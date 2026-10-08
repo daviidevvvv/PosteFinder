@@ -36,4 +36,16 @@ for (const expected of [
 }
 assert.ok(authSource.includes("code.includes('unauthorized-domain')"),
   'Missing authorized-domain error message');
-console.log('OK: original layout, Firebase config and Google sign-in integration found.');
+const rules = readFileSync(new URL('../firestore.rules', import.meta.url), 'utf8');
+assert.match(html, /const GEMINI_MODEL = 'gemini-3\.8-flash';/);
+assert.ok(!html.includes('gemini-2.5-flash-preview-09-2025'), 'Deprecated Gemini preview model still used');
+assert.ok(html.includes("'x-goog-api-key': keyToUse"), 'Gemini header missing');
+assert.ok(html.includes("thinkingLevel:'low'"), 'Gemini 3.8 low thinking level missing');
+assert.ok(html.includes('await window.PosteFinderBridge?.restoreGeminiKey?.()'), 'Account key restore missing');
+assert.ok(authSource.includes("'users', uid, 'private', 'geminiKey'"), 'Owner-only key doc missing');
+assert.ok(authSource.includes('bridge.saveGeminiKey = async rawKey =>'), 'Key save bridge missing');
+assert.match(rules, /match \/users\/\{uid\}\/private\/geminiKey/);
+assert.ok(rules.includes('allow get: if isOwner(uid);'));
+assert.ok(rules.includes('d.apiKey.matches('));
+assert.ok(rules.includes('allow list: if false;'));
+console.log('OK: original layout, Firebase Google sign-in, Gemini 3.8 and owner-only key sync source checks.');
