@@ -20,3 +20,13 @@ jobs:
         run: node scripts/seed-firestore.mjs
       - name: Check Firebase project availability (read-only, non-blocking)
         run: node scripts/check-firebase-readonly.mjs
+      - name: Build safe static preview package (no deploy)
+        uses: actions/upload-artifact@v4
+        with:
+          name: postefinder-netlify-preview
+          path: |
+            index.html
+            firebase-config.js
+            src/firebase-sync.mjs
+            src/state-schema.mjs
+          retention-days: 14
