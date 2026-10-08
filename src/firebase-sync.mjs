@@ -50,10 +50,52 @@ async function startFirebase() {
         <button type="submit" data-mode="login" class="flex-1 bg-blue-600 text-white rounded-lg py-2 font-semibold">Accedi</button>
         <button type="submit" data-mode="signup" class="flex-1 border border-blue-200 text-blue-700 rounded-lg py-2 font-semibold">Registrati</button>
       </div>
-      <p class="text-[11px] text-slate-500">Crea un account solo se hai configurato Firebase Authentication. Non usare password di altri servizi.</p>
+      <div class="flex items-center gap-2 text-[11px] text-slate-400" aria-hidden="true">
+        <span class="h-px bg-slate-200 flex-1"></span>oppure<span class="h-px bg-slate-200 flex-1"></span>
+      </div>
+      <button id="pf-google-signin" type="button"
+        class="w-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 rounded-lg py-2.5 font-semibold flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-wait">
+        <svg width="19" height="19" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+          <path fill="#4285F4" d="M43.61 24.45c0-1.36-.12-2.72-.36-4.01H24v7.72h11.01a9.41 9.41 0 0 1-4.09 6.18v5.14h6.62c3.88-3.57 6.07-8.84 6.07-15.03z"/>
+          <path fill="#34A853" d="M24 44c5.51 0 10.13-1.82 13.51-4.93l-6.62-5.14c-1.84 1.24-4.18 1.97-6.89 1.97-5.3 0-9.8-3.58-11.41-8.4H5.77v5.28C9.14 39.43 16.04 44 24 44z"/>
+          <path fill="#FBBC05" d="M12.59 27.5a11.99 11.99 0 0 1 0-7.67v-5.28H5.77a20 20 0 0 0 0 18.23l6.82-5.28z"/>
+          <path fill="#EA4335" d="M24 12.1c3 0 5.68 1.03 7.8 3.06l5.85-5.85C34.09 5.93 29.49 4 24 4 16.04 4 9.14 8.57 5.77 15.55l6.82 5.28c1.61-4.82 6.11-8.73 11.41-8.73z"/>
+        </svg>
+        Continua con Google
+      </button>
+      <p class="text-[11px] text-slate-500">Accedi con Google oppure con email/password. I dati rimangono legati al tuo account Firebase.</p>
     </form>`;
   document.body.appendChild(dialog);
   dialog.querySelector('#pf-close-auth').addEventListener('click', () => dialog.close());
+  const googleProvider = new authSdk.GoogleAuthProvider();
+  googleProvider.setCustomParameters({ prompt: 'select_account' });
+  let pendingGoogleCredential = null;
+  let pendingGoogleEmail = null;
+  const googleButton = dialog.querySelector('#pf-google-signin');
+  const authForm = dialog.querySelector('#pf-auth-form');
+  const authFeedback = dialog.querySelector('#pf-auth-feedback');
+  googleButton.addEventListener('click', async () => {
+    // Invoke the popup directly inside the click handler to avoid browser popup blockers.
+    googleButton.disabled = true;
+    authFeedback.textContent = 'Apertura accesso Google...';
+    try {
+      await authSdk.signInWithPopup(auth, googleProvider);
+      pendingGoogleCredential = null;
+      pendingGoogleEmail = null;
+      authForm.reset();
+      dialog.close();
+    } catch (error) {
+      if (error?.code === 'auth/account-exists-with-different-credential') {
+        pendingGoogleCredential = authSdk.GoogleAuthProvider.credentialFromError(error);
+        pendingGoogleEmail = String(error?.customData?.email || '').trim().toLowerCase();
+        authFeedback.textContent = 'Questa email ha già un account: accedi con la password per collegare Google senza perdere i tuoi dati.';
+      } else {
+        authFeedback.textContent = readableError(error, 'google');
+      }
+    } finally {
+      googleButton.disabled = false;
+    }
+  });
   dialog.querySelector('#pf-auth-form').addEventListener('submit', async event => {
     event.preventDefault();
     const feedback = dialog.querySelector('#pf-auth-feedback');
@@ -61,11 +103,30 @@ async function startFirebase() {
     const email = form.elements.email.value.trim();
     const password = form.elements.password.value;
     const isSignup = event.submitter?.dataset.mode === 'signup';
+    if (pendingGoogleCredential && pendingGoogleEmail && email.toLowerCase() !== pendingGoogleEmail) {
+      feedback.textContent = 'Per collegare Google accedi con la stessa email del tuo account Google.';
+      return;
+    }
     feedback.textContent = 'Connessione in corso...';
     [...form.querySelectorAll('button[type=submit]')].forEach(btn => { btn.disabled = true; });
     try {
-      if (isSignup) await authSdk.createUserWithEmailAndPassword(auth, email, password);
-      else await authSdk.signInWithEmailAndPassword(auth, email, password);
+      const result = isSignup
+        ? await authSdk.createUserWithEmailAndPassword(auth, email, password)
+        : await authSdk.signInWithEmailAndPassword(auth, email, password);
+      if (!isSignup && pendingGoogleCredential) {
+        try {
+          // Keep the same Firebase UID and Firestore preferences when adding Google login.
+          await authSdk.linkWithCredential(result.user, pendingGoogleCredential);
+        } catch (linkError) {
+          pendingGoogleCredential = null;
+          pendingGoogleEmail = null;
+          feedback.textContent = 'Accesso riuscito, ma Google non è stato collegato: ' +
+            readableError(linkError, 'google');
+          return;
+        }
+      }
+      pendingGoogleCredential = null;
+      pendingGoogleEmail = null;
       form.reset();
       dialog.close();
     } catch (error) {
@@ -199,12 +260,27 @@ async function startFirebase() {
   }
 }
 
-function readableError(error) {
+function readableError(error, provider = 'email') {
   const code = String(error?.code || '');
-  if (code.includes('invalid-credential') || code.includes('wrong-password')) return 'Email o password non corretti.';
-  if (code.includes('email-already-in-use')) return 'Questa email è già registrata.';
-  if (code.includes('weak-password')) return 'Scegli una password più lunga.';
-  if (code.includes('operation-not-allowed')) return 'Attiva Email/Password in Firebase Authentication.';
-  if (code.includes('unauthorized-domain')) return 'Autorizza questo dominio nella console Firebase.';
+  if (code.includes('popup-closed-by-user') || code.includes('cancelled-popup-request'))
+    return 'Accesso Google annullato.';
+  if (code.includes('popup-blocked'))
+    return 'Il browser ha bloccato la finestra Google: consenti i popup per questo sito.';
+  if (code.includes('invalid-credential') || code.includes('wrong-password'))
+    return 'Email o password non corretti.';
+  if (code.includes('email-already-in-use'))
+    return 'Questa email è già registrata.';
+  if (code.includes('weak-password'))
+    return 'Scegli una password più lunga.';
+  if (code.includes('operation-not-allowed'))
+    return provider === 'google'
+      ? 'Attiva Google in Firebase Authentication → Metodo di accesso.'
+      : 'Attiva Email/Password in Firebase Authentication.';
+  if (code.includes('unauthorized-domain'))
+    return 'Autorizza postefind.netlify.app in Firebase Authentication → Domini autorizzati.';
+  if (code.includes('credential-already-in-use'))
+    return 'Questo account Google è già collegato a un altro account.';
+  if (code.includes('network-request-failed'))
+    return 'Problema di rete: riprova quando la connessione è disponibile.';
   return 'Accesso non riuscito. Riprova.';
 }
