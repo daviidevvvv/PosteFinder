@@ -156,7 +156,67 @@ async function startFirebase() {
   let pendingSave = false;
   let unlisten = null;
   let scheduledSave = null;
+  let authStateReadyResolve;
+  const authStateReady = new Promise(resolve => { authStateReadyResolve = resolve; });
   const setLabel = label => { accountButton.textContent = label; accountButton.title = label; };
+
+  // Separate private document; never include the Gemini API key in public directory
+  // data or regular user preferences. This is account-only sync, NOT server-side secrecy.
+  const keyRef = uid => storeSdk.doc(db, 'users', uid, 'private', 'geminiKey');
+  const validGeminiKey = key => /^AIza[A-Za-z0-9_-]{25,150}$/.test(key);
+
+  async function syncGeminiKey(user, session) {
+    const uid = user.uid;
+    const storedLocally = bridge.getGeminiKey()?.trim() || '';
+    const secretDoc = await storeSdk.getDoc(keyRef(uid));
+    if (session !== generation || auth.currentUser?.uid !== uid) return;
+    if (secretDoc.exists()) {
+      const key = secretDoc.data()?.apiKey;
+      if (typeof key === 'string' && validGeminiKey(key)) {
+        // Keep the API key in memory; the private Firestore document supplies other devices.
+        bridge.setGeminiKey(key, false);
+      }
+    } else if (validGeminiKey(storedLocally)) {
+      // Explicit migration of the previously entered browser key for this signed-in user.
+      await storeSdk.setDoc(keyRef(uid), {
+        version: 1, apiKey: storedLocally, updatedAt: storeSdk.serverTimestamp()
+      });
+      if (session === generation && auth.currentUser?.uid === uid) {
+        bridge.setGeminiKey(storedLocally, false);
+      }
+    }
+  }
+
+  bridge.saveGeminiKey = async rawKey => {
+    const key = String(rawKey || '').trim();
+    if (!validGeminiKey(key)) throw new Error('Invalid Gemini API key format');
+    const user = auth.currentUser;
+    if (!user) return false; // Not signed in: the original browser-only mode still works.
+    const session = generation;
+    await storeSdk.setDoc(keyRef(user.uid), {
+      version: 1, apiKey: key, updatedAt: storeSdk.serverTimestamp()
+    });
+    if (session === generation && auth.currentUser?.uid === user.uid) {
+      bridge.setGeminiKey(key, false);
+    }
+    return true;
+  };
+
+  bridge.restoreGeminiKey = async () => {
+    if (bridge.getGeminiKey()) return bridge.getGeminiKey();
+    await authStateReady;
+    const user = auth.currentUser;
+    if (!user) return '';
+    const session = generation;
+    const snapshot = await storeSdk.getDoc(keyRef(user.uid));
+    if (session !== generation || auth.currentUser?.uid !== user.uid) return '';
+    const key = snapshot.exists() ? snapshot.data()?.apiKey : '';
+    if (typeof key === 'string' && validGeminiKey(key)) {
+      bridge.setGeminiKey(key, false);
+      return key;
+    }
+    return '';
+  };
 
   const connect = async user => {
     const session = ++generation;
@@ -193,6 +253,14 @@ async function startFirebase() {
         });
       }
       if (session !== generation) return;
+      try {
+        await syncGeminiKey(user, session);
+      } catch (error) {
+        // New private document may not yet be permitted in deployed Firestore rules.
+        // Keep the existing catalog and preference sync operational.
+        console.warn('PosteFinder: Gemini key sync unavailable', error?.code || error?.name);
+      }
+      if (session !== generation) return;
       observedFingerprint = preferencesFingerprint(bridge.getPreferences());
       ready = true;
       setLabel('Sincronizzato · Esci');
@@ -218,7 +286,13 @@ async function startFirebase() {
     }
   };
 
-  authSdk.onAuthStateChanged(auth, user => { void connect(user); });
+  authSdk.onAuthStateChanged(auth, user => {
+    void connect(user);
+    if (authStateReadyResolve) {
+      authStateReadyResolve();
+      authStateReadyResolve = null;
+    }
+  });
 
   // Poll only for changed legacy localStorage state. Avoid network writes when unchanged.
   setInterval(() => {
