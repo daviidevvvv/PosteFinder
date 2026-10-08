@@ -1,0 +1,32 @@
+name: Verify PosteFinder
+on:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify source and JavaScript
+        run: node scripts/check-source.mjs && node --check src/firebase-sync.mjs && node --check src/state-schema.mjs
+      - name: Unit tests
+        run: node --test
+      - name: Verify importable directory without writing to Firebase
+        run: node scripts/seed-firestore.mjs
+      - name: Check Firebase project availability (read-only, non-blocking)
+        run: node scripts/check-firebase-readonly.mjs
+      - name: Build safe static preview package (no deploy)
+        uses: actions/upload-artifact@v4
+        with:
+          name: postefinder-netlify-preview
+          path: |
+            index.html
+            firebase-config.js
+            src/firebase-sync.mjs
+            src/state-schema.mjs
+          retention-days: 14

@@ -17,8 +17,9 @@
   <!-- Phosphor Icons -->
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-  <!-- Markdown Parser (Marked) for AI responses -->
+  <!-- Markdown Parser and sanitization for untrusted AI responses -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.7/dist/purify.min.js"></script>
 
   <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -1337,7 +1338,12 @@ LISTA PUNTI + STATO: ${JSON.stringify(activeLocations)}.
         div.innerText = text;
       } else {
         div.className = "ai-message bg-indigo-50 text-indigo-900 p-3 rounded-2xl rounded-tl-none self-start max-w-[85%]";
-        div.innerHTML = marked.parse(text);
+        // AI responses are untrusted Markdown: do not inject raw HTML.
+        if (window.marked?.parse && window.DOMPurify?.sanitize) {
+          div.innerHTML = window.DOMPurify.sanitize(window.marked.parse(text));
+        } else {
+          div.textContent = text;
+        }
       }
 
       container.appendChild(div);
@@ -1357,6 +1363,60 @@ LISTA PUNTI + STATO: ${JSON.stringify(activeLocations)}.
       container.scrollTop = container.scrollHeight;
       return id;
     }
+
+    // Optional Firebase adapter. Only a small, explicit bridge to the original app state.
+    // Do not change the existing layout, marker logic, source dataset or local-only mode.
+    window.PosteFinderBridge = {
+      getPreferences() {
+        return { favorites, ratings, removedIds, customPlaces };
+      },
+      applyPreferences(prefs) {
+        favorites = Array.isArray(prefs.favorites) ? [...prefs.favorites] : [];
+        ratings = prefs.ratings && typeof prefs.ratings === 'object' ? { ...prefs.ratings } : {};
+        removedIds = Array.isArray(prefs.removedIds) ? [...prefs.removedIds] : [];
+        customPlaces = Array.isArray(prefs.customPlaces) ? prefs.customPlaces.map(p => ({ ...p })) : [];
+        localStorage.setItem('user_favorites', JSON.stringify(favorites));
+        localStorage.setItem('user_ratings', JSON.stringify(ratings));
+        localStorage.setItem('removed_locations', JSON.stringify(removedIds));
+        upsertDefaultPlacesIntoLocalStorage();
+        Object.values(customPlaceMarkers).forEach(marker => map.removeLayer(marker));
+        customPlaceMarkers = {};
+        renderCustomPlaces();
+        refreshView();
+      },
+      clearLocalSecrets() {
+        // Remove private geocoding queries, legacy AI credentials and position on logout.
+        userApiKey = '';
+        localStorage.removeItem('gemini_api_key');
+        localStorage.removeItem(GEO_CACHE_KEY);
+        if (userMarker) {
+          map.removeLayer(userMarker);
+          userMarker = null;
+        }
+        userPosition = null;
+        referencePoint = null;
+        document.getElementById('ref-point-indicator').classList.add('hidden');
+        document.getElementById('list-status').textContent = 'Elenco';
+        map.setView([41.2405, 16.5040], 14);
+        refreshView();
+      },
+      mergeLocations(remote) {
+        if (!Array.isArray(remote) || !remote.length) return;
+        const byId = new Map(LOCATIONS_DATA.map(loc => [loc.id, loc]));
+        for (const loc of remote) {
+          if (!loc || !Number.isSafeInteger(loc.id)) continue;
+          if (loc.active === false) byId.delete(loc.id);
+          else byId.set(loc.id, { ...(byId.get(loc.id) || {}), ...loc });
+        }
+        LOCATIONS_DATA.splice(0, LOCATIONS_DATA.length, ...byId.values());
+        refreshView();
+      }
+    };
+
   </script>
+
+  <!-- Optional Firebase support; does nothing until firebase-config.js is filled in. -->
+  <script src="./firebase-config.js"></script>
+  <script type="module" src="./src/firebase-sync.mjs"></script>
 </body>
 </html>
