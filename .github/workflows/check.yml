@@ -18,3 +18,5 @@ jobs:
         run: node --test
       - name: Verify importable directory without writing to Firebase
         run: node scripts/seed-firestore.mjs
+      - name: Check Firebase project availability (read-only, non-blocking)
+        run: node scripts/check-firebase-readonly.mjs
