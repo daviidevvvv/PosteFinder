@@ -14,4 +14,14 @@ for (const match of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) 
   const inline = match[1];
   if (inline.trim()) new Script(inline, { filename: 'index-inline.js' });
 }
-console.log('OK: original Netlify map/sidebar present; inline JavaScript parses.');
+const configSource = readFileSync(new URL('../firebase-config.js', import.meta.url), 'utf8');
+assert.ok(!configSource.includes('-----BEGIN PRIVATE KEY-----'), 'Never commit service-account private keys');
+const scoped = { window: {} };
+new Script(configSource, { filename: 'firebase-config.js' }).runInNewContext(scoped, { timeout: 1000 });
+const config = scoped.window.POSTEFINDER_FIREBASE_CONFIG;
+assert.equal(config?.projectId, 'postefinder-dev', 'Unexpected Firebase project');
+assert.equal(config?.authDomain, 'postefinder-dev.firebaseapp.com');
+assert.match(config?.apiKey || '', /^AIza[A-Za-z0-9_-]+$/);
+assert.match(config?.appId || '', /^1:\\d+:web:[a-zA-Z0-9]+$/);
+assert.equal(config?.storageBucket, 'postefinder-dev.firebasestorage.app');
+console.log('OK: original Netlify map/sidebar present; inline JavaScript parses; Firebase dev config is valid.');
