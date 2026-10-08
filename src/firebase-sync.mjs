@@ -102,6 +102,7 @@ async function startFirebase() {
     if (!user) {
       if (signedInBefore) {
         bridge.applyPreferences(normalizePreferences({}));
+        bridge.clearLocalSecrets();
       }
       signedInBefore = false;
       observedFingerprint = preferencesFingerprint(bridge.getPreferences());
@@ -109,7 +110,10 @@ async function startFirebase() {
       return;
     }
     // Avoid carrying personal data from another user across account switches.
-    if (signedInBefore) bridge.applyPreferences(normalizePreferences({}));
+    if (signedInBefore) {
+      bridge.applyPreferences(normalizePreferences({}));
+      bridge.clearLocalSecrets();
+    }
     signedInBefore = true;
     setLabel('Collegamento...');
     const ref = storeSdk.doc(db, 'users', user.uid, 'private', 'preferences');
@@ -188,7 +192,7 @@ async function startFirebase() {
   try {
     const result = await storeSdk.getDocs(storeSdk.collection(db, 'locations'));
     const remote = result.docs.map(entry => normalizeLocationDoc(entry.data()))
-      .filter(item => item && item.active);
+      .filter(Boolean);
     if (remote.length) bridge.mergeLocations(remote);
   } catch (error) {
     console.warn('PosteFinder: uso il catalogo locale', error);
