@@ -22,6 +22,6 @@ const config = scoped.window.POSTEFINDER_FIREBASE_CONFIG;
 assert.equal(config?.projectId, 'postefinder-dev', 'Unexpected Firebase project');
 assert.equal(config?.authDomain, 'postefinder-dev.firebaseapp.com');
 assert.match(config?.apiKey || '', /^AIza[A-Za-z0-9_-]+$/);
-assert.match(config?.appId || '', /^1:\\d+:web:[a-zA-Z0-9]+$/);
+assert.match(config?.appId || '', /^1:\d+:web:[a-zA-Z0-9]+$/);
 assert.equal(config?.storageBucket, 'postefinder-dev.firebasestorage.app');
 console.log('OK: original Netlify map/sidebar present; inline JavaScript parses; Firebase dev config is valid.');
