@@ -86,9 +86,13 @@ async function startFirebase() {
       dialog.close();
     } catch (error) {
       if (error?.code === 'auth/account-exists-with-different-credential') {
-        pendingGoogleCredential = authSdk.GoogleAuthProvider.credentialFromError(error);
-        pendingGoogleEmail = String(error?.customData?.email || '').trim().toLowerCase();
-        authFeedback.textContent = 'Questa email ha già un account: accedi con la password per collegare Google senza perdere i tuoi dati.';
+        const credential = authSdk.GoogleAuthProvider.credentialFromError(error);
+        const conflictEmail = String(error?.customData?.email || '').trim().toLowerCase();
+        pendingGoogleCredential = credential && conflictEmail ? credential : null;
+        pendingGoogleEmail = pendingGoogleCredential ? conflictEmail : null;
+        authFeedback.textContent = pendingGoogleCredential
+          ? 'Questa email ha già un account: accedi con la password per collegare Google senza perdere i tuoi dati.'
+          : 'Questa email ha già un account: accedi con il metodo usato in precedenza per conservare i tuoi dati.';
       } else {
         authFeedback.textContent = readableError(error, 'google');
       }
