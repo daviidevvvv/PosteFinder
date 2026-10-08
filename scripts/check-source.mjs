@@ -24,4 +24,16 @@ assert.equal(config?.authDomain, 'postefinder-dev.firebaseapp.com');
 assert.match(config?.apiKey || '', /^AIza[A-Za-z0-9_-]+$/);
 assert.match(config?.appId || '', /^1:\d+:web:[a-zA-Z0-9]+$/);
 assert.equal(config?.storageBucket, 'postefinder-dev.firebasestorage.app');
-console.log('OK: original Netlify map/sidebar present; inline JavaScript parses; Firebase dev config is valid.');
+const authSource = readFileSync(new URL('../src/firebase-sync.mjs', import.meta.url), 'utf8');
+for (const expected of [
+  'id="pf-google-signin"',
+  'new authSdk.GoogleAuthProvider()',
+  'authSdk.signInWithPopup(auth, googleProvider)',
+  'authSdk.GoogleAuthProvider.credentialFromError(error)',
+  'authSdk.linkWithCredential(result.user, pendingGoogleCredential)'
+]) {
+  assert.ok(authSource.includes(expected), 'Missing Google OAuth integration: ' + expected);
+}
+assert.ok(authSource.includes("code.includes('unauthorized-domain')"),
+  'Missing authorized-domain error message');
+console.log('OK: original layout, Firebase config and Google sign-in integration found.');
