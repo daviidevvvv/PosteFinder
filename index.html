@@ -84,6 +84,9 @@
     .status-open { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
     .status-closed { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
     .status-warning { background-color: #ffedd5; color: #9a3412; border: 1px solid #fed7aa; }
+
+    /* Small optional controls; keep the existing map-left / sidebar-right layout. */
+    .filter-open-now.active { background: #dcfce7; border-color: #86efac; color: #166534; }
   </style>
 </head>
 
@@ -198,7 +201,20 @@
       <div class="p-3 bg-white border-b border-slate-200 shrink-0 space-y-2">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Filtra</span>
-          <button onclick="resetFlags()" class="text-[10px] text-gray-400 underline hover:text-red-500">Ripristina</button>
+          <div class="flex items-center gap-2">
+            <button id="filter-open-now" type="button" aria-pressed="false" onclick="toggleOpenOnly()"
+                    class="filter-open-now text-[10px] font-bold text-slate-600 bg-slate-50 border border-slate-200 rounded-full px-2 py-1 hover:border-green-400">
+              <i class="ph-bold ph-clock"></i> Aperti ora
+            </button>
+            <button onclick="resetFlags()" class="text-[10px] text-gray-400 underline hover:text-red-500">Ripristina</button>
+          </div>
+        </div>
+
+        <div class="relative">
+          <i class="ph-bold ph-magnifying-glass absolute left-3 top-2.5 text-slate-400 pointer-events-none"></i>
+          <input id="location-search" type="search" oninput="refreshView()" autocomplete="off"
+                 aria-label="Cerca per nome o indirizzo" placeholder="Cerca punto o indirizzo..."
+                 class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-xs focus:outline-none focus:ring-2 focus:ring-blue-400">
         </div>
 
         <div class="flex flex-wrap gap-2">
@@ -249,10 +265,14 @@
 
   <script>
     // ============================================================
-    // PERSONAL PLACES - public repo safe defaults.
-    // Add your home and gym through the app; never hardcode private addresses.
+    // DEFAULT PLACES (no personal data published in GitHub)
+    // User-supplied addresses and coordinates are saved locally in this browser.
+    // ============================================================
     const HOME_FALLBACK_COORDS = null;
-    const DEFAULT_PLACES = [];
+    const DEFAULT_PLACES = [
+      { id: -101, isDefault: true, name: 'Casa', address: '', icon: 'ph-house', coords: null },
+      { id: -102, isDefault: true, name: 'Palestra', address: '', icon: 'ph-barbell', coords: null }
+    ];
 
     // ============================================================
     // DATASET (base + uffici + locker) - invariato
@@ -405,6 +425,7 @@
     let referencePoint = null;
     let selectedId = null;
     let currentFilter = 'all';
+    let openOnly = false;
 
     let removedIds = JSON.parse(localStorage.getItem('removed_locations') || '[]');
     let favorites = JSON.parse(localStorage.getItem('user_favorites') || '[]');
@@ -631,9 +652,29 @@
 
     function initMap() {
       map = L.map('map', { zoomControl: false }).setView([41.2405, 16.5040], 14);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap'
-      }).addTo(map);
+      // Keep the same OpenStreetMap tiles by default, including all original markers.
+      // If the primary tile endpoint is unavailable, retry with a second basemap.
+      let failures = 0;
+      let fallbackActive = false;
+      const primaryTiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors', maxZoom: 19
+      });
+      primaryTiles.on('tileerror', () => {
+        if (fallbackActive || ++failures < 4) return;
+        fallbackActive = true;
+        map.removeLayer(primaryTiles);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; OpenStreetMap contributors &copy; CARTO', maxZoom: 19
+        }).addTo(map);
+      });
+      primaryTiles.addTo(map);
+
+      // Prevent empty/partially drawn maps when returning to the tab or resizing.
+      requestAnimationFrame(() => map.invalidateSize({ pan: false }));
+      window.addEventListener('resize', () => map.invalidateSize({ pan: false }));
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) setTimeout(() => map.invalidateSize({ pan: false }), 80);
+      });
     }
 
     function upsertDefaultPlacesIntoLocalStorage() {
@@ -648,12 +689,13 @@
           const existing = byId.get(d.id);
           existing.isDefault = true;
           existing.name = d.name;
-          existing.address = d.address;
+          // Never overwrite an address or location the user previously saved.
+          if (!existing.address && d.address) existing.address = d.address;
           existing.icon = d.icon;
-          if (d.coords) existing.coords = d.coords; // se metti coords fisse, applicale
+          if (!existing.coords && d.coords) existing.coords = d.coords;
           continue;
         }
-        if (byAddr.has(addrKey)) {
+        if (addrKey && byAddr.has(addrKey)) {
           const existing = byAddr.get(addrKey);
           existing.isDefault = true;
           existing.name = existing.name || d.name;
@@ -744,6 +786,14 @@
       return true;
     }
 
+    function toggleOpenOnly() {
+      openOnly = !openOnly;
+      const button = document.getElementById('filter-open-now');
+      button.classList.toggle('active', openOnly);
+      button.setAttribute('aria-pressed', String(openOnly));
+      refreshView();
+    }
+
     // ============================================================
     // MARKER JITTER
     // ============================================================
@@ -765,6 +815,14 @@
       visibleData.forEach(loc => {
         loc.currentStatus = getOpeningStatus(loc.schedule);
       });
+
+      const searchTerm = (document.getElementById('location-search')?.value || '')
+        .trim().toLocaleLowerCase('it');
+      if (searchTerm) {
+        visibleData = visibleData.filter(loc => [loc.realName, loc.originalName, loc.address, loc.services]
+          .filter(Boolean).join(' ').toLocaleLowerCase('it').includes(searchTerm));
+      }
+      if (openOnly) visibleData = visibleData.filter(loc => loc.currentStatus.isOpen);
 
       visibleData.sort((a,b) => {
         const aFav = favorites.includes(a.id);
@@ -921,7 +979,7 @@
 
           ${isSelected && !isRemoved ? `
             <div class="flex gap-2 mt-3 pt-2 border-t border-blue-100">
-              <button onclick="event.stopPropagation(); openGoogleMaps('${escapeAttr(loc.address)}')"
+              <button onclick="event.stopPropagation(); openGoogleMapsById(${loc.id})"
                 class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs py-2 px-4 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors shadow-sm">
                 <i class="ph-bold ph-navigation-arrow"></i> Vai
               </button>
@@ -946,7 +1004,10 @@
       const btnText = document.getElementById('btn-locate-text');
       btnText.innerText = "Cerco...";
       document.getElementById('ref-point-indicator').classList.add('hidden');
-      if (!navigator.geolocation) return;
+      if (!navigator.geolocation) {
+        btnText.innerText = 'Trovami';
+        return;
+      }
 
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -989,16 +1050,20 @@
       if (!loc) return;
 
       if (!loc.coords) await ensureCoordsForObject(loc);
-      if (loc.coords) {
-        map.flyTo(loc.coords, 17);
-        if (storeMarkers[id]) storeMarkers[id].openPopup();
-      }
+      if (loc.coords) map.flyTo(loc.coords, 17);
 
       refreshView();
+      // refreshView rebuilds the markers: open the *new* one, not the old one.
+      if (loc.coords && storeMarkers[id]) storeMarkers[id].openPopup();
       setTimeout(() => {
         const el = document.getElementById(`loc-${id}`);
         if (el) el.scrollIntoView({ behavior:'smooth', block:'center' });
       }, 50);
+    }
+
+    function openGoogleMapsById(id) {
+      const loc = LOCATIONS_DATA.find(item => item.id === id);
+      if (loc) openGoogleMaps(loc.address);
     }
 
     function openGoogleMaps(address) {
@@ -1091,18 +1156,23 @@
         pill.innerHTML = `
           <i class="ph-fill ${escapeHtml(icon)} text-green-700 text-xs"></i>
           <span class="text-xs font-bold text-green-900">${escapeHtml(place.name)}</span>
-          ${place.isDefault ? '' : '<i class="ph-bold ph-x text-[10px] text-green-400 hover:text-red-500 ml-1"></i>'}
+          ${place.isDefault
+            ? '<i class="ph-bold ph-pencil-simple text-[10px] text-green-500 hover:text-blue-600 ml-1" title="Imposta o modifica indirizzo"></i>'
+            : '<i class="ph-bold ph-x text-[10px] text-green-400 hover:text-red-500 ml-1"></i>'}
         `;
 
         pill.querySelector('span').addEventListener('click', async () => {
           if (place.coords && Array.isArray(place.coords) && place.coords.length === 2) {
             setReferencePoint(place.coords, place.name);
           } else {
-            await ensureCoordsForObject(place);
-            localStorage.setItem('custom_places', JSON.stringify(customPlaces));
-            renderCustomPlaces();
-            if (place.coords) setReferencePoint(place.coords, place.name);
+            await configureReferencePlace(place);
           }
+        });
+
+        const edit = pill.querySelector('.ph-pencil-simple');
+        if (edit) edit.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          configureReferencePlace(place, true);
         });
 
         const x = pill.querySelector('.ph-x');
@@ -1110,6 +1180,35 @@
 
         list.appendChild(pill);
       });
+    }
+
+    async function configureReferencePlace(place, forceEdit = false) {
+      const previousAddress = place.address || '';
+      const previousCoords = place.coords;
+      if (forceEdit || !previousAddress || !Array.isArray(previousCoords)) {
+        const entered = prompt(`Inserisci l'indirizzo per ${place.name} (salvato solo in questo browser):`, previousAddress);
+        if (!entered || !entered.trim()) return;
+        place.address = entered.trim();
+        place.coords = null;
+      }
+      try {
+        await ensureCoordsForObject(place);
+      } catch (error) {
+        console.error('Ricerca indirizzo non riuscita', error);
+      }
+      if (!place.coords) {
+        place.address = previousAddress;
+        place.coords = previousCoords;
+        alert('Indirizzo non trovato. Controlla la connessione e riprova.');
+        return;
+      }
+      localStorage.setItem('custom_places', JSON.stringify(customPlaces));
+      if (customPlaceMarkers[place.id]) {
+        map.removeLayer(customPlaceMarkers[place.id]);
+        delete customPlaceMarkers[place.id];
+      }
+      renderCustomPlaces();
+      setReferencePoint(place.coords, place.name);
     }
 
     function setReferencePoint(coords, name) {
