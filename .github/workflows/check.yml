@@ -27,7 +27,7 @@ jobs:
       - name: Compile and test Firestore rules with official emulator
         run: |
           npm install --no-save --package-lock=false firebase-tools firebase @firebase/rules-unit-testing
-          npx firebase emulators:exec --only firestore --project demo-postefinder -- "node scripts/test-firestore-rules.mjs"
+          npx firebase emulators:exec --only firestore --project demo-postefinder -- "node scripts/verify-firestore-emulator.mjs"
       - name: Build safe static preview package (no deploy)
         uses: actions/upload-artifact@v4
         with:
