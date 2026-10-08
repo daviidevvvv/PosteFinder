@@ -1,6 +1,7 @@
 # Istruzioni per Codex - PosteFinder
 
 - La base attuale è un sito statico in `index.html`. Conserva mappa, dati dei punti, ricerca, geolocalizzazione, orari, filtri, preferiti, valutazioni e interfaccia mobile.
+- Vincolo prioritario: NON ridisegnare l'interfaccia senza richiesta esplicita. Mantieni l'header giallo, la mappa grande a sinistra e il pannello con filtri ed elenco a destra su desktop (layout mobile originale), non spostare la mappa e non sostituirla con uno sfondo vuoto.
 - Non modificare e non sovrascrivere automaticamente il sito pubblicato tramite ChatGPT Sites.
 - Non includere nei commit indirizzi personali, posizioni Casa/Palestra, token, password, chiavi API o dati privati.
 - Non caricare dati personali su servizi esterni senza una richiesta esplicita.
