@@ -1357,6 +1357,44 @@ LISTA PUNTI + STATO: ${JSON.stringify(activeLocations)}.
       container.scrollTop = container.scrollHeight;
       return id;
     }
+
+    // Optional Firebase adapter. Only a small, explicit bridge to the original app state.
+    // Do not change the existing layout, marker logic, source dataset or local-only mode.
+    window.PosteFinderBridge = {
+      getPreferences() {
+        return { favorites, ratings, removedIds, customPlaces };
+      },
+      applyPreferences(prefs) {
+        favorites = Array.isArray(prefs.favorites) ? [...prefs.favorites] : [];
+        ratings = prefs.ratings && typeof prefs.ratings === 'object' ? { ...prefs.ratings } : {};
+        removedIds = Array.isArray(prefs.removedIds) ? [...prefs.removedIds] : [];
+        customPlaces = Array.isArray(prefs.customPlaces) ? prefs.customPlaces.map(p => ({ ...p })) : [];
+        localStorage.setItem('user_favorites', JSON.stringify(favorites));
+        localStorage.setItem('user_ratings', JSON.stringify(ratings));
+        localStorage.setItem('removed_locations', JSON.stringify(removedIds));
+        upsertDefaultPlacesIntoLocalStorage();
+        Object.values(customPlaceMarkers).forEach(marker => map.removeLayer(marker));
+        customPlaceMarkers = {};
+        renderCustomPlaces();
+        refreshView();
+      },
+      mergeLocations(remote) {
+        if (!Array.isArray(remote) || !remote.length) return;
+        const byId = new Map(LOCATIONS_DATA.map(loc => [loc.id, loc]));
+        for (const loc of remote) {
+          if (!loc || !Number.isSafeInteger(loc.id)) continue;
+          if (loc.active === false) byId.delete(loc.id);
+          else byId.set(loc.id, { ...(byId.get(loc.id) || {}), ...loc });
+        }
+        LOCATIONS_DATA.splice(0, LOCATIONS_DATA.length, ...byId.values());
+        refreshView();
+      }
+    };
+
   </script>
+
+  <!-- Optional Firebase support; does nothing until firebase-config.js is filled in. -->
+  <script src="./firebase-config.js"></script>
+  <script type="module" src="./src/firebase-sync.mjs"></script>
 </body>
 </html>
