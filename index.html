@@ -17,8 +17,9 @@
   <!-- Phosphor Icons -->
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-  <!-- Markdown Parser (Marked) for AI responses -->
+  <!-- Markdown Parser and sanitization for untrusted AI responses -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.7/dist/purify.min.js"></script>
 
   <style>
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -1337,7 +1338,12 @@ LISTA PUNTI + STATO: ${JSON.stringify(activeLocations)}.
         div.innerText = text;
       } else {
         div.className = "ai-message bg-indigo-50 text-indigo-900 p-3 rounded-2xl rounded-tl-none self-start max-w-[85%]";
-        div.innerHTML = marked.parse(text);
+        // AI responses are untrusted Markdown: do not inject raw HTML.
+        if (window.marked?.parse && window.DOMPurify?.sanitize) {
+          div.innerHTML = window.DOMPurify.sanitize(window.marked.parse(text));
+        } else {
+          div.textContent = text;
+        }
       }
 
       container.appendChild(div);
