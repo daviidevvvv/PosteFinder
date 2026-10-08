@@ -30,10 +30,8 @@ for (const expected of [
   'new authSdk.GoogleAuthProvider()',
   'authSdk.signInWithPopup(auth, googleProvider)',
   'authSdk.GoogleAuthProvider.credentialFromError(error)',
-  'authSdk.linkWithCredential(result.user, pendingGoogleCredential)',
-  'auth/unauthorized-domain'
+  'authSdk.linkWithCredential(result.user, pendingGoogleCredential)'
 ]) {
-  if (expected === 'auth/unauthorized-domain') continue; // Firebase errors are matched by suffix.
   assert.ok(authSource.includes(expected), 'Missing Google OAuth integration: ' + expected);
 }
 assert.ok(authSource.includes("code.includes('unauthorized-domain')"),
