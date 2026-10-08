@@ -1,0 +1,16 @@
+{
+  "name": "postefinder",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "PosteFinder original Netlify UI with optional Firebase backend",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check src/firebase-sync.mjs && node --check src/state-schema.mjs && node --check scripts/seed-firestore.mjs && node --test",
+    "seed:dry-run": "node scripts/seed-firestore.mjs",
+    "seed": "node scripts/seed-firestore.mjs --write"
+  },
+  "devDependencies": {
+    "firebase-admin": "^13.5.0"
+  }
+}
