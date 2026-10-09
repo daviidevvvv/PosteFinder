@@ -88,6 +88,40 @@
 
     /* Small optional controls; keep the existing map-left / sidebar-right layout. */
     .filter-open-now.active { background: #dcfce7; border-color: #86efac; color: #166534; }
+
+    /* Use the visible viewport; flex children must be allowed to shrink. */
+    body { height: 100vh; height: 100dvh; }
+    #app-content, #map-panel, #sidebar, #locations-list { min-height: 0; min-width: 0; }
+    #mobile-view-switch { display: none; }
+    button:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+    @media (max-width: 767px), (max-width: 1023px) and (max-height: 500px) {
+      header { flex-wrap: wrap; gap: 8px; padding: 12px; }
+      header > div { flex: 1 1 100%; }
+      header button { min-height: 44px; }
+      #mobile-view-switch {
+        display: flex; gap: 8px; padding: 8px 12px;
+        background: white; border-bottom: 1px solid #e2e8f0; flex-shrink: 0;
+      }
+      #mobile-view-switch button {
+        flex: 1; min-height: 44px; border-radius: 10px;
+        font-size: 14px; font-weight: 700; color: #475569; background: #f1f5f9;
+      }
+      #mobile-view-switch button[aria-pressed="true"] { background: #2563eb; color: white; }
+      #sidebar { width: 100%; height: auto; flex: 1; overflow-y: auto; overscroll-behavior-y: contain; }
+      #locations-list { flex: none; overflow: visible; padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+      #map-panel { display: none; }
+      body[data-mobile-view="map"] #map-panel { display: block; }
+      body[data-mobile-view="map"] #sidebar { display: none; }
+      #sidebar button { min-height: 44px; }
+      #sidebar input { font-size: 16px; min-width: 0; min-height: 44px; }
+      #sidebar .location-item h3 { font-size: 15px; overflow-wrap: anywhere; }
+      #sidebar .location-item .truncate { white-space: normal; overflow-wrap: anywhere; }
+      #sidebar .star-rating { gap: 4px; }
+      #sidebar .star-rating i { display: inline-flex; align-items: center; justify-content: center; min-width: 32px; min-height: 44px; }
+      #chat-window { right: 12px; width: calc(100% - 24px); bottom: 88px; max-height: calc(100% - 100px); }
+      #chat-input { min-width: 0; font-size: 16px; }
+      #ref-point-indicator { max-width: calc(100% - 24px); width: max-content; }
+    }
   </style>
 </head>
 
@@ -109,10 +143,14 @@
   </header>
 
   <!-- Main Content -->
-  <div class="flex-1 flex flex-col md:flex-row overflow-hidden relative">
+  <nav id="mobile-view-switch" aria-label="Vista dei punti">
+    <button id="view-list" type="button" aria-pressed="true" aria-controls="sidebar" onclick="setMobileView('list')">Elenco</button>
+    <button id="view-map" type="button" aria-pressed="false" aria-controls="map-panel" onclick="setMobileView('map')">Mappa</button>
+  </nav>
+  <div id="app-content" class="flex-1 flex flex-col md:flex-row overflow-hidden relative">
 
     <!-- Map Container -->
-    <div class="flex-1 h-full relative z-0 order-2 md:order-1">
+    <div id="map-panel" class="flex-1 h-full relative z-0 order-2 md:order-1">
       <div id="map"></div>
 
       <!-- Reference Point Indicator (Floating) -->
@@ -179,7 +217,7 @@
     </div>
 
     <!-- Sidebar List -->
-    <div class="w-full md:w-96 bg-white flex flex-col shadow-2xl z-10 order-1 md:order-2 h-[50vh] md:h-auto border-t md:border-t-0 md:border-l border-slate-200">
+    <div id="sidebar" class="w-full md:w-96 bg-white flex flex-col shadow-2xl z-10 order-1 md:order-2 h-[50vh] md:h-auto border-t md:border-t-0 md:border-l border-slate-200">
 
       <!-- Add Place Section -->
       <div class="p-3 bg-slate-50 border-b border-slate-200 shrink-0">
@@ -303,7 +341,7 @@
         schedule:{ mon:[[7,30,13,30],[16,0,21,0]], tue:[[7,30,13,30],[16,0,21,0]], wed:[[7,30,13,30],[16,0,21,0]], thu:[[7,30,13,30],[16,0,21,0]], fri:[[7,30,13,30],[16,0,21,0]], sat:[[7,30,13,30],[16,0,21,0]], sun:[] },
         coords:[41.2400, 16.5015]
       },
-      { id: 5, kind:"punto", originalName:"Edicolandia", realName:"Edicolandia", address:"Via Fragata 103, Bisceglie", services:"PuntoLis (Solo Pagamenti)", hasPoste:false, hasLis:true,
+      { id: 5, kind:"punto", originalName:"Edicolandia", realName:"Edicolandia", address:"Via Fragata 103, Bisceglie", services:"PuntoLis (Solo Pagamenti) • BRT/Bartolini: solo non digital, digital non disponibile (segnalazione utente)", hasPoste:false, hasLis:true,
         schedule:{ mon:[[7,30,13,0],[17,0,20,30]], tue:[[7,30,13,0],[17,0,20,30]], wed:[[7,30,13,0],[17,0,20,30]], thu:[[7,30,13,0],[17,0,20,30]], fri:[[7,30,13,0],[17,0,20,30]], sat:[[7,30,13,0],[17,0,20,30]], sun:[[10,0,13,0]] },
         coords:[41.2390, 16.5045]
       },
@@ -1051,6 +1089,14 @@
       return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
 
+    function setMobileView(view) {
+      if (view !== 'list' && view !== 'map') return;
+      document.body.dataset.mobileView = view;
+      document.getElementById('view-list').setAttribute('aria-pressed', String(view === 'list'));
+      document.getElementById('view-map').setAttribute('aria-pressed', String(view === 'map'));
+      if (view === 'map') requestAnimationFrame(() => map?.invalidateSize({ pan: false }));
+    }
+
     async function selectLocation(id) {
       if (removedIds.includes(id)) return;
       selectedId = id;
@@ -1059,14 +1105,20 @@
       if (!loc) return;
 
       if (!loc.coords) await ensureCoordsForObject(loc);
-      if (loc.coords) map.flyTo(loc.coords, 17);
+      if (loc.coords) {
+        if (window.matchMedia('(max-width: 767px), (max-width: 1023px) and (max-height: 500px)').matches) setMobileView('map');
+        map.invalidateSize({ pan: false });
+        map.flyTo(loc.coords, 17);
+      }
 
       refreshView();
       // refreshView rebuilds the markers: open the *new* one, not the old one.
       if (loc.coords && storeMarkers[id]) storeMarkers[id].openPopup();
       setTimeout(() => {
         const el = document.getElementById(`loc-${id}`);
-        if (el) el.scrollIntoView({ behavior:'smooth', block:'center' });
+        if (el && (!window.matchMedia('(max-width: 767px), (max-width: 1023px) and (max-height: 500px)').matches || document.body.dataset.mobileView !== 'map')) {
+          el.scrollIntoView({ behavior:'smooth', block:'center' });
+        }
       }, 50);
     }
 
