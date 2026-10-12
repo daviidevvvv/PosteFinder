@@ -1,0 +1,37 @@
+name: Carrier audit and planner
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check modules and deterministic planner
+        run: |
+          node --check src/carrier-adapter.js
+          node --check src/carrier-ui.mjs
+          node --check src/carrier-catalog.mjs
+          node --test tests/carrier-planner.test.mjs
+      - name: Build from current original app without deploying
+        run: node scripts/build-carrier-bundle.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PosteFinder-multicorriere
+          path: dist/
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PosteFinder-fonti-e-verifiche
+          path: |
+            data/carrier-inputs.json
+            dist/data/carrier-catalog.json
+            research/
+          retention-days: 30
