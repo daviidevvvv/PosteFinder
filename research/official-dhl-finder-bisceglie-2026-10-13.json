@@ -1,0 +1,1225 @@
+{
+  "observedAt": "2026-10-13",
+  "sourceUrl": "https://www.dhl.com/global-en/microsites/ec/dhl-finder.html",
+  "query": "76011 Bisceglie",
+  "notes": "Official DHL Finder shows eCommerce plus partners, distinguishes PUNTOPOSTE and DHL ServicePoint; list excludes Trani and Molfetta",
+  "countShownArea": 50,
+  "results": [
+    {
+      "id": "/locations/8058-Z9382",
+      "name": "TABACCHERIA N. 2",
+      "address": "PUNTOPOSTE Z9382 | PIAZZA VITTORIO EMANUELE II 12 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "07:00 - 13:0015:00 - 21:00"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "07:00 - 13:0015:00 - 21:00"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "07:00 - 13:0015:00 - 21:00"
+        },
+        {
+          "day": "Thursday",
+          "hours": "07:00 - 13:0015:00 - 21:00"
+        },
+        {
+          "day": "Friday",
+          "hours": "07:00 - 13:0015:00 - 21:00"
+        },
+        {
+          "day": "Saturday",
+          "hours": "07:00 - 13:0015:00 - 21:00"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-07015",
+      "name": "Ufficio Postale BISCEGLIE",
+      "address": "FERMOPOSTA 07015 | VIA ANTONIO GRAMSCI 32 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Drop-off parcel with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "08:20 - 19:05"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "08:20 - 19:05"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "08:20 - 19:05"
+        },
+        {
+          "day": "Thursday",
+          "hours": "08:20 - 19:05"
+        },
+        {
+          "day": "Friday",
+          "hours": "08:20 - 19:05"
+        },
+        {
+          "day": "Saturday",
+          "hours": "08:20 - 12:35"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-Z2310",
+      "name": "TABACCHERIA N. 10",
+      "address": "PUNTOPOSTE Z2310 | CORSO UMBERTO I 7 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "06:30 - 13:0015:30 - 21:00"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "06:30 - 13:0015:30 - 21:00"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "06:30 - 13:0015:30 - 21:00"
+        },
+        {
+          "day": "Thursday",
+          "hours": "06:30 - 13:0015:30 - 21:00"
+        },
+        {
+          "day": "Friday",
+          "hours": "06:30 - 13:0015:30 - 21:00"
+        },
+        {
+          "day": "Saturday",
+          "hours": "06:30 - 13:0015:30 - 21:00"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-Z1634",
+      "name": "TABACCHERIA N. 13",
+      "address": "PUNTOPOSTE Z1634 | VIA VENTIQUATTRO MAGGIO 52 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "07:00 - 13:0016:00 - 20:30"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "07:00 - 13:0016:00 - 20:30"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "07:00 - 13:0016:00 - 20:30"
+        },
+        {
+          "day": "Thursday",
+          "hours": "07:00 - 13:0016:00 - 20:30"
+        },
+        {
+          "day": "Friday",
+          "hours": "07:00 - 13:0016:00 - 20:30"
+        },
+        {
+          "day": "Saturday",
+          "hours": "07:00 - 13:0016:00 - 20:30"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-ZBTNX",
+      "name": "NEXIVE BISCEGLIE",
+      "address": "PUNTOPOSTE ZBTNX | VIA ALCIDE DE GASPERI 40 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "07:00 - 12:3016:30 - 19:00"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "07:00 - 12:3016:30 - 19:00"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "07:00 - 12:3016:30 - 19:00"
+        },
+        {
+          "day": "Thursday",
+          "hours": "07:00 - 12:3016:30 - 19:00"
+        },
+        {
+          "day": "Friday",
+          "hours": "07:00 - 12:3016:30 - 19:00"
+        },
+        {
+          "day": "Saturday",
+          "hours": "09:00 - 12:00"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-Z1853",
+      "name": "TABACCHERIA N. 9",
+      "address": "PUNTOPOSTE Z1853 | PIAZZA CASTELLO 3 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "06:00 - 13:3016:00 - 21:00"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "06:00 - 13:3016:00 - 21:00"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "06:00 - 13:3016:00 - 21:00"
+        },
+        {
+          "day": "Thursday",
+          "hours": "06:00 - 13:3016:00 - 21:00"
+        },
+        {
+          "day": "Friday",
+          "hours": "06:00 - 13:3016:00 - 21:00"
+        },
+        {
+          "day": "Saturday",
+          "hours": "06:00 - 13:3016:00 - 21:00"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-Z2860",
+      "name": "TABACCHERIA N. 8",
+      "address": "PUNTOPOSTE Z2860 | VIA ALCIDE DE GASPERI 53 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "07:00 - 13:0015:30 - 20:30"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "07:00 - 13:0015:30 - 20:30"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "07:00 - 13:0015:30 - 20:30"
+        },
+        {
+          "day": "Thursday",
+          "hours": "07:00 - 13:0015:30 - 20:30"
+        },
+        {
+          "day": "Friday",
+          "hours": "07:00 - 13:0015:30 - 20:30"
+        },
+        {
+          "day": "Saturday",
+          "hours": "07:00 - 13:0015:30 - 20:30"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-ZBTRK",
+      "name": "ROKO COFFEE POINT",
+      "address": "PUNTOPOSTE ZBTRK | VIA MATTEO RENATO IMBRIANI 98 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "09:30 - 13:0017:00 - 20:30"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "09:30 - 13:0017:00 - 20:30"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "09:30 - 13:0017:00 - 20:30"
+        },
+        {
+          "day": "Thursday",
+          "hours": "09:30 - 13:00"
+        },
+        {
+          "day": "Friday",
+          "hours": "09:30 - 13:0017:00 - 20:30"
+        },
+        {
+          "day": "Saturday",
+          "hours": "09:30 - 13:0017:00 - 20:30"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8053-BRI005",
+      "name": "APP SERVICE",
+      "address": "DHL ServicePoint BRI005 | Via Francesco Petronelli 7 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off return with label"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "09:00 - 20:00"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "09:00 - 20:00"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "09:00 - 20:00"
+        },
+        {
+          "day": "Thursday",
+          "hours": "09:00 - 20:00"
+        },
+        {
+          "day": "Friday",
+          "hours": "09:00 - 20:00"
+        },
+        {
+          "day": "Saturday",
+          "hours": "09:00 - 13:00"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-Z0856",
+      "name": "TABACCHERIA N. 22",
+      "address": "PUNTOPOSTE Z0856 | VIA LUIGI PAPAGNI 27 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "07:30 - 13:0016:30 - 20:00"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "07:30 - 13:0016:30 - 20:00"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "07:30 - 13:0016:30 - 20:00"
+        },
+        {
+          "day": "Thursday",
+          "hours": "07:30 - 13:0016:30 - 20:00"
+        },
+        {
+          "day": "Friday",
+          "hours": "07:30 - 13:0016:30 - 20:00"
+        },
+        {
+          "day": "Saturday",
+          "hours": "07:30 - 13:0016:30 - 20:00"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-Z1419",
+      "name": "TABACCHERIA N. 17",
+      "address": "PUNTOPOSTE Z1419 | VIA CAVOUR 47 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "07:00 - 13:0016:00 - 20:00"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "07:00 - 13:0016:00 - 20:00"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "07:00 - 13:0016:00 - 20:00"
+        },
+        {
+          "day": "Thursday",
+          "hours": "07:00 - 13:0016:00 - 20:00"
+        },
+        {
+          "day": "Friday",
+          "hours": "07:00 - 13:0016:00 - 20:00"
+        },
+        {
+          "day": "Saturday",
+          "hours": "07:00 - 13:0016:00 - 20:00"
+        },
+        {
+          "day": "Sunday",
+          "hours": "08:30 - 12:00"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-ZI836",
+      "name": "TABACCHERIA N. 12",
+      "address": "PUNTOPOSTE ZI836 | CORSO UMBERTO I 144 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "07:00 - 14:0015:30 - 21:00"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "07:00 - 14:0015:30 - 21:00"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "07:00 - 14:0015:30 - 21:00"
+        },
+        {
+          "day": "Thursday",
+          "hours": "07:00 - 14:0015:30 - 21:00"
+        },
+        {
+          "day": "Friday",
+          "hours": "07:00 - 14:0015:30 - 21:00"
+        },
+        {
+          "day": "Saturday",
+          "hours": "07:00 - 14:0015:30 - 21:00"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-Z0386",
+      "name": "TABACCHERIA N. 14",
+      "address": "PUNTOPOSTE Z0386 | PIAZZA ARMANDO DIAZ 23 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "06:00 - 21:00"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "06:00 - 21:00"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "06:00 - 21:00"
+        },
+        {
+          "day": "Thursday",
+          "hours": "06:00 - 21:00"
+        },
+        {
+          "day": "Friday",
+          "hours": "06:00 - 21:00"
+        },
+        {
+          "day": "Saturday",
+          "hours": "06:00 - 21:00"
+        },
+        {
+          "day": "Sunday",
+          "hours": "06:00 - 21:00"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-ZE250",
+      "name": "TABACCHERIA N. 15",
+      "address": "PUNTOPOSTE ZE250 | VIA MATTEO RENATO IMBRIANI 163 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "07:00 - 13:3016:00 - 20:30"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "07:00 - 13:3016:00 - 20:30"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "07:00 - 13:3016:00 - 20:30"
+        },
+        {
+          "day": "Thursday",
+          "hours": "07:00 - 13:3016:00 - 20:30"
+        },
+        {
+          "day": "Friday",
+          "hours": "07:00 - 13:3016:00 - 20:30"
+        },
+        {
+          "day": "Saturday",
+          "hours": "07:00 - 13:3016:00 - 20:30"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-ZX711",
+      "name": "EDICOLANDIA",
+      "address": "PUNTOPOSTE ZX711 | VIA FRAGATA 103 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "07:30 - 13:0017:00 - 20:30"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "07:30 - 13:0017:00 - 20:30"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "07:30 - 13:0017:00 - 20:30"
+        },
+        {
+          "day": "Thursday",
+          "hours": "07:30 - 13:0017:00 - 20:30"
+        },
+        {
+          "day": "Friday",
+          "hours": "07:30 - 13:0017:00 - 20:30"
+        },
+        {
+          "day": "Saturday",
+          "hours": "07:30 - 13:0017:00 - 20:30"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-ZX662",
+      "name": "CARTOLIBRERIA BRESCI",
+      "address": "PUNTOPOSTE ZX662 | VIA MATTEO RENATO IMBRIANI 179 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "06:00 - 13:0016:30 - 20:00"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "06:00 - 13:0016:30 - 20:00"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "06:00 - 13:0016:30 - 20:00"
+        },
+        {
+          "day": "Thursday",
+          "hours": "06:00 - 13:0016:30 - 20:00"
+        },
+        {
+          "day": "Friday",
+          "hours": "06:00 - 13:0016:30 - 20:00"
+        },
+        {
+          "day": "Saturday",
+          "hours": "06:00 - 13:0016:30 - 20:00"
+        },
+        {
+          "day": "Sunday",
+          "hours": "07:00 - 13:00"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8053-BRI1L8",
+      "name": "EDICOLANDIA",
+      "address": "DHL ServicePoint BRI1L8 | Via Fragata, 103 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off return with label"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "08:00 - 20:30"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "08:00 - 20:30"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "08:00 - 20:30"
+        },
+        {
+          "day": "Thursday",
+          "hours": "08:00 - 20:30"
+        },
+        {
+          "day": "Friday",
+          "hours": "08:00 - 20:30"
+        },
+        {
+          "day": "Saturday",
+          "hours": "08:00 - 20:30"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8053-BRI042",
+      "name": "CARTOLIBRERIA BIBLIO",
+      "address": "DHL ServicePoint BRI042 | Cavour, 128 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off return with label"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "07:30 - 20:30"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "07:30 - 20:30"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "07:30 - 20:30"
+        },
+        {
+          "day": "Thursday",
+          "hours": "07:30 - 20:30"
+        },
+        {
+          "day": "Friday",
+          "hours": "07:30 - 20:30"
+        },
+        {
+          "day": "Saturday",
+          "hours": "07:30 - 20:30"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-ZBTCV",
+      "name": "KIPOINT VIA CAVOUR",
+      "address": "PUNTOPOSTE ZBTCV | VIA CAVOUR 85-A | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "09:00 - 13:0016:30 - 20:00"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "09:00 - 13:0016:30 - 20:00"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "09:00 - 13:0016:30 - 20:00"
+        },
+        {
+          "day": "Thursday",
+          "hours": "09:00 - 13:0016:30 - 20:00"
+        },
+        {
+          "day": "Friday",
+          "hours": "09:00 - 13:0016:30 - 20:00"
+        },
+        {
+          "day": "Saturday",
+          "hours": "09:00 - 13:00"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-Z8780",
+      "name": "TABACCHERIA N. 5",
+      "address": "PUNTOPOSTE Z8780 | VIA FRAGATA 129 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "06:30 - 13:4515:00 - 20:30"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "06:30 - 13:4515:00 - 20:30"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "06:30 - 13:4515:00 - 20:30"
+        },
+        {
+          "day": "Thursday",
+          "hours": "06:30 - 13:4515:00 - 20:30"
+        },
+        {
+          "day": "Friday",
+          "hours": "06:30 - 13:4515:00 - 20:30"
+        },
+        {
+          "day": "Saturday",
+          "hours": "06:30 - 13:4515:00 - 20:30"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-Z5817",
+      "name": "TABACCHERIA N. 35",
+      "address": "PUNTOPOSTE Z5817 | VIA LAMAVETA 66 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "04:00 - 19:00"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "04:00 - 19:00"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "04:00 - 19:00"
+        },
+        {
+          "day": "Thursday",
+          "hours": "04:00 - 19:00"
+        },
+        {
+          "day": "Friday",
+          "hours": "04:00 - 19:00"
+        },
+        {
+          "day": "Saturday",
+          "hours": "04:00 - 19:00"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-ZBTCO",
+      "name": "CORNER OFFICE",
+      "address": "PUNTOPOSTE ZBTCO | CARRARA REDDITO 73 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "08:30 - 13:0017:00 - 20:30"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "08:30 - 13:0017:00 - 20:30"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "08:30 - 13:0017:00 - 20:30"
+        },
+        {
+          "day": "Thursday",
+          "hours": "08:30 - 13:0017:00 - 20:30"
+        },
+        {
+          "day": "Friday",
+          "hours": "08:30 - 13:0017:00 - 20:30"
+        },
+        {
+          "day": "Saturday",
+          "hours": "08:30 - 13:0017:00 - 20:30"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-07106",
+      "name": "Ufficio Postale BISCEGLIE 1",
+      "address": "FERMOPOSTA 07106 | VIA CARRARA REDDITO 69 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Drop-off parcel with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "08:20 - 19:05"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "08:20 - 19:05"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "08:20 - 19:05"
+        },
+        {
+          "day": "Thursday",
+          "hours": "08:20 - 19:05"
+        },
+        {
+          "day": "Friday",
+          "hours": "08:20 - 19:05"
+        },
+        {
+          "day": "Saturday",
+          "hours": "08:20 - 12:35"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-Z2309",
+      "name": "TABACCHERIA N. 26",
+      "address": "PUNTOPOSTE Z2309 | VIA SANTANDREA 68 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "07:00 - 13:3016:00 - 21:00"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "07:00 - 13:3016:00 - 21:00"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "07:00 - 13:3016:00 - 21:00"
+        },
+        {
+          "day": "Thursday",
+          "hours": "07:00 - 13:3016:00 - 21:00"
+        },
+        {
+          "day": "Friday",
+          "hours": "07:00 - 13:3016:00 - 21:00"
+        },
+        {
+          "day": "Saturday",
+          "hours": "07:00 - 13:3016:00 - 21:00"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8053-BRI1Q9",
+      "name": "CORNER OFFICE",
+      "address": "DHL ServicePoint BRI1Q9 | Via Carrara Reddito 73 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off return with label"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "08:30 - 20:30"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "08:30 - 20:30"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "08:30 - 20:30"
+        },
+        {
+          "day": "Thursday",
+          "hours": "08:30 - 20:30"
+        },
+        {
+          "day": "Friday",
+          "hours": "08:30 - 20:30"
+        },
+        {
+          "day": "Saturday",
+          "hours": "08:30 - 20:30"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8053-BRI1T1",
+      "name": "TABACCHERIA TRENTADUE",
+      "address": "DHL ServicePoint BRI1T1 | Via Padre Massimiliano Kolbe 31 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off return with label"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "05:30 - 20:00"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "05:30 - 20:00"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "05:30 - 20:00"
+        },
+        {
+          "day": "Thursday",
+          "hours": "05:30 - 20:00"
+        },
+        {
+          "day": "Friday",
+          "hours": "05:30 - 20:00"
+        },
+        {
+          "day": "Saturday",
+          "hours": "05:30 - 20:00"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-ZI344",
+      "name": "TABACCHERIA N. 32",
+      "address": "PUNTOPOSTE ZI344 | VIA PADRE MASSIMILIANO KOLBE 31 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "08:00 - 13:0016:00 - 20:00"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "08:00 - 13:0016:00 - 20:00"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "08:00 - 13:0016:00 - 20:00"
+        },
+        {
+          "day": "Thursday",
+          "hours": "08:00 - 13:0016:00 - 20:00"
+        },
+        {
+          "day": "Friday",
+          "hours": "08:00 - 13:0016:00 - 20:00"
+        },
+        {
+          "day": "Saturday",
+          "hours": "08:00 - 13:0016:00 - 20:00"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-Z7302",
+      "name": "TABACCHERIA N. 11",
+      "address": "PUNTOPOSTE Z7302 | VIA MAURO GIULIANI 39 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "06:30 - 20:30"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "06:30 - 20:30"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "06:30 - 20:30"
+        },
+        {
+          "day": "Thursday",
+          "hours": "06:30 - 20:30"
+        },
+        {
+          "day": "Friday",
+          "hours": "06:30 - 20:30"
+        },
+        {
+          "day": "Saturday",
+          "hours": "06:30 - 20:30"
+        },
+        {
+          "day": "Sunday",
+          "hours": "09:00 - 13:00"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-Z5813",
+      "name": "TABACCHERIA n. 34",
+      "address": "PUNTOPOSTE Z5813 | VIA MATTEO RENATO IMBRIANI 322 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Parcel Drop-off",
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "05:30 - 20:30"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "05:30 - 20:30"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "05:30 - 20:30"
+        },
+        {
+          "day": "Thursday",
+          "hours": "05:30 - 20:30"
+        },
+        {
+          "day": "Friday",
+          "hours": "05:30 - 20:30"
+        },
+        {
+          "day": "Saturday",
+          "hours": "05:30 - 20:30"
+        },
+        {
+          "day": "Sunday",
+          "hours": "closed"
+        }
+      ]
+    },
+    {
+      "id": "/locations/8058-Y3840",
+      "name": "STAZIONE DI SERVIZIO IP",
+      "address": "PUNTOPOSTE LOCKER Y3840 | VIA MATTEO RENATO IMBRIANI 322 | 76011 BISCEGLIE Italy",
+      "services": [
+        "Drop-off parcel with label",
+        "Drop-off return with label",
+        "Parcel Drop-off",
+        "Click & collect"
+      ],
+      "hours": [
+        {
+          "day": "Monday",
+          "hours": "00:01 - 23:59"
+        },
+        {
+          "day": "Tuesday",
+          "hours": "00:01 - 23:59"
+        },
+        {
+          "day": "Wednesday",
+          "hours": "00:01 - 23:59"
+        },
+        {
+          "day": "Thursday",
+          "hours": "00:01 - 23:59"
+        },
+        {
+          "day": "Friday",
+          "hours": "00:01 - 23:59"
+        },
+        {
+          "day": "Saturday",
+          "hours": "00:01 - 23:59"
+        },
+        {
+          "day": "Sunday",
+          "hours": "00:01 - 23:59"
+        }
+      ]
+    }
+  ]
+}
