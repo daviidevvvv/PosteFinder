@@ -16,10 +16,10 @@ async function start(){
  const original=bridge.locations();
  const present=new Set(original.map(l=>l.id));
  const additions=catalog.sites.filter(s=>!present.has(s.appId)).map(s=>({id:s.appId,kind:s.kind,realName:s.name,address:s.address,services:s.memberships.map(m=>NETWORKS[m.network]).join(' / '),hasPoste:s.memberships.some(m=>m.network==='poste'),hasLis:false,coords:s.coords,schedule:{}}));
- let selectedNetwork='all', timer=null;
+ let selectedNetwork='verified', timer=null;
  const list=document.getElementById('locations-list');
  const panel=document.createElement('section');panel.id='carrier-panel';panel.className='px-3 py-2 border-b border-slate-200 bg-slate-50 shrink-0 text-xs';
- panel.innerHTML=`<label class="flex items-center gap-2 mb-2 text-slate-600">Rete / formato <select id="carrier-filter" class="flex-1 min-w-0 border rounded px-2 py-1 bg-white"><option value="all">Tutte (anche dati storici)</option><option value="brt_digital">BRT Digital (QR) · candidati da verificare</option>${catalog.coverage.map(c=>`<option value="${c.network}">${escape(c.label)}${c.count?' · '+c.count:' · da verificare'}</option>`).join('')}</select></label>
+ panel.innerHTML=`<label class="flex items-center gap-2 mb-2 text-slate-600">Rete / formato <select id="carrier-filter" class="flex-1 min-w-0 border rounded px-2 py-1 bg-white"><option value="verified">Solo punti con riscontro ufficiale (consigliato)</option><option value="all">Tutte (anche dati storici)</option><option value="brt_digital">BRT Digital (QR) · candidati da verificare</option>${catalog.coverage.map(c=>`<option value="${c.network}">${escape(c.label)}${c.count?' · '+c.count:' · da verificare'}</option>`).join('')}</select></label>
  <details id="parcel-organizer" class="group">
    <summary class="cursor-pointer font-bold text-blue-700 py-2">Organizza i miei pacchi / corrieri</summary>
    <div id="parcel-wizard-content" class="pt-2 pb-3 space-y-3 max-h-[54vh] md:max-h-[64vh] overflow-y-auto overscroll-contain">
@@ -320,7 +320,7 @@ async function start(){
   }
   if(plan.plans[0].stops.length>3&&destination){const note=document.createElement('p');note.textContent='Con quattro soste piu arrivo, Google Maps mobile puo limitare i punti intermedi: verifica che siano tutti presenti.';result.append(note);}
  });
- panel.querySelector('#carrier-filter').addEventListener('change',e=>{selectedNetwork=e.target.value;bridge.refresh();if(selectedNetwork!=='all'&&selectedNetwork!=='brt_digital'&&!catalog.sites.some(s=>s.memberships.some(m=>m.network===selectedNetwork))){organizer.open=true;setWizardStep(1);reportWizardError('parcel-parcel-error','Per questa rete non ho ancora punti verificati: puoi aggiungere il pacco, ma la ricerca non inventera luoghi compatibili.');}});
+ panel.querySelector('#carrier-filter').addEventListener('change',e=>{selectedNetwork=e.target.value;bridge.refresh();if(selectedNetwork!=='all'&&selectedNetwork!=='verified'&&selectedNetwork!=='brt_digital'&&!catalog.sites.some(s=>s.memberships.some(m=>m.network===selectedNetwork))){organizer.open=true;setWizardStep(1);reportWizardError('parcel-parcel-error','Per questa rete non ho ancora punti verificati: puoi aggiungere il pacco, ma la ricerca non inventera luoghi compatibili.');}});
  function audit(){
   for(const l of bridge.locations()){
    const s=byLegacy.get(l.id);if(!s)continue;
@@ -364,11 +364,11 @@ async function start(){
  }
  bridge.install({beforeRefresh:audit,decorate,
   baseFilter:l=>bridge.state().filter==='poste'&&byLegacy.has(l.id)?byLegacy.get(l.id).memberships.some(m=>m.network==='poste'):null,
-  filter:l=>selectedNetwork==='all'||Boolean(byLegacy.get(l.id)?.memberships.some(m=>selectedNetwork==='brt_digital'?(m.network==='brt'&&m.brtDigitalStatus!=='not_supported_reported'):m.network===selectedNetwork)),
+  filter:l=>selectedNetwork==='all'||(selectedNetwork==='verified'?byLegacy.has(l.id):Boolean(byLegacy.get(l.id)?.memberships.some(m=>selectedNetwork==='brt_digital'?(m.network==='brt'&&m.brtDigitalStatus!=='not_supported_reported'):m.network===selectedNetwork))),
   status:schedule=>{
    const s=auditSchedules.get(schedule);if(!s)return {isOpen:false,text:'Orari non verificati',class:'status-warning',score:-1};
    const desired=selectedNetwork==='brt_digital'?'brt':selectedNetwork;
-   if(desired!=='all'){
+   if(desired!=='all'&&desired!=='verified'){
     const member=s.memberships.find(m=>m.network===desired);
     const state=sourceOpen(member);
     const label=state===true?'Aperto per '+(NETWORKS[desired]||desired)+' (da orario fonte)':state===false?'Fuori orario '+(NETWORKS[desired]||desired):'Orari da verificare per '+(NETWORKS[desired]||desired);
