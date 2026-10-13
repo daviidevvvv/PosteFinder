@@ -1,4 +1,4 @@
-import {NETWORKS,ACTIONS,validateCatalog,siteOpening,planParcels,navigationUrl,interpretCarrierText} from './carrier-planner.mjs';
+import {NETWORKS,ACTIONS,validateCatalog,siteOpening,sourceOpen,planParcels,navigationUrl,interpretCarrierText} from './carrier-planner.mjs';
 import {MAX_PARCELS,describeParcel,validateParcelSelections,originOptions,defaultOrigin,resolveOrigin} from './parcel-wizard.mjs';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const hh=n=>String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
@@ -363,10 +363,17 @@ async function start(){
   }
  }
  bridge.install({beforeRefresh:audit,decorate,
-  baseFilter:l=>bridge.state().filter==='poste'&&byLegacy.has(l.id)?true:null,
+  baseFilter:l=>bridge.state().filter==='poste'&&byLegacy.has(l.id)?byLegacy.get(l.id).memberships.some(m=>m.network==='poste'):null,
   filter:l=>selectedNetwork==='all'||Boolean(byLegacy.get(l.id)?.memberships.some(m=>selectedNetwork==='brt_digital'?(m.network==='brt'&&m.brtDigitalStatus!=='not_supported_reported'):m.network===selectedNetwork)),
   status:schedule=>{
    const s=auditSchedules.get(schedule);if(!s)return {isOpen:false,text:'Orari non verificati',class:'status-warning',score:-1};
+   const desired=selectedNetwork==='brt_digital'?'brt':selectedNetwork;
+   if(desired!=='all'){
+    const member=s.memberships.find(m=>m.network===desired);
+    const state=sourceOpen(member);
+    const label=state===true?'Aperto per '+(NETWORKS[desired]||desired)+' (da orario fonte)':state===false?'Fuori orario '+(NETWORKS[desired]||desired):'Orari da verificare per '+(NETWORKS[desired]||desired);
+    return {isOpen:state===true,text:label,class:state===true?'status-open':state===false?'status-closed':'status-warning',score:state===true?3:state===false?0:-1};
+   }
    const state=siteOpening(s);return {isOpen:state.open===true,text:state.label,class:state.open===true?'status-open':state.open===false?'status-closed':'status-warning',score:state.open===true?3:state.open===false?0:-1};
   },
   chat:text=>{
