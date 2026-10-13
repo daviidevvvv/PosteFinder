@@ -23,9 +23,9 @@ const count=network=>c.sites.flatMap(s=>s.memberships).filter(m=>m.network===net
 const at='2026-10-13T10:15:00Z';
 const coords=[41.238,16.505];
 
-test('Bisceglie only: 57 deduplicated places and 126 explicit network memberships',()=>{
+test('Bisceglie only: 58 deduplicated places and 126 explicit network memberships',()=>{
  assert.equal(validateCatalog(c),true);
- assert.equal(c.sites.length,57);
+ assert.equal(c.sites.length,58);
  assert.equal(c.sites.reduce((total,s)=>total+s.memberships.length,0),126);
  assert.equal(count('amazon'),28);
  assert.equal(count('dhl_ecommerce'),30);
