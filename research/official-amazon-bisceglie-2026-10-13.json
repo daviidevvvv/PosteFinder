@@ -1,0 +1,373 @@
+{
+  "observedAt": "2026-10-13",
+  "sourceUrl": "https://www.amazon.it/ulp/view",
+  "description": "Two official pickup-locator searches; checkout/returns compatibility not guaranteed",
+  "queries": [
+    {
+      "query": "76011 Bisceglie",
+      "results": [
+        {
+          "name": "Amazon Counter - Colorado cafè",
+          "address": "Imbriani , 28, Bisceglie , 76011",
+          "hours": [
+            "Mon-Sat: 05:00 - 23:00",
+            "Sun: 06:00 - 14:00"
+          ],
+          "displayText": "Amazon Counter - Colorado cafè\n\nImbriani , 28, Bisceglie , 76011\n\n188 m\nMon-Sat: 05:00 - 23:00\nSun: 06:00 - 14:00\nShow details"
+        },
+        {
+          "name": "PuntoPoste TABACCHERIA N. 10",
+          "address": "CORSO UMBERTO I 7, BISCEGLIE, 76011",
+          "hours": [
+            "Mon-Sat: 06:30 - 13:00 & 15:30 - 21:00"
+          ],
+          "displayText": "PuntoPoste TABACCHERIA N. 10\n\nCORSO UMBERTO I 7, BISCEGLIE, 76011\n\n242 m\nMon-Sat: 06:30 - 13:00 & 15:30 - 21:00\nShow details"
+        },
+        {
+          "name": "PuntoPoste TABACCHERIA N. 2",
+          "address": "PIAZZA VITTORIO EMANUELE II 12, BISCEGLIE, 76011",
+          "hours": [
+            "Mon-Sat: 07:00 - 13:00 & 15:00 - 21:00"
+          ],
+          "displayText": "PuntoPoste TABACCHERIA N. 2\n\nPIAZZA VITTORIO EMANUELE II 12, BISCEGLIE, 76011\n\n251 m\nMon-Sat: 07:00 - 13:00 & 15:00 - 21:00\nShow details"
+        },
+        {
+          "name": "Amazon Counter - Caffe Frisari",
+          "address": "Via Giulio Frisari, 39, Bisceglie, 76011",
+          "hours": [
+            "Mon-Fri: 06:30 - 13:00 & 15:00 - 19:30",
+            "Sat: 06:30 - 13:00",
+            "Sun: 08:00 - 12:00"
+          ],
+          "displayText": "Amazon Counter - Caffe Frisari\n\nVia Giulio Frisari, 39, Bisceglie, 76011\n\n247 m\nMon-Fri: 06:30 - 13:00 & 15:00 - 19:30\nSat: 06:30 - 13:00\nSun: 08:00 - 12:00\nShow details"
+        },
+        {
+          "name": "Amazon Locker - MARISTELLA",
+          "address": "Stazione Tamoil - PV 7448, Via Vittorio Veneto, Bisceglie, BT, 76011",
+          "hours": [
+            "Mon-Sun: Open 24 hours"
+          ],
+          "displayText": "Amazon Locker - MARISTELLA\n\nStazione Tamoil - PV 7448, Via Vittorio Veneto, Bisceglie, BT, 76011\n\n928 m\nMon-Sun: Open 24 hours\nShow details\nNeeds Amazon App to open Locker. How does it work?"
+        },
+        {
+          "name": "Amazon Locker - melezio",
+          "address": "ENI Station pv.9033, Via Imbriani258, Bisceglie, BT, 70052",
+          "hours": [
+            "Mon-Sun: Open 24 hours"
+          ],
+          "displayText": "Amazon Locker - melezio\n\nENI Station pv.9033, Via Imbriani258, Bisceglie, BT, 70052\n\n984 m\nMon-Sun: Open 24 hours\nShow details\nNeeds Amazon App to open Locker. How does it work?"
+        },
+        {
+          "name": "Amazon Counter (fermopoint)",
+          "address": "Deval S.r.l, Via XXIV Maggio, 52, BISCEGLIE, BT, 76011",
+          "hours": [
+            "Mon-Sat: 07:00 - 13:00 & 16:00 - 20:30"
+          ],
+          "displayText": "Amazon Counter (fermopoint)\n\nDeval S.r.l, Via XXIV Maggio, 52, BISCEGLIE, BT, 76011\n\n363 m\nMon-Sat: 07:00 - 13:00 & 16:00 - 20:30\nShow details"
+        },
+        {
+          "name": "Amazon Counter - EDICOLA DEL CORSO",
+          "address": "VIA XXIV MAGGIO 61, BISCEGLIE, PUGLIA, 76011",
+          "hours": [
+            "Mon-Sat: 06:30 - 13:30 & 16:30 - 21:00",
+            "Sun: 06:30 - 13:30"
+          ],
+          "displayText": "Amazon Counter - EDICOLA DEL CORSO\n\nVIA XXIV MAGGIO 61, BISCEGLIE, PUGLIA, 76011\n\n421 m\nMon-Sat: 06:30 - 13:30 & 16:30 - 21:00\nSun: 06:30 - 13:30\nShow details"
+        },
+        {
+          "name": "PuntoPoste TABACCHERIA N. 9",
+          "address": "PIAZZA CASTELLO 3, BISCEGLIE, 76011",
+          "hours": [
+            "Mon-Sat: 06:00 - 13:30 & 16:00 - 21:00"
+          ],
+          "displayText": "PuntoPoste TABACCHERIA N. 9\n\nPIAZZA CASTELLO 3, BISCEGLIE, 76011\n\n426 m\nMon-Sat: 06:00 - 13:30 & 16:00 - 21:00\nShow details"
+        },
+        {
+          "name": "Amazon Counter - TABACCHERIA DE MANGO",
+          "address": "LARGO CASTELLO 3, BISCEGLIE, PUGLIA, 76011",
+          "hours": [
+            "Mon-Sat: 06:00 - 13:30 & 16:00 - 21:00"
+          ],
+          "displayText": "Amazon Counter - TABACCHERIA DE MANGO\n\nLARGO CASTELLO 3, BISCEGLIE, PUGLIA, 76011\n\n452 m\nMon-Sat: 06:00 - 13:30 & 16:00 - 21:00\nShow details"
+        },
+        {
+          "name": "Amazon Counter - Agenzia senza pensieri",
+          "address": "Via Piave, 10, Bisceglie, 76011",
+          "hours": [
+            "Mon: 09:30 - 12:30 & 17:00 - 20:30",
+            "Tue-Thu: 09:30 - 13:00 & 17:00 - 20:30",
+            "Fri: 09:30 - 12:30 & 17:00 - 20:00",
+            "Sat: 09:30 - 13:00"
+          ],
+          "displayText": "Amazon Counter - Agenzia senza pensieri\n\nVia Piave, 10, Bisceglie, 76011\n\n438 m\nMon: 09:30 - 12:30 & 17:00 - 20:30\nTue-Thu: 09:30 - 13:00 & 17:00 - 20:30\nFri: 09:30 - 12:30 & 17:00 - 20:00\nSat: 09:30 - 13:00\nShow details"
+        },
+        {
+          "name": "Amazon Counter - CARTOLERIA EDICOLA BRESCIA",
+          "address": "VIA RENATO IMBRIANI 179, BISCEGLIE, PUGLIA, 76011",
+          "hours": [
+            "Mon-Sat: 06:00 - 13:00 & 16:30 - 20:30",
+            "Sun: 06:00 - 13:00"
+          ],
+          "displayText": "Amazon Counter - CARTOLERIA EDICOLA BRESCIA\n\nVIA RENATO IMBRIANI 179, BISCEGLIE, PUGLIA, 76011\n\n776 m\nMon-Sat: 06:00 - 13:00 & 16:30 - 20:30\nSun: 06:00 - 13:00\nShow details"
+        },
+        {
+          "name": "Amazon Counter - Remì Cucina Per Vocazione",
+          "address": "Via Giovanni Bovio , 88, Bisceglie, 76011",
+          "hours": [
+            "Mon: 07:00 - 12:30 & 16:30 - 21:00",
+            "Tue, Thu, Fri, Sat: 07:00 - 12:30 & 16:30 - 23:00",
+            "Sun: 07:00 - 12:00"
+          ],
+          "displayText": "Amazon Counter - Remì Cucina Per Vocazione\n\nVia Giovanni Bovio , 88, Bisceglie, 76011\n\n594 m\nMon: 07:00 - 12:30 & 16:30 - 21:00\nTue, Thu, Fri, Sat: 07:00 - 12:30 & 16:30 - 23:00\nSun: 07:00 - 12:00\nShow details"
+        },
+        {
+          "name": "PuntoPoste NEXIVE BISCEGLIE",
+          "address": "VIA ALCIDE DE GASPERI 40, BISCEGLIE, 76011",
+          "hours": [
+            "Mon-Fri: 07:00 - 12:30 & 16:30 - 19:00",
+            "Sat: 09:00 - 12:00"
+          ],
+          "displayText": "PuntoPoste NEXIVE BISCEGLIE\n\nVIA ALCIDE DE GASPERI 40, BISCEGLIE, 76011\n\n605 m\nMon-Fri: 07:00 - 12:30 & 16:30 - 19:00\nSat: 09:00 - 12:00\nShow details"
+        },
+        {
+          "name": "Amazon Counter",
+          "address": "Cartolibreria Brescia (fermopoint), Via Imbriani, 179/181, BISCEGLIE, BT, 76011",
+          "hours": [
+            "Mon-Sat: 06:00 - 13:00 & 16:30 - 20:15",
+            "Sun: 06:00 - 13:00"
+          ],
+          "displayText": "Amazon Counter\n\nCartolibreria Brescia (fermopoint), Via Imbriani, 179/181, BISCEGLIE, BT, 76011\n\n776 m\nMon-Sat: 06:00 - 13:00 & 16:30 - 20:15\nSun: 06:00 - 13:00\nShow details"
+        },
+        {
+          "name": "Amazon Locker - milvia",
+          "address": "PENNY MARKET - Bisceglie 2, Via Bovio 324/326, Bisceglie, BA, 76011",
+          "hours": [
+            "Mon-Sat: 08:00 - 14:00 & 16:00 - 20:30",
+            "Sun: 08:30 - 13:30"
+          ],
+          "displayText": "Amazon Locker - milvia\n\nPENNY MARKET - Bisceglie 2, Via Bovio 324/326, Bisceglie, BA, 76011\n\n1.4 km\nMon-Sat: 08:00 - 14:00 & 16:00 - 20:30\nSun: 08:30 - 13:30\nShow details"
+        },
+        {
+          "name": "Amazon Counter - BAR PASTICCERIA EDEN",
+          "address": "PIAZZA ARMANDO DIAZ 10/11, BISCEGLIE, PUGLIA, 76011",
+          "hours": [
+            "Mon, Tue, Thu, Fri: 07:00 - 20:30",
+            "Sat: 07:00 - 13:30 & 15:00 - 20:00",
+            "Sun: 06:00 - 14:00 & 17:30 - 20:00"
+          ],
+          "displayText": "Amazon Counter - BAR PASTICCERIA EDEN\n\nPIAZZA ARMANDO DIAZ 10/11, BISCEGLIE, PUGLIA, 76011\n\n722 m\nMon, Tue, Thu, Fri: 07:00 - 20:30\nSat: 07:00 - 13:30 & 15:00 - 20:00\nSun: 06:00 - 14:00 & 17:30 - 20:00\nShow details"
+        },
+        {
+          "name": "Amazon Counter - Posta Privata Nexus",
+          "address": "Via Alcide de Gasperi, 40, Bisceglie, 76011",
+          "hours": [
+            "Mon-Fri: 07:00 - 12:30 & 16:30 - 19:00",
+            "Sat: 09:00 - 12:00"
+          ],
+          "displayText": "Amazon Counter - Posta Privata Nexus\n\nVia Alcide de Gasperi, 40, Bisceglie, 76011\n\n552 m\nMon-Fri: 07:00 - 12:30 & 16:30 - 19:00\nSat: 09:00 - 12:00\nShow details"
+        },
+        {
+          "name": "Amazon Counter - TARGET CAFFE'",
+          "address": "VIA DE GASPERI 53, BISCEGLIE, PUGLIA, 76011",
+          "hours": [
+            "Mon-Fri: 07:00 - 13:15 & 16:00 - 21:00",
+            "Sat: 07:00 - 13:15 & 16:00 - 20:00"
+          ],
+          "displayText": "Amazon Counter - TARGET CAFFE'\n\nVIA DE GASPERI 53, BISCEGLIE, PUGLIA, 76011\n\n682 m\nMon-Fri: 07:00 - 13:15 & 16:00 - 21:00\nSat: 07:00 - 13:15 & 16:00 - 20:00\nShow details"
+        },
+        {
+          "name": "Amazon Counter - Cartolibreria Bombini",
+          "address": "Via Luigi Papagni, 27, Bisceglie, 76011",
+          "hours": [
+            "Mon-Sat: 07:30 - 13:00 & 16:00 - 20:00"
+          ],
+          "displayText": "Amazon Counter - Cartolibreria Bombini\n\nVia Luigi Papagni, 27, Bisceglie, 76011\n\n720 m\nMon-Sat: 07:30 - 13:00 & 16:00 - 20:00\nShow details"
+        }
+      ]
+    },
+    {
+      "query": "Via Matteo Renato Imbriani 344 Bisceglie",
+      "results": [
+        {
+          "name": "Amazon Locker - melezio",
+          "address": "ENI Station pv.9033, Via Imbriani258, Bisceglie, BT, 70052",
+          "hours": [
+            "Mon-Sun: Open 24 hours"
+          ],
+          "displayText": "Amazon Locker - melezio\n\nENI Station pv.9033, Via Imbriani258, Bisceglie, BT, 70052\n\n1.3 km\nMon-Sun: Open 24 hours\nShow details\nNeeds Amazon App to open Locker. How does it work?"
+        },
+        {
+          "name": "PuntoPoste TABACCHERIA n. 34",
+          "address": "VIA MATTEO RENATO IMBRIANI 322, BISCEGLIE, 76011",
+          "hours": [
+            "Mon-Sat: 05:30 - 20:30"
+          ],
+          "displayText": "PuntoPoste TABACCHERIA n. 34\n\nVIA MATTEO RENATO IMBRIANI 322, BISCEGLIE, 76011\n\n467 m\nMon-Sat: 05:30 - 20:30\nShow details"
+        },
+        {
+          "name": "Amazon Locker - MARISTELLA",
+          "address": "Stazione Tamoil - PV 7448, Via Vittorio Veneto, Bisceglie, BT, 76011",
+          "hours": [
+            "Mon-Sun: Open 24 hours"
+          ],
+          "displayText": "Amazon Locker - MARISTELLA\n\nStazione Tamoil - PV 7448, Via Vittorio Veneto, Bisceglie, BT, 76011\n\n1.5 km\nMon-Sun: Open 24 hours\nShow details\nNeeds Amazon App to open Locker. How does it work?"
+        },
+        {
+          "name": "Amazon Counter",
+          "address": "Planetwin 365-Bisceglie (fermopoint), Via Imbriani 255, BISCEGLIE, BT, 76011",
+          "hours": [
+            "Mon: 09:00 - 13:30 & 15:30 - 20:30",
+            "Tue-Fri: 09:00 - 20:30",
+            "Sat-Sun: 09:30 - 20:30"
+          ],
+          "displayText": "Amazon Counter\n\nPlanetwin 365-Bisceglie (fermopoint), Via Imbriani 255, BISCEGLIE, BT, 76011\n\n1.1 km\nMon: 09:00 - 13:30 & 15:30 - 20:30\nTue-Fri: 09:00 - 20:30\nSat-Sun: 09:30 - 20:30\nShow details"
+        },
+        {
+          "name": "Amazon Counter - TABACCHERIA LEONE",
+          "address": "VIA GIULIANI 39, BISCEGLIE, PUGLIA, 76011",
+          "hours": [
+            "Mon-Sat: 08:00 - 20:00",
+            "Sun: 09:00 - 13:00"
+          ],
+          "displayText": "Amazon Counter - TABACCHERIA LEONE\n\nVIA GIULIANI 39, BISCEGLIE, PUGLIA, 76011\n\n886 m\nMon-Sat: 08:00 - 20:00\nSun: 09:00 - 13:00\nShow details"
+        },
+        {
+          "name": "PuntoPoste TABACCHERIA N. 11",
+          "address": "VIA MAURO GIULIANI 39, BISCEGLIE, 76011",
+          "hours": [
+            "Mon-Sat: 06:30 - 20:30",
+            "Sun: 09:00 - 13:00"
+          ],
+          "displayText": "PuntoPoste TABACCHERIA N. 11\n\nVIA MAURO GIULIANI 39, BISCEGLIE, 76011\n\n816 m\nMon-Sat: 06:30 - 20:30\nSun: 09:00 - 13:00\nShow details"
+        },
+        {
+          "name": "Amazon Counter - CARTOLERIA EDICOLA BRESCIA",
+          "address": "VIA RENATO IMBRIANI 179, BISCEGLIE, PUGLIA, 76011",
+          "hours": [
+            "Mon-Sat: 06:00 - 13:00 & 16:30 - 20:30",
+            "Sun: 06:00 - 13:00"
+          ],
+          "displayText": "Amazon Counter - CARTOLERIA EDICOLA BRESCIA\n\nVIA RENATO IMBRIANI 179, BISCEGLIE, PUGLIA, 76011\n\n1.4 km\nMon-Sat: 06:00 - 13:00 & 16:30 - 20:30\nSun: 06:00 - 13:00\nShow details"
+        },
+        {
+          "name": "Amazon Counter - PRIMAEDICOLA",
+          "address": "SALVEMINI MARIANNA, VIALE INGEGNER VINCENZO CALACE 5, BISCEGLIE, BT, 76011",
+          "hours": [
+            "Mon-Sat: 07:30 - 13:00 & 16:30 - 20:30",
+            "Sun: 08:30 - 13:00"
+          ],
+          "displayText": "Amazon Counter - PRIMAEDICOLA\n\nSALVEMINI MARIANNA, VIALE INGEGNER VINCENZO CALACE 5, BISCEGLIE, BT, 76011\n\n1.4 km\nMon-Sat: 07:30 - 13:00 & 16:30 - 20:30\nSun: 08:30 - 13:00\nShow details"
+        },
+        {
+          "name": "Amazon Counter",
+          "address": "Cartolibreria Brescia (fermopoint), Via Imbriani, 179/181, BISCEGLIE, BT, 76011",
+          "hours": [
+            "Mon-Sat: 06:00 - 13:00 & 16:30 - 20:15",
+            "Sun: 06:00 - 13:00"
+          ],
+          "displayText": "Amazon Counter\n\nCartolibreria Brescia (fermopoint), Via Imbriani, 179/181, BISCEGLIE, BT, 76011\n\n1.4 km\nMon-Sat: 06:00 - 13:00 & 16:30 - 20:15\nSun: 06:00 - 13:00\nShow details"
+        },
+        {
+          "name": "Amazon Counter - Crazy Café",
+          "address": "Largo F. di Molfetta 2, Bisceglie , 76011",
+          "hours": [
+            "Mon-Fri: 05:00 - 20:00",
+            "Sat: 05:00 - 13:00"
+          ],
+          "displayText": "Amazon Counter - Crazy Café\n\nLargo F. di Molfetta 2, Bisceglie , 76011\n\n1.1 km\nMon-Fri: 05:00 - 20:00\nSat: 05:00 - 13:00\nShow details"
+        },
+        {
+          "name": "Ufficio Postale BISCEGLIE 2",
+          "address": "VIA SACERDOTE FRANCESCO DI MOLFETTA 14, BISCEGLIE, 76011",
+          "hours": [
+            "Mon-Fri: 08:20 - 13:35",
+            "Sat: 08:20 - 12:35"
+          ],
+          "displayText": "Ufficio Postale BISCEGLIE 2\n\nVIA SACERDOTE FRANCESCO DI MOLFETTA 14, BISCEGLIE, 76011\n\n1.1 km\nMon-Fri: 08:20 - 13:35\nSat: 08:20 - 12:35\nShow details"
+        },
+        {
+          "name": "Amazon Counter - PRIMAEDICOLA",
+          "address": "EDICOLANDIA DI ACQUAVIVA, VIA FRAGATA 103, BISCEGLIE, BT, 76011",
+          "hours": [
+            "Mon-Sat: 08:00 - 13:00 & 17:00 - 20:30",
+            "Sun: 10:00 - 13:00"
+          ],
+          "displayText": "Amazon Counter - PRIMAEDICOLA\n\nEDICOLANDIA DI ACQUAVIVA, VIA FRAGATA 103, BISCEGLIE, BT, 76011\n\n1.8 km\nMon-Sat: 08:00 - 13:00 & 17:00 - 20:30\nSun: 10:00 - 13:00\nShow details"
+        },
+        {
+          "name": "Amazon Counter - PRIMAEDICOLA",
+          "address": "PRETE ALESSANDRO, VIA VITTORIO VENETO 71, BISCEGLIE, BT, 76011",
+          "hours": [
+            "Mon, Wed, Thu, Sat: 07:00 - 12:30 & 16:30 - 20:00",
+            "Tue, Fri: 07:00 - 13:30 & 16:30 - 20:00"
+          ],
+          "displayText": "Amazon Counter - PRIMAEDICOLA\n\nPRETE ALESSANDRO, VIA VITTORIO VENETO 71, BISCEGLIE, BT, 76011\n\n1.6 km\nMon, Wed, Thu, Sat: 07:00 - 12:30 & 16:30 - 20:00\nTue, Fri: 07:00 - 13:30 & 16:30 - 20:00\nShow details"
+        },
+        {
+          "name": "Amazon Counter",
+          "address": "Edicolandia (fermopoint), Via Fragata 103-105, BISCEGLIE, BT, 76011",
+          "hours": [
+            "Mon-Sat: 07:45 - 13:00 & 17:00 - 20:30"
+          ],
+          "displayText": "Amazon Counter\n\nEdicolandia (fermopoint), Via Fragata 103-105, BISCEGLIE, BT, 76011\n\n1.8 km\nMon-Sat: 07:45 - 13:00 & 17:00 - 20:30\nShow details"
+        },
+        {
+          "name": "Amazon Counter - BAR PASTICCERIA EDEN",
+          "address": "PIAZZA ARMANDO DIAZ 10/11, BISCEGLIE, PUGLIA, 76011",
+          "hours": [
+            "Mon, Tue, Thu, Fri: 07:00 - 20:30",
+            "Sat: 07:00 - 13:30 & 15:00 - 20:00",
+            "Sun: 06:00 - 14:00 & 17:30 - 20:00"
+          ],
+          "displayText": "Amazon Counter - BAR PASTICCERIA EDEN\n\nPIAZZA ARMANDO DIAZ 10/11, BISCEGLIE, PUGLIA, 76011\n\n2.1 km\nMon, Tue, Thu, Fri: 07:00 - 20:30\nSat: 07:00 - 13:30 & 15:00 - 20:00\nSun: 06:00 - 14:00 & 17:30 - 20:00\nShow details"
+        },
+        {
+          "name": "Amazon Counter (fermopoint)",
+          "address": "Deval S.r.l, Via XXIV Maggio, 52, BISCEGLIE, BT, 76011",
+          "hours": [
+            "Mon-Sat: 07:00 - 13:00 & 16:00 - 20:30"
+          ],
+          "displayText": "Amazon Counter (fermopoint)\n\nDeval S.r.l, Via XXIV Maggio, 52, BISCEGLIE, BT, 76011\n\n2 km\nMon-Sat: 07:00 - 13:00 & 16:00 - 20:30\nShow details"
+        },
+        {
+          "name": "Amazon Counter - EDICOLA DEL CORSO",
+          "address": "VIA XXIV MAGGIO 61, BISCEGLIE, PUGLIA, 76011",
+          "hours": [
+            "Mon-Sat: 06:30 - 13:30 & 16:30 - 21:00",
+            "Sun: 06:30 - 13:30"
+          ],
+          "displayText": "Amazon Counter - EDICOLA DEL CORSO\n\nVIA XXIV MAGGIO 61, BISCEGLIE, PUGLIA, 76011\n\n2.1 km\nMon-Sat: 06:30 - 13:30 & 16:30 - 21:00\nSun: 06:30 - 13:30\nShow details"
+        },
+        {
+          "name": "Amazon Counter - Agenzia senza pensieri",
+          "address": "Via Piave, 10, Bisceglie, 76011",
+          "hours": [
+            "Mon: 09:30 - 12:30 & 17:00 - 20:30",
+            "Tue-Thu: 09:30 - 13:00 & 17:00 - 20:30",
+            "Fri: 09:30 - 12:30 & 17:00 - 20:00",
+            "Sat: 09:30 - 13:00"
+          ],
+          "displayText": "Amazon Counter - Agenzia senza pensieri\n\nVia Piave, 10, Bisceglie, 76011\n\n2 km\nMon: 09:30 - 12:30 & 17:00 - 20:30\nTue-Thu: 09:30 - 13:00 & 17:00 - 20:30\nFri: 09:30 - 12:30 & 17:00 - 20:00\nSat: 09:30 - 13:00\nShow details"
+        },
+        {
+          "name": "Amazon Counter - CAFFE' VENETO",
+          "address": "VIA VITTORIO VENETO 71, BISCEGLIE, PUGLIA, 76011",
+          "hours": [
+            "Mon-Fri: 05:30 - 12:45 & 14:30 - 20:00",
+            "Sat: 05:30 - 12:45 & 15:00 - 19:30"
+          ],
+          "displayText": "Amazon Counter - CAFFE' VENETO\n\nVIA VITTORIO VENETO 71, BISCEGLIE, PUGLIA, 76011\n\n1.6 km\nMon-Fri: 05:30 - 12:45 & 14:30 - 20:00\nSat: 05:30 - 12:45 & 15:00 - 19:30\nShow details"
+        },
+        {
+          "name": "Amazon Counter - BAR",
+          "address": "CORSO UMBERTO 144, BISCEGLIE, PUGLIA, 76011",
+          "hours": [
+            "Mon-Sat: 07:00 - 20:30",
+            "Sun: 07:00 - 12:30"
+          ],
+          "displayText": "Amazon Counter - BAR\n\nCORSO UMBERTO 144, BISCEGLIE, PUGLIA, 76011\n\n1.8 km\nMon-Sat: 07:00 - 20:30\nSun: 07:00 - 12:30\nShow details"
+        }
+      ]
+    }
+  ]
+}
