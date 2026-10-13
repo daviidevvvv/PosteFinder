@@ -59,7 +59,39 @@ test('delivered pickup cannot move to another shop',()=>{
 test('no GPS means no invented distance from city center',()=>assert.equal(planParcels(c,[demand('brt')],{at}).status,'origin_required'));
 test('stale observations cannot produce current verified routes',()=>assert.equal(planParcels(c,[demand('brt')],{...opts,at:'2027-01-01T09:00:00Z'}).status,'incomplete_coverage'));
 test('recorded holiday closure is respected',()=>assert.equal(canServe(site('edicolandia'),demand('dhl_express'),{at:'2026-11-01T09:00:00Z'}),false));
-test('missing QR capability is not upgraded to yes',()=>assert.equal(planParcels(c,[demand('brt','return_qr')],opts).status,'incomplete_coverage'));
+test('BRT QR never becomes VERIFIED without point-specific support',()=>{
+ assert.equal(canServe(site('trentadue'),demand('brt','return_qr'),{at}),false);
+ const result=planParcels(c,[demand('brt','return_qr')],opts);
+ assert.equal(result.status,'provisional');
+ assert.ok(result.plans.length>0);
+ assert.ok(result.plans.every(p=>p.stops.every(s=>s.id!=='edicolandia')));
+ assert.ok(result.plans[0].assignments[0].provisional);
+});
+test('Edicolandia refuses BRT Digital for shipping, returns and QR',()=>{
+ for(const action of ['dropoff','return_label','return_qr']){
+  const d={...demand('brt',action),brtFormat:'digital'};
+  assert.equal(canServe(site('edicolandia'),d,{at,allowProvisionalBrtDigital:true}),false);
+ }
+ assert.equal(canServe(site('edicolandia'),{...demand('brt','dropoff'),brtFormat:'printed'},{at}),true);
+ assert.equal(canServe(site('edicolandia'),demand('dhl_express','return_qr'),{at}),true);
+});
+test('BRT Digital plus DHL yields one PROVISIONAL stop, never Edicolandia',()=>{
+ const p=planParcels(c,[{...demand('brt','dropoff'),brtFormat:'digital'},demand('dhl_express')],opts);
+ assert.equal(p.status,'provisional');
+ assert.equal(p.plans[0].stops.length,1);
+ assert.equal(p.plans[0].stops[0].id,'trentadue');
+});
+test('Only point-specific support can make a verified BRT Digital route',()=>{
+ const copy=structuredClone(c),brt=copy.sites.find(s=>s.id==='trentadue').memberships.find(m=>m.network==='brt');
+ brt.brtDigitalStatus='confirmed';brt.services.return_qr='confirmed';
+ const verified=planParcels(copy,[{...demand('brt','dropoff'),brtFormat:'digital'}],opts);
+ assert.equal(verified.status,'ok');
+ assert.equal(verified.plans[0].stops[0].id,'trentadue');
+});
+test('BRT digital and printed parser modes remain distinct',()=>{
+ assert.equal(interpretCarrierText('Devo spedire BRT digital').brtFormat,'digital');
+ assert.equal(interpretCarrierText('Devo spedire BRT con etichetta stampata').brtFormat,'printed');
+});
 test('DHL Express QR explicitly documented',()=>assert.equal(canServe(site('edicolandia'),demand('dhl_express','return_qr'),{at}),true));
 test('weight and rotated package dimensions are checked when supplied',()=>{
  assert.equal(canServe(site('edicolandia'),{...demand('brt'),weightKg:21},{at}),false);
@@ -88,4 +120,4 @@ test('source dataset has no private account fields',()=>{
  const raw=JSON.stringify(c);assert.ok(!/apiKey|gemini_api_key|user_favorites/.test(raw));
 });
 test('normalization rejects incomplete or duplicate weeks',()=>{assert.throws(()=>unpackHours('mon=0-1440'));assert.throws(()=>unpackHours('mon,mon,tue,wed,thu,fri,sat,sun=0-1440'));});
-test('Edicolandia user report non digital is retained',()=>{assert.equal(site('edicolandia').memberships[0].services.return_qr,'not_supported_reported');assert.ok(site('edicolandia').memberships[0].userReport.includes('solo non digital'));});
+test('Edicolandia user report non digital is retained',()=>{assert.equal(site('edicolandia').memberships[0].services.return_qr,'not_supported_reported');assert.ok(site('edicolandia').memberships[0].userReport.includes('NON accetta BRT Digital'));});
