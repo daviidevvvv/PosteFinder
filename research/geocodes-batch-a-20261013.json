@@ -1,0 +1,72 @@
+[
+  {
+    "id": "amazon-colorado",
+    "street": "Via Matteo Renato Imbriani 28",
+    "coords": [
+      41.236035,
+      16.508215
+    ],
+    "precision": "road",
+    "place": "Via Matteo Renato Imbriani, Quartiere 167, Bisceglie, Barletta-Andria-Trani, Apulia, 76011, Italy"
+  },
+  {
+    "id": "caffe-frisari",
+    "street": "Via Giulio Frisari 39",
+    "coords": [
+      41.2414059,
+      16.5025213
+    ],
+    "precision": "road",
+    "place": "Via Giulio Frisari, Bisceglie, Barletta-Andria-Trani, Apulia, 76011, Italy"
+  },
+  {
+    "id": "amazon-maristella",
+    "street": "Via Vittorio Veneto",
+    "coords": [
+      41.2364103,
+      16.5017899
+    ],
+    "precision": "road",
+    "place": "Via Vittorio Veneto, Bisceglie, Barletta-Andria-Trani, Apulia, 76011, Italy"
+  },
+  {
+    "id": "edicola-corso",
+    "street": "Via Ventiquattro Maggio 61",
+    "coords": [
+      41.2378944,
+      16.5021674
+    ],
+    "precision": "road",
+    "place": "Via Ventiquattro Maggio, Bisceglie, Barletta-Andria-Trani, Apulia, 76011, Italy"
+  },
+  {
+    "id": "agenzia-pensieri",
+    "street": "Via Piave 10",
+    "coords": [
+      41.2378342,
+      16.5030804
+    ],
+    "precision": "road",
+    "place": "Via Piave, Bisceglie, Barletta-Andria-Trani, Apulia, 76011, Italy"
+  },
+  {
+    "id": "remi",
+    "street": "Via Giovanni Bovio 88",
+    "coords": [
+      41.2448859,
+      16.4873277
+    ],
+    "precision": "road",
+    "place": "Via Giovanni Bovio, Bisceglie, Barletta-Andria-Trani, Apulia, 76011, Italy"
+  },
+  {
+    "id": "bar-eden",
+    "street": "Piazza Armando Diaz 10",
+    "coords": [
+      41.2358417,
+      16.4998042
+    ],
+    "precision": "road",
+    "place": "Piazza Armando Diaz, Bisceglie, Barletta-Andria-Trani, Apulia, 76011, Italy"
+  }
+]
