@@ -22,8 +22,8 @@ export function validateParcelSelections(demands){
     if(!NETWORKS[d.network] || !ACTIONS[d.action]){
       return {ok:false,index:i,message:prefix+'scegli un corriere e un\'operazione.'};
     }
-    if(d.network==='amazon'){
-      return {ok:false,index:i,message:prefix+'per Amazon scegli il corriere indicato sul QR o nelle istruzioni di reso (non esiste un unico punto resi universale).'};
+    if(d.network==='amazon'&&d.action!=='pickup'){
+      return {ok:false,index:i,message:prefix+'gli Amazon Hub sono confermati come punti di RITIRO ordini; per un reso scegli il corriere indicato nelle istruzioni Amazon.'};
     }
     if(d.network==='brt' && d.action!=='pickup' &&
        d.action!=='return_qr' && !['digital','printed'].includes(d.brtFormat)){
