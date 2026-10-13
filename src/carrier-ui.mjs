@@ -106,7 +106,7 @@ async function start(){
   }
   if(plan.plans[0].stops.length>3&&destination){const note=document.createElement('p');note.textContent='Con quattro soste piu arrivo, Google Maps mobile puo limitare i punti intermedi: verifica che siano tutti presenti.';result.append(note);}
  });
- panel.querySelector('#carrier-filter').addEventListener('change',e=>{selectedNetwork=e.target.value;bridge.refresh();if(selectedNetwork!=='all'&&!catalog.sites.some(s=>s.memberships.some(m=>m.network===selectedNetwork))){organizer.open=true;result.textContent='Per questa rete non ho ancora punti verificati nella raccolta. Non significa che non esistano: consulta la fonte in Copertura.';}});
+ panel.querySelector('#carrier-filter').addEventListener('change',e=>{selectedNetwork=e.target.value;bridge.refresh();if(selectedNetwork!=='all'&&selectedNetwork!=='brt_digital'&&!catalog.sites.some(s=>s.memberships.some(m=>m.network===selectedNetwork))){organizer.open=true;result.textContent='Per questa rete non ho ancora punti verificati nella raccolta. Non significa che non esistano: consulta la fonte in Copertura.';}});
  function audit(){
   for(const l of bridge.locations()){
    const s=byLegacy.get(l.id);if(!s)continue;
