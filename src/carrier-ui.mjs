@@ -19,18 +19,64 @@ async function start(){
  const list=document.getElementById('locations-list');
  const panel=document.createElement('section');panel.id='carrier-panel';panel.className='px-3 py-2 border-b border-slate-200 bg-slate-50 shrink-0 text-xs';
  panel.innerHTML=`<label class="flex items-center gap-2 mb-2 text-slate-600">Rete / formato <select id="carrier-filter" class="flex-1 min-w-0 border rounded px-2 py-1 bg-white"><option value="all">Tutte (anche dati storici)</option><option value="brt_digital">BRT Digital (QR) · candidati da verificare</option>${catalog.coverage.map(c=>`<option value="${c.network}">${escape(c.label)}${c.count?' · '+c.count:' · da verificare'}</option>`).join('')}</select></label>
- <details id="parcel-organizer"><summary class="cursor-pointer font-bold text-blue-700 py-1">Organizza piu pacchi / corrieri</summary><div class="pt-2 space-y-2 max-h-[24vh] md:max-h-[45vh] overflow-y-auto">
- <p class="text-slate-500">Bisceglie · prima raccolta ${escape(catalog.observedAt)} · copertura parziale. Meno soste, poi distanza indicativa.</p>
- <div id="parcel-rows" class="space-y-2"></div><button type="button" id="parcel-add" class="text-blue-700 font-bold">+ Altro pacco / corriere</button>
- <label class="block">Partenza <select id="parcel-origin" class="w-full border rounded p-1 bg-white"></select></label>
- <label class="block">Arrivo <select id="parcel-destination" class="w-full border rounded p-1 bg-white"></select></label>
- <div class="flex gap-2"><label class="flex-1">Raggio <select id="parcel-radius" class="w-full border rounded p-1 bg-white"><option value="3">3 km</option><option value="5">5 km</option><option value="10" selected>10 km</option><option value="20">20 km</option></select></label><label class="flex-1">Massimo soste <select id="parcel-max-stops" class="w-full border rounded p-1 bg-white"><option>1</option><option>2</option><option selected>3</option><option>4</option></select></label></div>
- <label class="flex items-center gap-2"><input type="checkbox" id="parcel-open" checked> Solo nella fascia di apertura prudenziale adesso</label>
- <p class="text-[10px] text-slate-500">Nessuna conferma in tempo reale: le fonti possono divergere. La chiusura all'arrivo e il traffico non sono calcolati.</p>
- <button type="button" id="parcel-calculate" class="w-full bg-blue-600 text-white rounded-lg py-2 font-bold">Trova la combinazione</button>
- <div id="parcel-result" role="status" aria-live="polite" class="space-y-2"></div>
- <details class="text-slate-500"><summary>Copertura e limiti delle fonti</summary>${catalog.coverage.map(c=>`<p class="mt-1"><b>${escape(c.label)}:</b> ${escape(c.note)} <a target="_blank" rel="noopener noreferrer" href="${escape(sourceLink(c.sourceUrl))}" class="underline">Fonte</a></p>`).join('')}</details>
- </div></details>`;
+ <details id="parcel-organizer" class="group">
+   <summary class="cursor-pointer font-bold text-blue-700 py-2">Organizza i miei pacchi / corrieri</summary>
+   <div id="parcel-wizard-content" class="pt-2 pb-3 space-y-3 max-h-[54vh] md:max-h-[64vh] overflow-y-auto overscroll-contain">
+     <p class="text-[10px] text-slate-500">Bisceglie · dati consultati il ${escape(catalog.observedAt)}. Copertura parziale: le reti non verificate non vengono inventate.</p>
+     <div id="parcel-progress" class="grid grid-cols-3 gap-1 text-center text-[10px] font-semibold" aria-label="Fasi di ricerca">
+       <span data-wizard-step="1" class="rounded-md border p-1.5 bg-blue-600 text-white border-blue-600">1. Pacchi</span>
+       <span data-wizard-step="2" class="rounded-md border p-1.5 border-slate-200 text-slate-500">2. Partenza</span>
+       <span data-wizard-step="3" class="rounded-md border p-1.5 border-slate-200 text-slate-500">3. Risultati</span>
+     </div>
+     <section id="parcel-stage-parcels" class="space-y-2" aria-label="Pacchi e corrieri">
+       <h4 class="font-bold text-slate-800 text-sm">Quali pacchi devi gestire?</h4>
+       <p class="text-slate-600">Per ogni pacco scegli il corriere e poi il tipo di servizio. BRT Digital e BRT con etichetta stampata sono differenti.</p>
+       <div id="parcel-rows" class="space-y-2"></div>
+       <button type="button" id="parcel-add" class="w-full rounded-lg border border-blue-200 bg-blue-50 px-2 py-2 text-blue-800 font-semibold">+ Aggiungi un altro pacco (max 4)</button>
+       <p id="parcel-parcel-error" role="alert" class="hidden rounded border border-amber-300 bg-amber-50 p-2 text-amber-900"></p>
+       <button type="button" id="parcel-next-location" class="w-full rounded-lg bg-blue-600 text-white py-2.5 font-bold">Continua: scegli la partenza →</button>
+     </section>
+     <section id="parcel-stage-location" class="hidden space-y-2" aria-label="Posizione di partenza e arrivo">
+       <h4 class="font-bold text-slate-800 text-sm">Da dove vuoi partire?</h4>
+       <p id="parcel-selection-summary" class="text-[11px] rounded bg-blue-50 text-blue-900 p-2"></p>
+       <div id="parcel-origin-shortcuts" role="group" aria-label="Partenze rapide" class="flex flex-wrap gap-1.5"></div>
+       <label class="block font-medium text-slate-700">Posizione o luogo salvato
+         <select id="parcel-origin" class="block w-full mt-1 border rounded-lg p-2 bg-white"></select>
+       </label>
+       <button type="button" id="parcel-gps-request" class="rounded border border-blue-200 bg-white px-2 py-1.5 text-blue-700 font-semibold">Rileva posizione attuale con GPS</button>
+       <p id="parcel-origin-hint" role="status" class="text-[11px] text-slate-600"></p>
+       <label class="block font-medium text-slate-700">Dove devi arrivare? (facoltativo)
+         <select id="parcel-destination" class="block w-full mt-1 border rounded-lg p-2 bg-white"></select>
+       </label>
+       <details id="parcel-advanced" class="border rounded-lg bg-white p-2">
+         <summary class="cursor-pointer font-semibold text-slate-700">Orari e distanza · opzioni avanzate</summary>
+         <div class="space-y-2 pt-2">
+           <div class="grid grid-cols-2 gap-2">
+             <label>Raggio <select id="parcel-radius" class="block w-full border rounded p-1.5 bg-white"><option value="3">3 km</option><option value="5">5 km</option><option value="10" selected>10 km</option><option value="20">20 km</option></select></label>
+             <label>Massimo soste <select id="parcel-max-stops" class="block w-full border rounded p-1.5 bg-white"><option>1</option><option>2</option><option selected>3</option><option>4</option></select></label>
+           </div>
+           <label class="flex items-start gap-1.5"><input type="checkbox" id="parcel-open" checked class="mt-0.5"> Solo nella fascia di apertura prudenziale adesso</label>
+           <p class="text-[10px] text-slate-500">Le distanze sono in linea d'aria; traffico e apertura all'arrivo non sono calcolati.</p>
+         </div>
+       </details>
+       <p id="parcel-location-error" class="hidden rounded border border-amber-300 bg-amber-50 p-2 text-amber-900" role="alert"></p>
+       <div class="grid grid-cols-3 gap-2">
+         <button type="button" id="parcel-back-packages" class="rounded border border-slate-300 py-2 font-semibold">← Indietro</button>
+         <button type="button" id="parcel-calculate" class="col-span-2 rounded bg-blue-600 text-white py-2 font-bold">Trova i punti →</button>
+       </div>
+     </section>
+     <section id="parcel-stage-results" class="hidden space-y-2" aria-label="Risultati e percorsi">
+       <h4 class="font-bold text-slate-800 text-sm">Dove puoi andare</h4>
+       <p id="parcel-results-summary" class="text-[11px] rounded bg-blue-50 text-blue-900 p-2"></p>
+       <div class="grid grid-cols-2 gap-2">
+         <button type="button" id="parcel-edit-packages" class="rounded border border-slate-300 p-2 font-semibold">← Modifica pacchi</button>
+         <button type="button" id="parcel-edit-location" class="rounded border border-slate-300 p-2 font-semibold">← Cambia partenza</button>
+       </div>
+       <div id="parcel-result" role="status" aria-live="polite" class="space-y-2"></div>
+     </section>
+     <details class="text-slate-500 border-t pt-2"><summary class="cursor-pointer">Fonti, copertura e limiti</summary>${catalog.coverage.map(c=>`<p class="mt-1"><b>${escape(c.label)}:</b> ${escape(c.note)} <a target="_blank" rel="noopener noreferrer" href="${escape(sourceLink(c.sourceUrl))}" class="underline">Fonte</a></p>`).join('')}</details>
+   </div>
+ </details>`;
  list.parentElement.insertBefore(panel,list.previousElementSibling);
  const organizer=panel.querySelector('#parcel-organizer'), rows=panel.querySelector('#parcel-rows'), result=panel.querySelector('#parcel-result');
  const stateSelects=()=>{
