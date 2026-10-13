@@ -19,7 +19,8 @@ jobs:
           node --check src/carrier-adapter.js
           node --check src/carrier-ui.mjs
           node --check src/carrier-catalog.mjs
-          node --test tests/carrier-planner.test.mjs
+          node --check src/parcel-wizard.mjs
+          node --test tests/carrier-planner.test.mjs tests/parcel-wizard.test.mjs
       - name: Build from current original app without deploying
         run: node scripts/build-carrier-bundle.mjs
       - uses: actions/upload-artifact@v4

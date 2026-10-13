@@ -91,6 +91,7 @@ test('Only point-specific support can make a verified BRT Digital route',()=>{
 test('BRT digital and printed parser modes remain distinct',()=>{
  assert.equal(interpretCarrierText('Devo spedire BRT digital').brtFormat,'digital');
  assert.equal(interpretCarrierText('Devo spedire BRT con etichetta stampata').brtFormat,'printed');
+ assert.equal(interpretCarrierText('Devo spedire un pacco BRT').brtFormat,null);
 });
 test('DHL Express QR explicitly documented',()=>assert.equal(canServe(site('edicolandia'),demand('dhl_express','return_qr'),{at}),true));
 test('weight and rotated package dimensions are checked when supplied',()=>{

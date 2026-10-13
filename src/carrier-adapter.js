@@ -18,6 +18,7 @@
     locations(){return LOCATIONS_DATA;},
     replaceLocations(items){LOCATIONS_DATA.splice(0,LOCATIONS_DATA.length,...items);},
     state(){return {gps:userPosition,reference:referencePoint,places:customPlaces,removedIds:[...removedIds],filter:currentFilter};},
+    locate(){return locateUser();},
     refresh(){refreshView();},
     focus(id){return selectLocation(id);},
     message(text,sender='ai'){addMessage(text,sender);},

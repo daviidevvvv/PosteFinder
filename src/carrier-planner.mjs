@@ -149,5 +149,5 @@ export function interpretCarrierText(text) {
   if(/in\s?post/.test(t))networks.push('inpost');if(/\bups\b/.test(t))networks.push('ups');if(/\bgls\b/.test(t))networks.push('gls');
   if(/poste|sda/.test(t))networks.push('poste');
   const amazon=/amazon/.test(t);
-  return {networks:[...new Set(networks)],amazon,needsClarification:networks.includes('dhl_unspecified')||(amazon&&!networks.length),brtFormat:/non[ -]?digital|cartace|stampat|etichetta fisica/.test(t)?'printed':'digital',action:/ritirar|ritiro/.test(t)?'pickup':/reso|restitui/.test(t)?(/\bqr\b/.test(t)?'return_qr':'return_label'):'dropoff',towardHome:/verso casa|torn.*casa|and.*casa/.test(t)};
+  return {networks:[...new Set(networks)],amazon,needsClarification:networks.includes('dhl_unspecified')||(amazon&&!networks.length),brtFormat:/non[ -]?digital|cartace|stampat|etichetta fisica/.test(t)?'printed':/\bdigital\b|\bqr\b|senza stampar/.test(t)?'digital':null,action:/ritirar|ritiro/.test(t)?'pickup':/reso|restitui/.test(t)?(/\bqr\b/.test(t)?'return_qr':'return_label'):'dropoff',towardHome:/verso casa|torn.*casa|and.*casa/.test(t)};
 }
