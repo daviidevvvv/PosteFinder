@@ -1,4 +1,5 @@
 import {NETWORKS,ACTIONS,validateCatalog,siteOpening,planParcels,navigationUrl,interpretCarrierText} from './carrier-planner.mjs';
+import {MAX_PARCELS,describeParcel,validateParcelSelections,originOptions,defaultOrigin,resolveOrigin} from './parcel-wizard.mjs';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const hh=n=>String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
 const dayLabels={mon:'Lun',tue:'Mar',wed:'Mer',thu:'Gio',fri:'Ven',sat:'Sab',sun:'Dom'};
@@ -78,17 +79,129 @@ async function start(){
    </div>
  </details>`;
  list.parentElement.insertBefore(panel,list.previousElementSibling);
- const organizer=panel.querySelector('#parcel-organizer'), rows=panel.querySelector('#parcel-rows'), result=panel.querySelector('#parcel-result');
- const stateSelects=()=>{
-   const state=bridge.state(),options=[['gps','Posizione attuale (Trovami)'],['reference','Riferimento della mappa'],...state.places.map(p=>['place:'+p.id,p.name])];
-   for(const id of ['parcel-origin','parcel-destination']){
-    const select=panel.querySelector('#'+id), prior=select.value;
-    const opts=id==='parcel-destination'?[['none','Nessun arrivo'],...options.slice(2)]:options;
-    select.innerHTML=opts.map(([v,t])=>`<option value="${escape(v)}">${escape(t)}</option>`).join('');
-    if(opts.some(([v])=>v===prior))select.value=prior;
+ const organizer=panel.querySelector('#parcel-organizer'),rows=panel.querySelector('#parcel-rows'),result=panel.querySelector('#parcel-result');
+ let wizardStep=1, geolocationPoll=null;
+
+ function setWizardStep(step){
+  wizardStep=step;
+  for(const [number,id] of [[1,'parcel-stage-parcels'],[2,'parcel-stage-location'],[3,'parcel-stage-results']]){
+   panel.querySelector('#'+id).classList.toggle('hidden',number!==step);
+  }
+  for(const indicator of panel.querySelectorAll('[data-wizard-step]')){
+   const number=Number(indicator.dataset.wizardStep);
+   indicator.className='rounded-md border p-1.5 '+(number===step?'bg-blue-600 text-white border-blue-600':number<step?'bg-blue-50 border-blue-200 text-blue-800':'border-slate-200 text-slate-500');
+  }
+  if(step===2)stateSelects();
+  panel.querySelector('#parcel-wizard-content').scrollTop=0;
+ }
+
+ function reportWizardError(id,message){
+  const el=panel.querySelector('#'+id);
+  el.textContent=message;
+  el.classList.toggle('hidden',!message);
+ }
+
+ function collectedParcels(){
+  return [...rows.children].map(row=>({
+   network:row.querySelector('.parcel-network').value,
+   action:row.querySelector('.parcel-action').value,
+   labelConfirmed:row.querySelector('.parcel-confirm').checked,
+   assignedPointId:row.querySelector('.parcel-assigned').value||null,
+   brtFormat:row.querySelector('.parcel-network').value==='brt'
+     ?(row.querySelector('.parcel-action').value==='return_qr'?'digital':row.querySelector('.parcel-brt-format').value)
+     :undefined
+  }));
+ }
+
+ function renumberParcels(){
+  for(const [i,row] of [...rows.children].entries()){
+   row.querySelector('.parcel-number').textContent='Pacco '+(i+1);
+   row.querySelector('.parcel-remove').classList.toggle('hidden',rows.children.length===1);
+  }
+  const add=panel.querySelector('#parcel-add');
+  add.disabled=rows.children.length>=MAX_PARCELS;
+  add.classList.toggle('opacity-50',add.disabled);
+  reportWizardError('parcel-parcel-error','');
+ }
+
+ function updateOriginUI(options=originOptions(bridge.state())){
+  const selected=panel.querySelector('#parcel-origin').value;
+  const container=panel.querySelector('#parcel-origin-shortcuts');
+  container.replaceChildren();
+  const main=options.filter(o=>o.kind==='gps'||(o.kind==='place'&&['casa','palestra','lavoro'].includes(o.label.trim().toLowerCase()))).slice(0,5);
+  for(const choice of main){
+   const button=document.createElement('button');button.type='button';
+   button.className='rounded-full border px-3 py-1.5 font-medium '+(selected===choice.value?'border-blue-600 bg-blue-600 text-white':'border-slate-300 bg-white text-slate-700');
+   button.setAttribute('aria-pressed',String(selected===choice.value));
+   button.textContent=choice.kind==='gps'?'La mia posizione':choice.label;
+   button.addEventListener('click',()=>{panel.querySelector('#parcel-origin').value=choice.value;updateOriginUI();});
+   container.append(button);
+  }
+  const other=document.createElement('button');other.type='button';other.className='rounded-full border border-slate-300 px-3 py-1.5 bg-white text-slate-700';
+  other.textContent='Altro luogo...';other.addEventListener('click',()=>panel.querySelector('#parcel-origin').focus());container.append(other);
+  const point=resolveOrigin(selected,bridge.state()),hint=panel.querySelector('#parcel-origin-hint');
+  hint.textContent=point?'Partenza impostata. La distanza sara calcolata da questo punto.':
+    selected==='gps'?'Posizione attuale non ancora rilevata. Premi Rileva posizione e autorizza il GPS.':
+    'Questo luogo non ha coordinate. Configuralo in I miei luoghi oppure scegli un altro punto.';
+  panel.querySelector('#parcel-gps-request').classList.toggle('hidden',selected!=='gps');
+ }
+
+ function stateSelects(){
+  const state=bridge.state(),options=originOptions(state);
+  const origin=panel.querySelector('#parcel-origin'),priorOrigin=origin.value;
+  origin.innerHTML=options.map(o=>`<option value="${escape(o.value)}">${escape(o.label)}${o.available?'':' · da configurare / rilevare'}</option>`).join('');
+  origin.value=options.some(o=>o.value===priorOrigin)?priorOrigin:defaultOrigin(state);
+  const destination=panel.querySelector('#parcel-destination'),priorDestination=destination.value;
+  const destinations=[{value:'none',label:'Nessun arrivo (solo punti di ritiro)'},...options.filter(o=>o.kind==='place')];
+  destination.innerHTML=destinations.map(o=>`<option value="${escape(o.value)}">${escape(o.label)}${o.available===false?' · da configurare':''}</option>`).join('');
+  destination.value=destinations.some(o=>o.value===priorDestination)?priorDestination:'none';
+  updateOriginUI(options);
+ }
+
+ function selectionSummary(){
+  return collectedParcels().map((d,i)=>'Pacco '+(i+1)+': '+describeParcel(d)).join(' | ');
+ }
+ function updateStepSummary(){
+  panel.querySelector('#parcel-selection-summary').textContent=selectionSummary();
+  const option=panel.querySelector('#parcel-origin').selectedOptions[0]?.textContent||'Da scegliere';
+  panel.querySelector('#parcel-results-summary').textContent=selectionSummary()+' | Partenza: '+option;
+ }
+ stateSelects();
+ organizer.addEventListener('toggle',()=>{if(organizer.open){stateSelects();updateStepSummary();}});
+ panel.querySelector('#parcel-origin').addEventListener('change',()=>{updateOriginUI();reportWizardError('parcel-location-error','');});
+ panel.querySelector('#parcel-gps-request').addEventListener('click',()=>{
+  const hint=panel.querySelector('#parcel-origin-hint');
+  hint.textContent='Rilevamento GPS in corso: autorizza la posizione nel browser...';
+  panel.querySelector('#parcel-origin').value='gps';
+  if(!navigator.geolocation){hint.textContent='Il browser non supporta il GPS: scegli Casa, Palestra o un luogo salvato.';return;}
+  bridge.locate();
+  if(geolocationPoll)clearInterval(geolocationPoll);
+  let attempts=0;
+  geolocationPoll=setInterval(()=>{
+   attempts++;
+   if(resolveOrigin('gps',bridge.state())){
+    clearInterval(geolocationPoll);geolocationPoll=null;
+    stateSelects();panel.querySelector('#parcel-origin').value='gps';updateOriginUI();
+   }else if(attempts>=24){
+    clearInterval(geolocationPoll);geolocationPoll=null;
+    hint.textContent='Posizione non rilevata. Controlla il permesso GPS del browser o scegli un luogo salvato.';
    }
- };
- stateSelects();organizer.addEventListener('toggle',()=>{if(organizer.open)stateSelects();});
+  },500);
+ });
+
+ panel.querySelector('#parcel-next-location').addEventListener('click',()=>{
+  const validation=validateParcelSelections(collectedParcels());
+  if(!validation.ok){
+   reportWizardError('parcel-parcel-error',validation.message);
+   if(validation.index>=0)rows.children[validation.index]?.scrollIntoView({block:'nearest'});
+   return;
+  }
+  reportWizardError('parcel-parcel-error','');
+  stateSelects();updateStepSummary();setWizardStep(2);
+ });
+ panel.querySelector('#parcel-back-packages').addEventListener('click',()=>setWizardStep(1));
+ panel.querySelector('#parcel-edit-packages').addEventListener('click',()=>setWizardStep(1));
+ panel.querySelector('#parcel-edit-location').addEventListener('click',()=>setWizardStep(2));
  function addRow(network='brt',action='dropoff',brtFormat='digital'){
   if(rows.children.length>=4)return;
   const row=document.createElement('div');row.className='parcel-row border border-slate-200 rounded-lg p-2 bg-white';
