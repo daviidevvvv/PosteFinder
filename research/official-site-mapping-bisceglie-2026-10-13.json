@@ -348,6 +348,12 @@
       "address": "Via Ruvo, Bisceglie",
       "fallbackLegacyId": 17,
       "note": "Manca civico e geocodifica; pin rappresentativo della strada, NON posizione del negozio"
+    },
+    {
+      "id": "roko-coffee",
+      "name": "Roko Coffee Point",
+      "address": "Via Matteo Renato Imbriani 98, Bisceglie",
+      "legacyId": 6
     }
   ]
 }
