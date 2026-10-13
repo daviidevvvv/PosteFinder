@@ -17,14 +17,19 @@ test('DHL Express plus BRT offers one physical stop, not duplicate pins',()=>{
  assert.equal(p.plans[0].stops.length,1);assert.ok(['edicolandia','trentadue'].includes(p.plans[0].stops[0].id));
  assert.equal(p.plans[0].assignments.length,2);
 });
-test('Edicolandia conflicting lunchtime data are not advertised as certain open',()=>{
+test('Edicolandia different carrier opening hours are evaluated per network',()=>{
  const t='2026-10-12T12:00:00Z';
- assert.equal(siteOpening(site('edicolandia'),t).open,false);
- assert.equal(canServe(site('edicolandia'),demand('dhl_express'),{at:t}),false);
+ assert.equal(siteOpening(site('edicolandia'),t).open,true);
+ assert.equal(siteOpening(site('edicolandia'),t).conflict,true);
+ assert.equal(canServe(site('edicolandia'),demand('dhl_express'),{at:t}),true);
+ assert.equal(canServe(site('edicolandia'),demand('brt'),{at:t}),false);
 });
-test('Nexus 16:00 BRT versus 16:30 InPost uses conservative window',()=>{
- assert.equal(siteOpening(site('nexus'),'2026-10-12T14:15:00Z').open,false);
- assert.equal(siteOpening(site('nexus'),'2026-10-12T14:35:00Z').open,true);
+test('Nexus 16:00 BRT and 16:30 InPost do not block each other',()=>{
+ const t='2026-10-12T14:15:00Z';
+ assert.equal(siteOpening(site('nexus'),t).open,true);
+ assert.equal(canServe(site('nexus'),demand('brt'),{at:t}),true);
+ assert.equal(canServe(site('nexus'),demand('inpost'),{at:t}),false);
+ assert.equal(canServe(site('nexus'),demand('inpost'),{at:'2026-10-12T14:35:00Z'}),true);
 });
 test('opening endpoint is exclusive',()=>{
  assert.equal(scheduleOpen(site('nexus').memberships[0].hours,'2026-10-12T10:29:00Z'),true);
@@ -128,10 +133,10 @@ test('Removed Amazon Veridiana ex PENNY is not an active static map location',()
  assert.ok(!/\\bid:\\s*402\\s*,\\s*kind:\\s*["']locker_amazon/.test(html),'obsolete Veridiana pin is still active');
  assert.match(html,/Amazon Locker Veridiana .*DISATTIVATO/);
 });
-test('ENI Amazon Melezio lead is informational, never a falsely verified carrier membership',()=>{
+test('ENI Melezio stays separate from historical DHL Express base until official import',()=>{
  const eno=site('eni-09033');
  assert.deepEqual(eno.memberships.map(m=>m.network),['dhl_express']);
  const ui=readFileSync(new URL('../src/carrier-ui.mjs',import.meta.url),'utf8');
- assert.match(ui,/Amazon Locker Melezio/);
- assert.match(ui,/NON e confermata dal selettore ufficiale Amazon/);
+ assert.match(ui,/Amazon Locker melezio CONFERMATO nel localizzatore ufficiale Amazon/);
+ assert.doesNotMatch(ui,/La loro presenza\/abilitazione oggi NON e confermata/);
 });

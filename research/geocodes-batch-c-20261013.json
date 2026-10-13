@@ -1,0 +1,66 @@
+[
+  {
+    "id": "tabaccheria14-diaz",
+    "street": "Piazza Armando Diaz 23",
+    "coords": [
+      41.2358417,
+      16.4998042
+    ],
+    "precision": "road",
+    "place": "Piazza Armando Diaz, Bisceglie, Barletta-Andria-Trani, Apulia, 76011, Italy"
+  },
+  {
+    "id": "paolo-de-ruvo",
+    "street": "Via dell'Urbanistica",
+    "coords": [
+      41.2382439,
+      16.5053509
+    ],
+    "precision": "road",
+    "place": "Via dell'Urbanistica, Bisceglie, Barletta-Andria-Trani, Apulia, 76011, Italy"
+  },
+  {
+    "id": "postoffice",
+    "street": "Via Giovanni Bovio",
+    "coords": [
+      41.2438705,
+      16.4911866
+    ],
+    "precision": "road",
+    "place": "Via Giovanni Bovio, Bisceglie, Barletta-Andria-Trani, Apulia, 76011, Italy"
+  },
+  {
+    "id": "cab",
+    "street": "Via Sant'Andrea",
+    "coords": [
+      41.228134,
+      16.4948412
+    ],
+    "precision": "road",
+    "place": "Via Sant'Andrea, Bisceglie, Barletta-Andria-Trani, Apulia, 76011, Italy"
+  },
+  {
+    "id": "autolavaggio-pansini",
+    "street": "Via Ruvo",
+    "coords": null,
+    "precision": "unknown",
+    "place": null
+  },
+  {
+    "id": "primaedicola-calace",
+    "street": "Viale Vincenzo Calace",
+    "coords": [
+      41.2375596,
+      16.5117683
+    ],
+    "precision": "road",
+    "place": "Viale Vincenzo Calace, Bisceglie, Barletta-Andria-Trani, Apulia, 76011, Italy"
+  },
+  {
+    "id": "crazy-cafe",
+    "street": "Largo Francesco di Molfetta",
+    "coords": null,
+    "precision": "unknown",
+    "place": null
+  }
+]

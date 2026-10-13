@@ -1,4 +1,4 @@
-import {NETWORKS,ACTIONS,validateCatalog,siteOpening,planParcels,navigationUrl,interpretCarrierText} from './carrier-planner.mjs';
+import {NETWORKS,ACTIONS,validateCatalog,siteOpening,sourceOpen,planParcels,navigationUrl,interpretCarrierText} from './carrier-planner.mjs';
 import {MAX_PARCELS,describeParcel,validateParcelSelections,originOptions,defaultOrigin,resolveOrigin} from './parcel-wizard.mjs';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const hh=n=>String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
@@ -12,14 +12,14 @@ async function start(){
  if(!r.ok)throw new Error('Catalogo corrieri HTTP '+r.status);
  const catalog=await r.json();validateCatalog(catalog);
  const byId=new Map(), byLegacy=new Map(), auditSchedules=new WeakMap();
- let nextId=8100;for(const s of catalog.sites){s.appId=s.legacyId??nextId++;byId.set(s.id,s);byLegacy.set(s.appId,s);}
+ let nextId=8100;for(const s of catalog.sites){s.appId=s.legacyId??s.appId??nextId++;byId.set(s.id,s);if(byLegacy.has(s.appId))throw new Error('Duplicate pin '+s.appId);byLegacy.set(s.appId,s);}
  const original=bridge.locations();
  const present=new Set(original.map(l=>l.id));
- const additions=catalog.sites.filter(s=>!present.has(s.appId)).map(s=>({id:s.appId,kind:s.kind,realName:s.name,address:s.address,services:s.memberships.map(m=>NETWORKS[m.network]).join(' / '),hasPoste:false,hasLis:false,coords:s.coords,schedule:{}}));
- let selectedNetwork='all', timer=null;
+ const additions=catalog.sites.filter(s=>!present.has(s.appId)).map(s=>({id:s.appId,kind:s.kind,realName:s.name,address:s.address,services:s.memberships.map(m=>NETWORKS[m.network]).join(' / '),hasPoste:s.memberships.some(m=>m.network==='poste'),hasLis:false,coords:s.coords,schedule:{}}));
+ let selectedNetwork='verified', timer=null;
  const list=document.getElementById('locations-list');
  const panel=document.createElement('section');panel.id='carrier-panel';panel.className='px-3 py-2 border-b border-slate-200 bg-slate-50 shrink-0 text-xs';
- panel.innerHTML=`<label class="flex items-center gap-2 mb-2 text-slate-600">Rete / formato <select id="carrier-filter" class="flex-1 min-w-0 border rounded px-2 py-1 bg-white"><option value="all">Tutte (anche dati storici)</option><option value="brt_digital">BRT Digital (QR) · candidati da verificare</option>${catalog.coverage.map(c=>`<option value="${c.network}">${escape(c.label)}${c.count?' · '+c.count:' · da verificare'}</option>`).join('')}</select></label>
+ panel.innerHTML=`<label class="flex items-center gap-2 mb-2 text-slate-600">Rete / formato <select id="carrier-filter" class="flex-1 min-w-0 border rounded px-2 py-1 bg-white"><option value="verified">Solo punti con riscontro ufficiale (consigliato)</option><option value="all">Tutte (anche dati storici)</option><option value="brt_digital">BRT Digital (QR) · candidati da verificare</option>${catalog.coverage.map(c=>`<option value="${c.network}">${escape(c.label)}${c.count?' · '+c.count:' · da verificare'}</option>`).join('')}</select></label>
  <details id="parcel-organizer" class="group">
    <summary class="cursor-pointer font-bold text-blue-700 py-2">Organizza i miei pacchi / corrieri</summary>
    <div id="parcel-wizard-content" class="pt-2 pb-3 space-y-3 max-h-[54vh] md:max-h-[64vh] overflow-y-auto overscroll-contain">
@@ -241,7 +241,10 @@ async function start(){
   row.querySelector('.parcel-brt-format').value=brtFormat||'';
   const update=(resetConfirm=false)=>{
    const net=row.querySelector('.parcel-network').value;
-   const operation=row.querySelector('.parcel-action').value;
+   const actionField=row.querySelector('.parcel-action');
+   if(net==='amazon')actionField.value='pickup';
+   for(const option of actionField.options)option.disabled=(net==='amazon'&&option.value!=='pickup');
+   const operation=actionField.value;
    const isPickup=operation==='pickup',isBrt=net==='brt';
    const mode=operation==='return_qr'?'digital':row.querySelector('.parcel-brt-format').value;
    row.querySelector('.parcel-brt-format-wrap').classList.toggle('hidden',!isBrt||isPickup||operation==='return_qr');
@@ -258,9 +261,10 @@ async function start(){
    if(previous&&[...assigned.options].some(o=>o.value===previous))assigned.value=previous;
    const warning=row.querySelector('.parcel-network-warning');
    const coverage=catalog.coverage.find(c=>c.network===net);
-   const notVerified=net==='amazon'||net==='dhl_unspecified'||!coverage||!coverage.count||coverage.status==='not_verified'||coverage.status==='legacy';
+   const notVerified=net==='amazon'||net==='dhl_ecommerce'||net==='dhl_unspecified'||!coverage||!coverage.count||coverage.status==='not_verified'||coverage.status==='legacy';
    warning.classList.toggle('hidden',!notVerified);
-   warning.textContent=net==='amazon'?'Per Amazon devi scegliere il corriere indicato nelle istruzioni di reso.':
+   warning.textContent=net==='amazon'?'Punti Amazon confermati soltanto per il ritiro di un ordine, non per resi automatici. Seleziona ESATTAMENTE il Locker/Counter gia assegnato.':
+     net==='dhl_ecommerce'?'DHL Finder include partner PuntoPoste: verifica che il punto sia abilitato per la tua specifica etichetta DHL eCommerce; QR NON attestato.':
      net==='dhl_unspecified'?'DHL Express e DHL eCommerce usano reti diverse: seleziona quella sull’etichetta.':
      notVerified?'La rete '+(NETWORKS[net]||net)+' non ha ancora punti ricontrollati in questo catalogo: le combinazioni potrebbero risultare non disponibili.':'';
    if(resetConfirm)row.querySelector('.parcel-confirm').checked=false;
@@ -316,7 +320,7 @@ async function start(){
   }
   if(plan.plans[0].stops.length>3&&destination){const note=document.createElement('p');note.textContent='Con quattro soste piu arrivo, Google Maps mobile puo limitare i punti intermedi: verifica che siano tutti presenti.';result.append(note);}
  });
- panel.querySelector('#carrier-filter').addEventListener('change',e=>{selectedNetwork=e.target.value;bridge.refresh();if(selectedNetwork!=='all'&&selectedNetwork!=='brt_digital'&&!catalog.sites.some(s=>s.memberships.some(m=>m.network===selectedNetwork))){organizer.open=true;setWizardStep(1);reportWizardError('parcel-parcel-error','Per questa rete non ho ancora punti verificati: puoi aggiungere il pacco, ma la ricerca non inventera luoghi compatibili.');}});
+ panel.querySelector('#carrier-filter').addEventListener('change',e=>{selectedNetwork=e.target.value;bridge.refresh();if(selectedNetwork!=='all'&&selectedNetwork!=='verified'&&selectedNetwork!=='brt_digital'&&!catalog.sites.some(s=>s.memberships.some(m=>m.network===selectedNetwork))){organizer.open=true;setWizardStep(1);reportWizardError('parcel-parcel-error','Per questa rete non ho ancora punti verificati: puoi aggiungere il pacco, ma la ricerca non inventera luoghi compatibili.');}});
  function audit(){
   for(const l of bridge.locations()){
    const s=byLegacy.get(l.id);if(!s)continue;
@@ -330,12 +334,23 @@ async function start(){
    const s=byLegacy.get(l.id),el=document.createElement('div');el.className='carrier-source text-[10px] mt-2 text-slate-500';
    if(!s){el.textContent='Dato storico: corrieri e orari non ricontrollati.';card.append(el);continue;}
    const nets=s.memberships.map(m=>NETWORKS[m.network]);
-   el.innerHTML=`<div class="flex flex-wrap gap-1">${nets.map(n=>`<span class="rounded border border-blue-100 bg-blue-50 text-blue-800 px-1">${escape(n)}</span>`).join('')}</div><p class="mt-1">Fonti consultate ${escape(catalog.observedAt)} · non verifica in tempo reale</p>${s.conflicts.length?'<p class="text-amber-800">Dati discordanti: controlla le fonti.</p>':''}<details class="mt-1"><summary>Orari, limiti e fonti per corriere</summary>${s.memberships.map(m=>`<div class="mt-2"><a class="underline font-bold" target="_blank" rel="noopener noreferrer" href="${escape(sourceLink(m.sourceDetailsUrl||m.sourceUrl))}">${escape(NETWORKS[m.network])} · ${escape(m.pointId)}</a><p>${Object.entries(dayLabels).map(([d,t])=>t+' '+(m.hours[d].length?m.hours[d].map(([a,b])=>hh(a)+'–'+hh(b)).join(', '):'chiuso')).join('<br>')}</p><p>${escape(m.conditions.join(' '))}</p>${m.userReport?'<p class="text-amber-800">'+escape(m.userReport)+'</p>':''}<p>Limite peso fonte: ${m.limits?.maxWeightKg??'?'} kg${m.limits?.maxDimensionsCm?' · '+m.limits.maxDimensionsCm.join('×')+' cm':''}${m.cutoffMinute!=null?' · cutoff '+hh(m.cutoffMinute):''}</p>${m.freshnessNote?'<p>'+escape(m.freshnessNote)+'</p>':''}</div>`).join('')}${s.conflicts.map(c=>'<p class="text-amber-800 mt-1">'+escape(c.note)+'</p>').join('')}</details>`;
+   el.innerHTML=`<div class="flex flex-wrap gap-1">${nets.map(n=>`<span class="rounded border border-blue-100 bg-blue-50 text-blue-800 px-1">${escape(n)}</span>`).join('')}</div><p class="mt-1">Fonti consultate: ${escape([...new Set(s.memberships.map(m=>m.observedAt))].join(', '))} · non verifica in tempo reale</p>${s.conflicts.length?'<p class="text-amber-800">Dati discordanti: controlla le fonti.</p>':''}<details class="mt-1"><summary>Orari, limiti e fonti per corriere</summary>${s.memberships.map(m=>`<div class="mt-2"><a class="underline font-bold" target="_blank" rel="noopener noreferrer" href="${escape(sourceLink(m.sourceDetailsUrl||m.sourceUrl))}">${escape(NETWORKS[m.network])} · ${escape(m.pointId)}</a><p>${Object.entries(dayLabels).map(([d,t])=>t+' '+(m.hours[d].length?m.hours[d].map(([a,b])=>hh(a)+'–'+hh(b)).join(', '):'chiuso')).join('<br>')}</p><p>${escape(m.conditions.join(' '))}</p>${m.userReport?'<p class="text-amber-800">'+escape(m.userReport)+'</p>':''}<p>Limite peso fonte: ${m.limits?.maxWeightKg??'?'} kg${m.limits?.maxDimensionsCm?' · '+m.limits.maxDimensionsCm.join('×')+' cm':''}${m.cutoffMinute!=null?' · cutoff '+hh(m.cutoffMinute):''}</p>${m.freshnessNote?'<p>'+escape(m.freshnessNote)+'</p>':''}</div>`).join('')}${s.conflicts.map(c=>'<p class="text-amber-800 mt-1">'+escape(c.note)+'</p>').join('')}</details>`;
    if(s.id==='eni-09033'){
      const note=document.createElement('p');
-     note.className='rounded mt-1 p-1 bg-amber-50 text-amber-900 font-medium';
-     note.textContent='Zona ENI, Via Imbriani 258: segnalati Amazon Locker Melezio e Amazon Counter Eni Cafe. La loro presenza/abilitazione oggi NON e confermata dal selettore ufficiale Amazon; non sono disponibili nel planner. Per InPost controlla le schede ufficiali dei locker su Via Imbriani, senza presumere che siano dentro ENI.';
+     note.className='rounded mt-1 p-1 bg-blue-50 text-blue-900 font-medium';
+     note.textContent='Amazon Locker melezio CONFERMATO nel localizzatore ufficiale Amazon presso ENI PV9033 (ritiro ordini, H24). Il vecchio Amazon Counter Eni Cafe non e confermato nella raccolta. InPost nei civici vicini resta un punto DISTINTO.';
      el.querySelector('details')?.before(note);
+   }
+   if(s.coordinatePrecision==='street_approx'||s.coordinatePrecision==='nearby_proxy'){
+     const pinNote=document.createElement('p');
+     pinNote.className='rounded mt-1 p-1 bg-amber-50 text-amber-900 font-medium';
+     pinNote.textContent='Posizione indicativa sulla mappa: le coordinate non identificano con precisione l ingresso. Verifica indirizzo e civico ('+s.address+').';
+     el.querySelector('details')?.before(pinNote);
+   }
+   if(s.memberships.some(m=>m.network==='amazon')){
+     const amzNote=document.createElement('p');amzNote.className='rounded mt-1 p-1 bg-blue-50 text-blue-900';
+     amzNote.textContent='Amazon Hub: sede dal selettore ufficiale per RITIRO ordini. Resi possibili SOLO se il singolo ordine propone questa sede e modalita.';
+     el.querySelector('details')?.before(amzNote);
    }
    const brt=s.memberships.find(m=>m.network==='brt');
    if(brt){
@@ -348,10 +363,17 @@ async function start(){
   }
  }
  bridge.install({beforeRefresh:audit,decorate,
-  baseFilter:l=>bridge.state().filter==='poste'&&byLegacy.has(l.id)?true:null,
-  filter:l=>selectedNetwork==='all'||Boolean(byLegacy.get(l.id)?.memberships.some(m=>selectedNetwork==='brt_digital'?(m.network==='brt'&&m.brtDigitalStatus!=='not_supported_reported'):m.network===selectedNetwork)),
+  baseFilter:l=>bridge.state().filter==='poste'&&byLegacy.has(l.id)?byLegacy.get(l.id).memberships.some(m=>m.network==='poste'):null,
+  filter:l=>selectedNetwork==='all'||(selectedNetwork==='verified'?byLegacy.has(l.id):Boolean(byLegacy.get(l.id)?.memberships.some(m=>selectedNetwork==='brt_digital'?(m.network==='brt'&&m.brtDigitalStatus!=='not_supported_reported'):m.network===selectedNetwork))),
   status:schedule=>{
    const s=auditSchedules.get(schedule);if(!s)return {isOpen:false,text:'Orari non verificati',class:'status-warning',score:-1};
+   const desired=selectedNetwork==='brt_digital'?'brt':selectedNetwork;
+   if(desired!=='all'&&desired!=='verified'){
+    const member=s.memberships.find(m=>m.network===desired);
+    const state=sourceOpen(member);
+    const label=state===true?'Aperto per '+(NETWORKS[desired]||desired)+' (da orario fonte)':state===false?'Fuori orario '+(NETWORKS[desired]||desired):'Orari da verificare per '+(NETWORKS[desired]||desired);
+    return {isOpen:state===true,text:label,class:state===true?'status-open':state===false?'status-closed':'status-warning',score:state===true?3:state===false?0:-1};
+   }
    const state=siteOpening(s);return {isOpen:state.open===true,text:state.label,class:state.open===true?'status-open':state.open===false?'status-closed':'status-warning',score:state.open===true?3:state.open===false?0:-1};
   },
   chat:text=>{

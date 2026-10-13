@@ -1,0 +1,359 @@
+{
+  "version": 1,
+  "date": "2026-10-13",
+  "sources": {
+    "amazon": "research/official-amazon-bisceglie-2026-10-13.json",
+    "dhl": "research/official-dhl-finder-bisceglie-2026-10-13.json",
+    "gls": "research/official-gls-bisceglie-2026-10-13.json"
+  },
+  "notes": [
+    "Arrays are indexed to immutable source snapshots and map explicitly to distinct physical shops; never derive a merger only from distance.",
+    "Edicolandia BRT Digital not accepted; Amazon Veridiana decommissioned.",
+    "Same address with different shop names remains distinct unless ownership confirmed.",
+    "Road-level coordinates are approximate and not evidence of physical shop."
+  ],
+  "dhl": [
+    "tabaccheria-n2",
+    "poste-bisceglie",
+    "tabaccheria-n10",
+    "deval",
+    "nexus",
+    "tabaccheria-n9",
+    "tabaccheria-n8",
+    "roko-coffee",
+    "app-service",
+    "bombini",
+    "tabacchi-cavour",
+    "tabaccheria-belsito",
+    "tabaccheria-n14",
+    "cafe-luxor",
+    "edicolandia",
+    "brescia",
+    "edicolandia",
+    "biblio",
+    "kipoint-cavour",
+    "tabaccheria-n5",
+    "tabaccheria-n35",
+    "corner-office",
+    "poste-bisceglie1",
+    "tabaccheria-n26",
+    "corner-office",
+    "trentadue",
+    "trentadue",
+    "tabaccheria-leone",
+    "tabaccheria-n34",
+    "ip322-locker"
+  ],
+  "amazon": [
+    "amazon-colorado",
+    "tabaccheria-n10",
+    "tabaccheria-n2",
+    "caffe-frisari",
+    "amazon-maristella",
+    "eni-09033",
+    "deval",
+    "edicola-corso",
+    "tabaccheria-n9",
+    "tabaccheria-de-mango",
+    "agenzia-pensieri",
+    "brescia",
+    "remi",
+    "nexus",
+    "brescia",
+    "amazon-milvia",
+    "bar-eden",
+    "nexus",
+    "target-caffe",
+    "bombini",
+    "eni-09033",
+    "tabaccheria-n34",
+    "amazon-maristella",
+    "planetwin",
+    "tabaccheria-leone",
+    "tabaccheria-leone",
+    "brescia",
+    "primaedicola-calace",
+    "brescia",
+    "crazy-cafe",
+    "poste-bisceglie2",
+    "edicolandia",
+    "primaedicola-prete",
+    "edicolandia",
+    "bar-eden",
+    "deval",
+    "edicola-corso",
+    "agenzia-pensieri",
+    "caffe-veneto",
+    "tabaccheria-belsito"
+  ],
+  "gls": [
+    "caffe-frisari",
+    "agenzia-pensieri",
+    "edicolandia",
+    "nexus",
+    "roko-coffee",
+    "paolo-de-ruvo",
+    "remi",
+    "italiana",
+    "bombini",
+    "cafe-luxor",
+    "postoffice",
+    "biblio",
+    "anli",
+    "mbe",
+    "ficus",
+    "cab",
+    "autolavaggio-pansini",
+    "corner-office",
+    "trentadue",
+    "royal"
+  ],
+  "newSites": [
+    {
+      "id": "tabaccheria-n2",
+      "name": "Tabaccheria del Centro (N. 2)",
+      "address": "Piazza Vittorio Emanuele II 12, Bisceglie",
+      "legacyId": 11
+    },
+    {
+      "id": "poste-bisceglie",
+      "name": "Ufficio Postale Bisceglie",
+      "address": "Via Antonio Gramsci 32, Bisceglie",
+      "legacyId": 101,
+      "kind": "ufficio_postale"
+    },
+    {
+      "id": "tabaccheria-n10",
+      "name": "Tabaccheria Al Teatro (N. 10)",
+      "address": "Corso Umberto I 7, Bisceglie",
+      "legacyId": 10
+    },
+    {
+      "id": "tabaccheria-n9",
+      "name": "Tabaccheria N. 9 / PuntoPoste",
+      "address": "Piazza Castello 3, Bisceglie",
+      "fallbackLegacyId": 8,
+      "note": "Piazza Castello 3 vs De Mango Largo Castello 3: co-localizzazione NON confermata; due punti distinti",
+      "kind": "punto"
+    },
+    {
+      "id": "tabaccheria-n8",
+      "name": "Tabaccheria N. 8 / PuntoPoste",
+      "address": "Via Alcide De Gasperi 53, Bisceglie",
+      "geoId": "target-caffe",
+      "note": "Stesso civico di Target Caffe ma non provata identita commerciale; mantenuto distinto"
+    },
+    {
+      "id": "bombini",
+      "name": "Cartolibreria Bombini",
+      "address": "Via Luigi Papagni 27, Bisceglie",
+      "geoId": "bombini"
+    },
+    {
+      "id": "tabaccheria-belsito",
+      "name": "Tabaccheria Belsito (N. 12)",
+      "address": "Corso Umberto I 144, Bisceglie",
+      "legacyId": 2
+    },
+    {
+      "id": "tabaccheria-n14",
+      "name": "Tabaccheria N. 14 / PuntoPoste",
+      "address": "Piazza Armando Diaz 23, Bisceglie",
+      "geoId": "tabaccheria14-diaz"
+    },
+    {
+      "id": "cafe-luxor",
+      "name": "Cafè Luxor / Tabaccheria N. 15",
+      "address": "Via Matteo Renato Imbriani 163, Bisceglie",
+      "legacyId": 1
+    },
+    {
+      "id": "kipoint-cavour",
+      "name": "Kipoint Via Cavour",
+      "address": "Via Cavour 85/A, Bisceglie",
+      "geoId": "kipoint-cavour"
+    },
+    {
+      "id": "tabaccheria-n5",
+      "name": "Tabaccheria Losciale (N. 5)",
+      "address": "Via Fragata 129, Bisceglie",
+      "legacyId": 3
+    },
+    {
+      "id": "tabaccheria-n35",
+      "name": "Tabaccheria N. 35 / Lamaveta",
+      "address": "Via Lamaveta 66, Bisceglie",
+      "legacyId": 20
+    },
+    {
+      "id": "poste-bisceglie1",
+      "name": "Ufficio Postale Bisceglie 1",
+      "address": "Via Carrara Reddito 69, Bisceglie",
+      "legacyId": 103,
+      "kind": "ufficio_postale"
+    },
+    {
+      "id": "tabaccheria-n26",
+      "name": "Tabaccheria Sant'Andrea (N. 26)",
+      "address": "Via Sant'Andrea 68, Bisceglie",
+      "legacyId": 18
+    },
+    {
+      "id": "tabaccheria-leone",
+      "name": "Tabaccheria Leone (N. 11)",
+      "address": "Via Mauro Giuliani 39, Bisceglie",
+      "legacyId": 16
+    },
+    {
+      "id": "tabaccheria-n34",
+      "name": "IP - Bar Tabacchi N. 34",
+      "address": "Via Matteo Renato Imbriani 322, Bisceglie",
+      "legacyId": 12
+    },
+    {
+      "id": "ip322-locker",
+      "name": "Punto Poste Locker - Stazione IP",
+      "address": "Via Matteo Renato Imbriani 322, Bisceglie",
+      "fallbackLegacyId": 12,
+      "kind": "locker_punto_poste",
+      "note": "Locker separato dal banco tabaccheria presso lo stesso civico; coordinate del negozio adiacente"
+    },
+    {
+      "id": "amazon-colorado",
+      "name": "Amazon Counter - Colorado Cafè",
+      "address": "Via Matteo Renato Imbriani 28, Bisceglie",
+      "geoId": "amazon-colorado"
+    },
+    {
+      "id": "caffe-frisari",
+      "name": "Caffè Frisari",
+      "address": "Via Giulio Frisari 39, Bisceglie",
+      "geoId": "caffe-frisari"
+    },
+    {
+      "id": "amazon-maristella",
+      "name": "Amazon Locker MARISTELLA (Tamoil PV7448)",
+      "address": "Via Vittorio Veneto (Tamoil), Bisceglie",
+      "geoId": "amazon-maristella",
+      "kind": "locker_amazon"
+    },
+    {
+      "id": "edicola-corso",
+      "name": "Edicola del Corso",
+      "address": "Via XXIV Maggio 61, Bisceglie",
+      "geoId": "edicola-corso"
+    },
+    {
+      "id": "tabaccheria-de-mango",
+      "name": "Tabaccheria De Mango",
+      "address": "Largo Castello 3, Bisceglie",
+      "legacyId": 8
+    },
+    {
+      "id": "agenzia-pensieri",
+      "name": "Agenzia Senza Pensieri",
+      "address": "Via Piave 10, Bisceglie",
+      "geoId": "agenzia-pensieri"
+    },
+    {
+      "id": "remi",
+      "name": "Remì Cucina per Vocazione",
+      "address": "Via Giovanni Bovio 88, Bisceglie",
+      "geoId": "remi"
+    },
+    {
+      "id": "amazon-milvia",
+      "name": "Amazon Locker Milvia (PENNY via Bovio)",
+      "address": "Via Giovanni Bovio 324/326, Bisceglie",
+      "legacyId": 401,
+      "kind": "locker_amazon"
+    },
+    {
+      "id": "bar-eden",
+      "name": "Bar Pasticceria Eden",
+      "address": "Piazza Armando Diaz 10/11, Bisceglie",
+      "geoId": "bar-eden"
+    },
+    {
+      "id": "target-caffe",
+      "name": "Target Caffè - Amazon Counter",
+      "address": "Via Alcide De Gasperi 53, Bisceglie",
+      "geoId": "target-caffe",
+      "note": "Stesso civico Tabaccheria N. 8, banco Amazon distinto fino a verifica"
+    },
+    {
+      "id": "primaedicola-calace",
+      "name": "Primaedicola Salvemini Marianna",
+      "address": "Viale Vincenzo Calace 5, Bisceglie",
+      "geoId": "primaedicola-calace"
+    },
+    {
+      "id": "crazy-cafe",
+      "name": "Crazy Café",
+      "address": "Largo Francesco di Molfetta 2, Bisceglie",
+      "fallbackLegacyId": 104,
+      "note": "Pin approssimato da altro civico, non posizione confermata; navigare all'indirizzo"
+    },
+    {
+      "id": "poste-bisceglie2",
+      "name": "Ufficio Postale Bisceglie 2",
+      "address": "Via Sacerdote Francesco di Molfetta 14, Bisceglie",
+      "legacyId": 104,
+      "kind": "ufficio_postale"
+    },
+    {
+      "id": "primaedicola-prete",
+      "name": "Primaedicola Prete Alessandro",
+      "address": "Via Vittorio Veneto 71, Bisceglie",
+      "geoId": "primaedicola-prete",
+      "note": "Non confondere con Caffè Veneto allo stesso civico"
+    },
+    {
+      "id": "caffe-veneto",
+      "name": "Caffè Veneto",
+      "address": "Via Vittorio Veneto 71, Bisceglie",
+      "geoId": "caffe-veneto",
+      "note": "Non confondere con Primaedicola Prete allo stesso civico"
+    },
+    {
+      "id": "paolo-de-ruvo",
+      "name": "Paolo De Ruvo - GLS Point",
+      "address": "Via dell'Urbanistica, Bisceglie",
+      "geoId": "paolo-de-ruvo",
+      "note": "Manca civico GLS, posizione indicativa da strada"
+    },
+    {
+      "id": "postoffice",
+      "name": "Postoffice - GLS Point",
+      "address": "Via Giovanni Bovio, Bisceglie",
+      "geoId": "postoffice",
+      "note": "Manca civico GLS, posizione indicativa da strada"
+    },
+    {
+      "id": "anli",
+      "name": "An.Li. Mail Service",
+      "address": "Via Bruni Abate 27, Bisceglie",
+      "legacyId": 14
+    },
+    {
+      "id": "cab",
+      "name": "CAB Centro Assistenza Bollette",
+      "address": "Via Sant'Andrea, Bisceglie",
+      "geoId": "cab",
+      "note": "Manca civico GLS, posizione indicativa da strada"
+    },
+    {
+      "id": "autolavaggio-pansini",
+      "name": "Autolavaggio Pansini - GLS Point",
+      "address": "Via Ruvo, Bisceglie",
+      "fallbackLegacyId": 17,
+      "note": "Manca civico e geocodifica; pin rappresentativo della strada, NON posizione del negozio"
+    },
+    {
+      "id": "roko-coffee",
+      "name": "Roko Coffee Point",
+      "address": "Via Matteo Renato Imbriani 98, Bisceglie",
+      "legacyId": 6
+    }
+  ]
+}

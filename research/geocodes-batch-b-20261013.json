@@ -1,0 +1,66 @@
+[
+  {
+    "id": "target-caffe",
+    "street": "Via Alcide de Gasperi 53",
+    "coords": [
+      41.2375218,
+      16.4998089
+    ],
+    "precision": "road",
+    "place": "Via Alcide De Gasperi, Bisceglie, Barletta-Andria-Trani, Apulia, 76011, Italy"
+  },
+  {
+    "id": "bombini",
+    "street": "Via Luigi Papagni 27",
+    "coords": [
+      41.2379337,
+      16.497214
+    ],
+    "precision": "road",
+    "place": "Via Luigi Papagni, Bisceglie, Barletta-Andria-Trani, Apulia, 76011, Italy"
+  },
+  {
+    "id": "primaedicola-calace",
+    "street": "Viale Ingegnere Vincenzo Calace 5",
+    "coords": null,
+    "precision": "unknown",
+    "place": null
+  },
+  {
+    "id": "crazy-cafe",
+    "street": "Largo Sacerdote Francesco di Molfetta 2",
+    "coords": null,
+    "precision": "unknown",
+    "place": null
+  },
+  {
+    "id": "primaedicola-prete",
+    "street": "Via Vittorio Veneto 71",
+    "coords": [
+      41.2364103,
+      16.5017899
+    ],
+    "precision": "road",
+    "place": "Via Vittorio Veneto, Bisceglie, Barletta-Andria-Trani, Apulia, 76011, Italy"
+  },
+  {
+    "id": "caffe-veneto",
+    "street": "Via Vittorio Veneto 71",
+    "coords": [
+      41.2364103,
+      16.5017899
+    ],
+    "precision": "road",
+    "place": "Via Vittorio Veneto, Bisceglie, Barletta-Andria-Trani, Apulia, 76011, Italy"
+  },
+  {
+    "id": "kipoint-cavour",
+    "street": "Via Cavour 85",
+    "coords": [
+      41.2417503,
+      16.4908264
+    ],
+    "precision": "road",
+    "place": "Via Camillo Benso Conte di Cavour, Bisceglie, Barletta-Andria-Trani, Apulia, 76011, Italy"
+  }
+]
