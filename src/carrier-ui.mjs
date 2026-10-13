@@ -277,12 +277,24 @@ async function start(){
  }
  addRow('brt','dropoff','');
  panel.querySelector('#parcel-add').addEventListener('click',()=>addRow());
- function point(value,state){if(value==='gps')return state.gps;if(value==='reference')return state.reference;if(value.startsWith('place:'))return state.places.find(p=>String(p.id)===value.slice(6))?.coords??null;return null;}
  panel.querySelector('#parcel-calculate').addEventListener('click',()=>{
-  const state=bridge.state(),origin=point(panel.querySelector('#parcel-origin').value,state),target=panel.querySelector('#parcel-destination').value;
-  const destination=target==='none'?null:point(target,state);
-  if(target!=='none'&&!destination){result.textContent='Il luogo di arrivo non ha coordinate: configurale dalla matita del luogo.';return;}
-  const demands=[...rows.children].map(row=>({network:row.querySelector('.parcel-network').value,action:row.querySelector('.parcel-action').value,labelConfirmed:row.querySelector('.parcel-confirm').checked,assignedPointId:row.querySelector('.parcel-assigned').value||null,brtFormat:row.querySelector('.parcel-network').value==='brt'?(row.querySelector('.parcel-action').value==='return_qr'?'digital':row.querySelector('.parcel-brt-format').value):undefined}));
+  const demands=collectedParcels(),validation=validateParcelSelections(demands);
+  if(!validation.ok){reportWizardError('parcel-parcel-error',validation.message);setWizardStep(1);return;}
+  const state=bridge.state(),origin=resolveOrigin(panel.querySelector('#parcel-origin').value,state);
+  const target=panel.querySelector('#parcel-destination').value;
+  const destination=target==='none'?null:resolveOrigin(target,state);
+  if(!origin){
+   reportWizardError('parcel-location-error',panel.querySelector('#parcel-origin').value==='gps'
+     ?'Posizione attuale non rilevata: premi Rileva posizione oppure scegli Casa, Palestra o un altro luogo salvato.'
+     :'Il luogo scelto non ha coordinate. Configuralo in I miei luoghi oppure cambia la partenza.');
+   return;
+  }
+  if(target!=='none'&&!destination){
+   reportWizardError('parcel-location-error','Il luogo di arrivo non ha coordinate. Configuralo in I miei luoghi oppure scegli Nessun arrivo.');
+   return;
+  }
+  reportWizardError('parcel-location-error','');
+  updateStepSummary();setWizardStep(3);
   const liveIds=new Set(bridge.locations().map(l=>l.id));
   const exclusions=catalog.sites.filter(s=>state.removedIds.includes(s.appId)||!liveIds.has(s.appId)).map(s=>s.id);
   const plan=planParcels(catalog,demands,{origin,destination,openOnly:panel.querySelector('#parcel-open').checked,radiusKm:Number(panel.querySelector('#parcel-radius').value),maxStops:Number(panel.querySelector('#parcel-max-stops').value),excludedSiteIds:exclusions});
@@ -304,7 +316,7 @@ async function start(){
   }
   if(plan.plans[0].stops.length>3&&destination){const note=document.createElement('p');note.textContent='Con quattro soste piu arrivo, Google Maps mobile puo limitare i punti intermedi: verifica che siano tutti presenti.';result.append(note);}
  });
- panel.querySelector('#carrier-filter').addEventListener('change',e=>{selectedNetwork=e.target.value;bridge.refresh();if(selectedNetwork!=='all'&&selectedNetwork!=='brt_digital'&&!catalog.sites.some(s=>s.memberships.some(m=>m.network===selectedNetwork))){organizer.open=true;result.textContent='Per questa rete non ho ancora punti verificati nella raccolta. Non significa che non esistano: consulta la fonte in Copertura.';}});
+ panel.querySelector('#carrier-filter').addEventListener('change',e=>{selectedNetwork=e.target.value;bridge.refresh();if(selectedNetwork!=='all'&&selectedNetwork!=='brt_digital'&&!catalog.sites.some(s=>s.memberships.some(m=>m.network===selectedNetwork))){organizer.open=true;setWizardStep(1);reportWizardError('parcel-parcel-error','Per questa rete non ho ancora punti verificati: puoi aggiungere il pacco, ma la ricerca non inventera luoghi compatibili.');}});
  function audit(){
   for(const l of bridge.locations()){
    const s=byLegacy.get(l.id);if(!s)continue;
@@ -339,13 +351,13 @@ async function start(){
   chat:text=>{
    const parsed=interpretCarrierText(text);if(!parsed.networks.length&&!parsed.amazon)return false;
    bridge.consumeMessage();bridge.message(text,'user');organizer.open=true;stateSelects();rows.replaceChildren();
-   const networks=parsed.networks.length?parsed.networks:['amazon'];networks.slice(0,4).forEach(n=>addRow(n,parsed.action,parsed.brtFormat));
+   const networks=parsed.networks.length?parsed.networks:['amazon'];networks.slice(0,4).forEach(n=>addRow(n,parsed.action,n==='brt'?parsed.brtFormat:''));renumberParcels();setWizardStep(1);
    if(parsed.towardHome){const home=bridge.state().places.find(p=>p.id===-101||p.name.toLowerCase()==='casa');if(home)panel.querySelector('#parcel-destination').value='place:'+home.id;}
    const message=parsed.needsClarification?'Prima serve il servizio esatto: DHL Express e DHL eCommerce sono reti diverse; per Amazon conta il corriere indicato nelle istruzioni del reso. Ho aperto Organizza pacchi: conferma la rete, l\'operazione e l\'etichetta.':'Ho impostato i corrieri in Organizza pacchi, nella barra laterale. Conferma operazione, etichetta e partenza, poi premi Trova la combinazione. Il calcolo confronta le fonti verificate e le soste senza inventare compatibilita.';
-   bridge.message(message);result.textContent=message;bridge.showOrganizer();return true;
+   bridge.message(message);reportWizardError('parcel-parcel-error',message);bridge.showOrganizer();return true;
   }
  });
  bridge.replaceLocations([...original,...additions]);bridge.refresh();
- timer=setInterval(()=>{if(organizer.open)stateSelects();},60000);
- window.addEventListener('pagehide',()=>clearInterval(timer),{once:true});
+ timer=setInterval(()=>{if(organizer.open&&wizardStep===2)stateSelects();},30000);
+ window.addEventListener('pagehide',()=>{clearInterval(timer);if(geolocationPoll)clearInterval(geolocationPoll);},{once:true});
 }
