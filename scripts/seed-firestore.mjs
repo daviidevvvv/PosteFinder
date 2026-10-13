@@ -2,7 +2,8 @@ import { readFileSync } from 'node:fs';
 import { Script } from 'node:vm';
 import { normalizeLocationDoc } from '../src/state-schema.mjs';
 
-// Read ONLY the 31 static entries inside index.html, never execute the page.
+// Read only the current static entries inside index.html, never execute the page.
+// Removed / decommissioned points MUST NOT reappear in a future seed.
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const opening = 'const LOCATIONS_DATA = [';
 const start = html.indexOf(opening);
@@ -13,7 +14,8 @@ const raw = new Script('(' + literal + ')').runInNewContext({}, { timeout: 1000 
 if (!Array.isArray(raw)) throw new Error('Expected an array of locations');
 const locations = raw.map(entry => normalizeLocationDoc(JSON.parse(JSON.stringify(entry))));
 if (locations.some(item => !item)) throw new Error('Some locations failed validation');
-if (locations.length !== 31) throw new Error(`Expected 31 locations, found ${locations.length}`);
+if (locations.length !== 30) throw new Error(`Expected 30 currently listed static locations, found ${locations.length}`);
+if (locations.some(location => Number(location.id) === 402)) throw new Error('Decommissioned Veridiana Amazon Locker must not be seeded');
 const ids = locations.map(item => item.id);
 if (new Set(ids).size !== ids.length) throw new Error('Duplicate location ids');
 
