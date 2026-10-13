@@ -1,7 +1,7 @@
 // Pure, deterministic planner. No requests, geocoding or model-generated memberships.
 export const NETWORKS = {
   brt: 'BRT / Bartolini', dhl_express: 'DHL Express', dhl_ecommerce: 'DHL eCommerce',
-  inpost: 'InPost', ups: 'UPS', gls: 'GLS', poste: 'Poste / Punto Poste', amazon: 'Amazon: specificare il corriere'
+  inpost: 'InPost', ups: 'UPS', gls: 'GLS', poste: 'Poste / Punto Poste', amazon: 'Amazon Hub Locker / Counter (ritiro)'
 };
 export const ACTIONS = {dropoff:'Spedizione / consegna', return_label:'Reso con etichetta', return_qr:'Reso con QR (senza stampa)', pickup:'Ritiro gia assegnato'};
 export function isBrtDigital(demand) {
@@ -40,13 +40,17 @@ export function sourceOpen(member,at=new Date(),maxDays=30) {
   if((member.closedDates||[]).includes(italyTime(at).date)) return false;
   return scheduleOpen(member.hours,at);
 }
-// Conflicts stay visible; conservative policy requires all official schedules to agree.
+// The card shows whether ANY network is reported open; the route planner checks
+// the exact requested network independently. One closed courier must not block another.
 export function siteOpening(site,at=new Date(),maxDays=30) {
   const sources=(site.memberships||[]).filter(m=>m.evidence==='official'&&m.active===true);
   const values=sources.map(m=>sourceOpen(m,at,maxDays));
-  const conflict=(site.conflicts||[]).some(c=>c.type==='hours');
-  const open=values.length&&values.every(v=>v===true) ? true : values.some(v=>v===false) ? false : null;
-  return {open,conflict,label:open===null?'Orari da verificare':open?(conflict?'Fascia comune alle fonti':'Aperto da orario fonte'):(conflict?'Fuori dalla fascia comune':'Chiuso da orario fonte')};
+  const anyOpen=values.some(v=>v===true);
+  const allClosed=values.length>0&&values.every(v=>v===false);
+  const mixed=anyOpen&&values.some(v=>v!==true);
+  const conflict=(site.conflicts||[]).some(c=>c.type==='hours')||mixed;
+  const open=anyOpen?true:allClosed?false:null;
+  return {open,conflict,label:open===null?'Orari da verificare':open?(mixed?'Alcune reti aperte: verifica il corriere':'Almeno una rete aperta da fonte'):'Tutte le reti fuori orario fonte'};
 }
 export function validateCatalog(catalog) {
   if(catalog?.schemaVersion!==1||!Array.isArray(catalog.sites)) throw new Error('Catalogo corrieri non valido');
@@ -86,7 +90,9 @@ export function canServe(site,demand,{at=new Date(),maxDays=30,openOnly=true,all
     if(limit.maxLengthCmExclusive && dims[2]>=limit.maxLengthCmExclusive) return false;
     if(limit.maxVolumeM3Exclusive && dims.reduce((a,b)=>a*b,1)/1e6>=limit.maxVolumeM3Exclusive) return false;
   }
-  return !openOnly || (sourceOpen(m,at,maxDays)===true && siteOpening(site,at,maxDays).open===true);
+  // Evaluate the membership needed for THIS parcel, not every courier at the same shop.
+  if(site.coordinatePrecision==='nearby_proxy'&&demand.action!=='pickup')return false;
+  return !openOnly || sourceOpen(m,at,maxDays)===true;
 }
 // Minimum physical stops, then geometric route length. Not a street-routing optimum.
 export function planParcels(catalog,demands,options={}) {
@@ -96,7 +102,7 @@ export function planParcels(catalog,demands,options={}) {
   if(destination!==null&&!validCoords(destination)) return {status:'destination_required',plans:[],message:'Configura le coordinate del luogo di arrivo.'};
   if(!Array.isArray(demands)||demands.length<1||demands.length>4) return {status:'invalid_demands',plans:[],message:'Scegli da uno a quattro pacchi/corrieri.'};
   if(demands.some(d=>!NETWORKS[d.network]||!ACTIONS[d.action]||(d.network==='brt'&&d.brtFormat!=null&&!['digital','printed'].includes(d.brtFormat)))) return {status:'invalid_demands',plans:[],message:'Corriere, formato BRT o operazione non riconosciuti.'};
-  if(demands.some(d=>d.network==='amazon')) return {status:'label_required',plans:[],message:'Per Amazon scegli il corriere/rete indicato nelle istruzioni del reso: un Amazon Locker non equivale a un punto resi universale.'};
+  if(demands.some(d=>d.network==='amazon'&&d.action!=='pickup')) return {status:'label_required',plans:[],message:'I punti Amazon Hub verificati consentono la selezione per il RITIRO di un ordine; per un reso scegli il corriere e il metodo proposti nell ordine.'};
   if(demands.some(d=>d.action==='pickup'&&!d.assignedPointId)) return {status:'assigned_point_required',plans:[],message:'Un ritiro gia consegnato va effettuato nel punto indicato nell\'avviso. Selezionalo: non posso sostituirlo con un altro negozio.'};
   if(demands.some(d=>d.action!=='pickup'&&d.labelConfirmed!==true)) return {status:'label_required',plans:[],message:'Conferma che etichetta/QR e limiti del pacco sono compatibili con la rete selezionata.'};
   if(!Number.isFinite(radiusKm)||radiusKm<=0||radiusKm>100||!Number.isInteger(maxStops)||maxStops<1||maxStops>4) throw new Error('Limiti di ricerca non validi');
@@ -132,7 +138,7 @@ export function planParcels(catalog,demands,options={}) {
   const plans=solutions.sort((a,b)=>a.total-b.total).slice(0,3).map(s=>({
     stops:s.path.map(i=>eligible[i].site),distanceMetres:Math.round(s.total),extraMetres:destination?Math.max(0,Math.round(s.total-direct)):null,
     assignments:demands.map((d,i)=>{const assigned=s.path.map(j=>eligible[j]).find(p=>p.mask&(1<<i)).site;return {demandIndex:i,network:d.network,action:d.action,brtFormat:isBrtDigital(d)?'digital':d.brtFormat,provisional:isBrtDigital(d)&&assigned.memberships.find(m=>m.network==='brt')?.brtDigitalStatus!=='confirmed',siteId:assigned.id};}),
-    warnings:['Distanze in linea d\'aria: ordine indicativo, non chilometri stradali.','Orari verificati alla partenza selezionata, non all\'arrivo; verifica chiusure, tempi di viaggio, etichetta, peso e ingombri.',...(s.path.some(i=>siteOpening(eligible[i].site,at,maxDays).conflict)?['Almeno un punto ha orari discordanti: applicata la fascia comune prudenziale.']:[]),...(provisional?['BRT Digital / QR NON confermato per i punti proposti: questi sono solo CANDIDATI da contattare prima di partire. Edicolandia esclusa per segnalazione di mancata accettazione.']:[])]
+    warnings:['Distanze in linea d\'aria: ordine indicativo, non chilometri stradali.','Orari verificati alla partenza selezionata, non all\'arrivo; verifica chiusure, tempi di viaggio, etichetta, peso e ingombri.',...(s.path.some(i=>siteOpening(eligible[i].site,at,maxDays).conflict)?['Orari discordanti fra reti sullo stesso negozio: il planner ha controllato il singolo corriere richiesto.']:[]),...(s.path.some(i=>eligible[i].site.coordinatePrecision==='street_approx')?['Alcuni pin sono geocodificati sulla strada, NON presso l ingresso: confronta il civico prima di partire.']:[]),...(provisional?['BRT Digital / QR NON confermato per i punti proposti: questi sono solo CANDIDATI da contattare prima di partire. Edicolandia esclusa per segnalazione di mancata accettazione.']:[])]
   }));
   return {...base,status:provisional?'provisional':'ok',plans,missing:[]};
 }
