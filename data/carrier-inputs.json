@@ -1,68 +1,806 @@
 {
-"schemaVersion":1,"observedAt":"2026-10-12","sourceUpdatedAt":null,"scope":"Bisceglie - prima raccolta locale, non completa","timezone":"Europe/Rome","maxSourceAgeDays":30,
-"coverage":[
-{"network":"brt","label":"BRT / Bartolini","status":"partial_live","count":10,"sourceUrl":"https://www.mybrt.it/it/mybrt/parcel-shops/search","note":"Primi 10 risultati della ricerca Bisceglie. Non certifica completezza del comune o rete nazionale."},
-{"network":"dhl_express","label":"DHL Express","status":"partial_live","count":6,"sourceUrl":"https://mydhl.express.dhl/it/it/locator.html","note":"6 risultati a Bisceglie su 10 restituiti; gli altri 4 erano a Trani/Molfetta. Filtro reso pre-etichettato."},
-{"network":"inpost","label":"InPost","status":"partial_live","count":7,"sourceUrl":"https://inpost.it/trova-un-locker","note":"7 pagine ufficiali ricontrollate live. Non inventario esaustivo."},
-{"network":"dhl_ecommerce","label":"DHL eCommerce","status":"not_verified","count":0,"sourceUrl":"https://www.dhl.com/it-it/home/servizio-clienti/servicepoint-finder-dhl-ecommerce-per-i-ritiri-e-linvio-dei-resi-e-commerce.html","note":"Rete distinta da Express: non assegnata per analogia."},
-{"network":"ups","label":"UPS","status":"not_verified","count":0,"sourceUrl":"https://www.ups.com/dropoff?loc=it_IT","note":"Candidati da elenchi esterni, non confermati nel localizzatore ufficiale in questa raccolta."},
-{"network":"gls","label":"GLS","status":"merchant_only","count":0,"sourceUrl":"https://www.gls-italy.com/","note":"Biblio dichiara GLS sul proprio sito; tipo di servizio e appartenenza ufficiale da verificare."},
-{"network":"poste","label":"Poste / Punto Poste","status":"legacy","count":0,"sourceUrl":"https://www.poste.it/cerca/index.html#/","note":"Punti storici conservati, non ricertificati per i resi o i servizi attuali."},
-{"network":"amazon","label":"Amazon / reso da verificare","status":"label_required","count":0,"sourceUrl":"https://www.amazon.it/returns","note":"Amazon e un negozio: indicare il corriere/rete e il metodo previsti dal reso. Non tutti i locker accettano resi."}],
-"pending":[
-{"name":"InPost Ciuffo Wash","providerId":"ITBLQ149474B","address":"Via Mosca 4, Bisceglie","status":"page_redirect","sourceUrl":"https://inpost.it/locker-bisceglie-itblq149474b-via-mosca","finding":"Pagina reindirizza al localizzatore generale; non aggiunto come attivo. Non prova chiusura definitiva."},
-{"name":"Fatto a Posta","address":"Via Pietro Mascagni 5, Bisceglie","status":"page_unavailable","sourceUrl":"https://www.fermopoint.it/punto-di-ritiro-e-di-spedizione-pacchi/fatto-a-posta--15007","finding":"Risposta HTTP200 ma pagina di errore; escluso dal planner."},
-{"name":"Cartolibreria Biblio","address":"Via Cavour 128, Bisceglie","status":"merchant_declared","sourceUrl":"https://www.cartolibreriabiblio.it/","finding":"Sito negozio dichiara Amazon Hub, GLS, DHL. Solo DHL Express confermato separatamente nel localizzatore in questa versione."},
-{"name":"UPS Access Point candidato","address":"Via Alcide De Gasperi 53, Bisceglie","status":"unverified","finding":"Directory esterna, non confondere con Nexus al civico40; nessuna membership attiva aggiunta."},
-{"name":"Mail Boxes Etc / UPS candidato","address":"Via Lamaveta 92-94, Bisceglie","status":"unverified","finding":"BRT confermato; rapporto UPS Access Point e orari domenicali delle directory non verificati."}],
-"disclaimer":"Verificato nella fonte non significa disponibilita del negozio o del servizio garantita adesso. Necessari etichetta corretta, peso e ingombri compatibili. Orari festivi e chiusure straordinarie possono mancare.",
-"networkDefaults":{
-"brt":{"services":{"dropoff":"conditional","return_label":"conditional","pickup":"assigned_only","return_qr":"unknown"},"conditions":["Etichetta BRT valida per BRT-fermopoint; per resi e ritiri seguire le istruzioni della specifica spedizione."],"limits":{"maxWeightKg":20,"maxLengthCmExclusive":100,"maxVolumeM3Exclusive":0.2,"maxPieces":5},"providerServiceCodes":["100","102","200","204","306"],"defaultSourceUrl":"https://www.mybrt.it/it/mybrt/parcel-shops/search"},
-"inpost":{"services":{"dropoff":"conditional","return_label":"conditional","return_qr":"unknown","pickup":"assigned_only"},"conditions":["Etichetta/codice InPost valido e istruzioni del venditore; la disponibilita del vano non e verificata in tempo reale."],"limits":{"maxWeightKg":25,"maxDimensionsCm":[41,38,64]}},
-"dhl_express":{"services":{"dropoff":"conditional","return_label":"confirmed","return_qr":"confirmed","pickup":"assigned_only"},"conditions":["Solo DHL Express, non DHL eCommerce. Reso con lettera di vettura o QR DHL Express emesso per il servizio corretto."],"limits":{"maxWeightKg":25,"maxDimensionsCm":[60,60,60],"maxPieces":4},"closedDates":["2026-11-01","2026-12-08","2026-12-25","2026-12-26"],"defaultSourceUrl":"https://mydhl.express.dhl/it/it/locator.html"}},
-"physicalSites":[
-{"id":"deval","legacyId":9,"name":"Deval / Tabacchi - Bisceglie","address":"Via XXIV Maggio 52, Bisceglie","city":"Bisceglie","coords":[41.23865260165,16.50261713929],"kind":"punto","conflicts":[]},
-{"id":"italiana","legacyId":null,"name":"Italiana Serv. Post. Bisceglie","address":"Via Pasubio 17, Bisceglie","city":"Bisceglie","coords":[41.2363135,16.50101143],"kind":"punto","conflicts":[]},
-{"id":"nexus","legacyId":null,"name":"Posta Privata Nexus","address":"Via Alcide De Gasperi 40, Bisceglie","city":"Bisceglie","coords":[41.23808852517,16.50006053254],"kind":"punto","conflicts":[{"type":"hours","resolution":"conservative_intersection","note":"Le fonti dei corrieri non concordano. Il planner usa solo la fascia comune, non una apertura garantita."}],"mergeBasis":"Stesso nome commerciale e stesso indirizzo/civico (alias controllato manualmente). Non fusione basata solo sulla vicinanza.","coordinateNote":"Coordinate diverse fra fonti: punto rappresentativo del primo localizzatore; navigare usando indirizzo e verificare ingresso."},
-{"id":"brescia","legacyId":null,"name":"Cartolibreria Brescia","address":"Via Imbriani 179/181, Bisceglie","city":"Bisceglie","coords":[41.2365799,16.50763],"kind":"punto","conflicts":[]},
-{"id":"edicolandia","legacyId":5,"name":"Edicolandia","address":"Via Fragata 103-105, Bisceglie","city":"Bisceglie","coords":[41.2396546,16.5092995],"kind":"punto","conflicts":[{"type":"hours","resolution":"conservative_intersection","note":"Le fonti dei corrieri non concordano. Il planner usa solo la fascia comune, non una apertura garantita."}],"mergeBasis":"Stesso nome commerciale e stesso indirizzo/civico (alias controllato manualmente). Non fusione basata solo sulla vicinanza.","coordinateNote":"Coordinate diverse fra fonti: punto rappresentativo del primo localizzatore; navigare usando indirizzo e verificare ingresso."},
-{"id":"planetwin","legacyId":null,"name":"Planetwin 365-Bisceglie","address":"Via Imbriani 255, Bisceglie","city":"Bisceglie","coords":[41.2340908,16.5104304],"kind":"punto","conflicts":[]},
-{"id":"mbe","legacyId":null,"name":"Mail Boxes Etc-Bisceglie","address":"Via Lamaveta 92-94, Bisceglie","city":"Bisceglie","coords":[41.2329508,16.4984304],"kind":"punto","conflicts":[]},
-{"id":"ficus","legacyId":null,"name":"Ficus-Deter Ficus","address":"Via G. Di Vittorio 128-134, Bisceglie","city":"Bisceglie","coords":[41.24215629,16.49134759],"kind":"punto","conflicts":[{"type":"address","note":"BRT: civici 128-134; Fermopoint: 128-130. Mantenute entrambe le evidenze."}]},
-{"id":"trentadue","legacyId":19,"name":"Tabaccheria Trentadue","address":"Via Padre Massimiliano Kolbe 31, Bisceglie","city":"Bisceglie","coords":[41.23191381,16.49485687],"kind":"punto","conflicts":[{"type":"hours","resolution":"conservative_intersection","note":"Le fonti dei corrieri non concordano. Il planner usa solo la fascia comune, non una apertura garantita."}],"mergeBasis":"Stesso nome commerciale e stesso indirizzo/civico (alias controllato manualmente). Non fusione basata solo sulla vicinanza.","coordinateNote":"Coordinate diverse fra fonti: punto rappresentativo del primo localizzatore; navigare usando indirizzo e verificare ingresso."},
-{"id":"royal","legacyId":null,"name":"Bar Royal Cafe","address":"Via Dottor G. La Notte 18-20, Bisceglie","city":"Bisceglie","coords":[41.2295885,16.4917345],"kind":"punto","conflicts":[{"type":"coordinates","note":"Coordinate BRT e Fermopoint differiscono di circa 170 m; usata posizione BRT. Verificare ingresso."}]},
-{"id":"app-service","legacyId":null,"name":"App Service","address":"Via Francesco Petronelli 7, Bisceglie","city":"Bisceglie","coords":[41.2372,16.4998],"kind":"punto","conflicts":[]},
-{"id":"biblio","legacyId":null,"name":"Cartolibreria Biblio","address":"Via Cavour 128, Bisceglie","city":"Bisceglie","coords":[41.241879,16.4921],"kind":"punto","conflicts":[]},
-{"id":"corner-office","legacyId":null,"name":"Corner Office","address":"Via Carrara Reddito 73, Bisceglie","city":"Bisceglie","coords":[41.232377,16.495399],"kind":"punto","conflicts":[]},
-{"id":"eni-09033","legacyId":null,"name":"Distributore Eni 09033","address":"Via Imbriani 258, Bisceglie","city":"Bisceglie","coords":[41.2341202,16.510591],"kind":"punto","conflicts":[]},
-{"id":"tabacchi-cavour","legacyId":null,"name":"Tabaccheria - InPost Point","address":"Via Cavour 47, Bisceglie","city":"Bisceglie","coords":[41.24177,16.49454],"kind":"punto","conflicts":[]},
-{"id":"inpost-famila","legacyId":301,"name":"InPost Locker - CC Famila","address":"Via Nicola Consiglio 2, Bisceglie","city":"Bisceglie","coords":[41.23155,16.49365],"kind":"locker_inpost","conflicts":[]},
-{"id":"inpost-cassetta","legacyId":302,"name":"InPost Locker - Cassetta Petroli","address":"Via Mauro Giuliani 8, Bisceglie","city":"Bisceglie","coords":[41.23575,16.51449],"kind":"locker_inpost","conflicts":[]},
-{"id":"inpost-ip","legacyId":303,"name":"InPost Locker - IP","address":"Via Lamaveta, Bisceglie","city":"Bisceglie","coords":[41.23207,16.49824],"kind":"locker_inpost","conflicts":[]},
-{"id":"inpost-iplanet","legacyId":null,"name":"InPost Locker - IPLANET","address":"Via Imbriani snc, Bisceglie","city":"Bisceglie","coords":[41.2324,16.51686],"kind":"locker_inpost","conflicts":[]},
-{"id":"inpost-toil","legacyId":null,"name":"InPost Locker - TOIL","address":"Via Imbriani 212, Bisceglie","city":"Bisceglie","coords":[41.2356,16.5085],"kind":"locker_inpost","conflicts":[]}],
-"observations":[
-{"site":"deval","network":"brt","pointId":"uJNaXghhOwHoyx-sc6h0nA","coords":[41.23865260165,16.50261713929],"hoursPacked":"mon,tue,wed,thu,fri,sat=420-780/960-1230;sun=","sourceDetailsUrl":"https://www.fermopoint.it/punto-di-ritiro-e-di-spedizione-pacchi/deval-s-r-l-7598","retrievalMethod":"live_locator"},
-{"site":"italiana","network":"brt","pointId":"oemtFvrPk5-w7qKVebir2Q","coords":[41.2363135,16.50101143],"hoursPacked":"mon,tue,wed,thu,fri=510-720/990-1140;sat,sun=","sourceDetailsUrl":"https://www.fermopoint.it/punto-di-ritiro-e-di-spedizione-pacchi/italiana-serv-post-bisceglie-19341","retrievalMethod":"live_locator"},
-{"site":"nexus","network":"brt","pointId":"VQCPUOfcygC0FbBM_zIkRg","coords":[41.23808852517,16.50006053254],"hoursPacked":"mon,tue,wed,thu,fri=420-750/960-1140;sat=540-720;sun=","sourceDetailsUrl":"https://www.fermopoint.it/punto-di-ritiro-e-di-spedizione-pacchi/posta-privata-nexus-12532","retrievalMethod":"live_locator"},
-{"site":"nexus","network":"inpost","pointId":"ITPBT03592P","coords":[41.23825,16.5],"hoursPacked":"mon,tue,wed,thu,fri=420-750/990-1140;sat=540-720;sun=","sourceUrl":"https://inpost.it/punto-ritiro-itpbt03592p-bisceglie-via-alcide-de-gasperi","retrievalMethod":"live_page"},
-{"site":"brescia","network":"brt","pointId":"_x9lh_It8IeuARW8yIO8HQ","coords":[41.2365799,16.50763],"hoursPacked":"mon,tue,wed,thu,fri,sat=360-780/990-1215;sun=360-780","sourceDetailsUrl":"https://www.fermopoint.it/punto-di-ritiro-e-di-spedizione-pacchi/cartolibreria-brescia-2702","retrievalMethod":"live_locator"},
-{"site":"edicolandia","network":"brt","pointId":"_MbM-XoCsf4oYWWE4RgFlg","coords":[41.2396546,16.5092995],"hoursPacked":"mon,tue,wed,thu,fri,sat=465-780/1020-1230;sun=","sourceDetailsUrl":"https://www.fermopoint.it/punto-di-ritiro-e-di-spedizione-pacchi/edicolandia-19904","retrievalMethod":"live_locator","serviceOverrides":{"return_qr":"not_supported_reported"},"userReport":"Segnalazione conservata dal repository (commit 9 ottobre 2026): BRT solo non digital, digital non disponibile. Non estesa ad altri punti o a DHL."},
-{"site":"edicolandia","network":"dhl_express","pointId":"BRI1L8","coords":[41.239345,16.510073],"hoursPacked":"mon,tue,wed,thu,fri,sat=480-1230;sun=480-780","retrievalMethod":"live_locator","cutoffMinute":720,"cutoffNote":"Ora limite di partenza indicata dalla fonte; non coincide necessariamente con ultimo orario di accettazione.","providerCapabilities":{"prePrintReturnLabel":true,"labelFree":true,"shipmentDropOffAndCollection":true,"labelPrinting":true}},
-{"site":"planetwin","network":"brt","pointId":"DniqSjTRP5lFL6Is02cZFw","coords":[41.2340908,16.5104304],"hoursPacked":"mon,tue,wed,thu,fri=540-1230;sat,sun=570-1230","sourceDetailsUrl":"https://www.mybrt.it/it/mybrt/parcel-shops/search","retrievalMethod":"live_locator"},
-{"site":"mbe","network":"brt","pointId":"yQ149OHR7mpV-tKY-CdjEA","coords":[41.2329508,16.4984304],"hoursPacked":"mon,tue,wed,thu,fri=510-810/990-1140;sat,sun=","sourceDetailsUrl":"https://www.fermopoint.it/punto-di-ritiro-e-di-spedizione-pacchi/Mail-Boxes-Etc-Bisceglie-17349","retrievalMethod":"live_locator"},
-{"site":"ficus","network":"brt","pointId":"4QYJfA7y8XoajhMPrOCPlg","coords":[41.24215629,16.49134759],"hoursPacked":"mon=1020-1200;tue,wed,thu,fri,sat=510-780/1020-1200;sun=","sourceDetailsUrl":"https://www.fermopoint.it/punto-di-ritiro-e-di-spedizione-pacchi/ficus-deter-ficus-16824","retrievalMethod":"live_locator"},
-{"site":"trentadue","network":"brt","pointId":"Yj-nXo7NsdCDV2P9L32h-w","coords":[41.23191381,16.49485687],"hoursPacked":"mon,tue,wed,thu,fri,sat=300-780/960-1170;sun=","sourceDetailsUrl":"https://www.fermopoint.it/punto-di-ritiro-e-di-spedizione-pacchi/tabaccheria-trentadue-19500","retrievalMethod":"live_locator"},
-{"site":"trentadue","network":"dhl_express","pointId":"BRI1T1","coords":[41.232332,16.494579],"hoursPacked":"mon,tue,wed,thu,fri,sat=330-780/930-1200;sun=","retrievalMethod":"live_locator","cutoffMinute":720,"cutoffNote":"Ora limite di partenza indicata dalla fonte; non coincide necessariamente con ultimo orario di accettazione.","providerCapabilities":{"prePrintReturnLabel":true,"labelFree":true,"shipmentDropOffAndCollection":true,"labelPrinting":true}},
-{"site":"royal","network":"brt","pointId":"5iVkYAgbz08cGpC6uaUWvQ","coords":[41.2295885,16.4917345],"hoursPacked":"mon,tue,thu,fri,sat=330-780/1020-1350;wed=330-780/1020-1320;sun=330-780","sourceDetailsUrl":"https://www.fermopoint.it/punto-di-ritiro-e-di-spedizione-pacchi/bar-royal-cafe-13937","retrievalMethod":"live_locator"},
-{"site":"app-service","network":"dhl_express","pointId":"BRI005","coords":[41.2372,16.4998],"hoursPacked":"mon,tue,wed,thu,fri=540-780/1020-1200;sat=540-780;sun=","retrievalMethod":"live_locator","cutoffMinute":720,"cutoffNote":"Ora limite di partenza indicata dalla fonte; non coincide necessariamente con ultimo orario di accettazione.","providerCapabilities":{"prePrintReturnLabel":true,"labelFree":true,"shipmentDropOffAndCollection":true,"labelPrinting":true}},
-{"site":"biblio","network":"dhl_express","pointId":"BRI042","coords":[41.241879,16.4921],"hoursPacked":"mon,tue,wed,thu,fri,sat=450-810/990-1230;sun=","retrievalMethod":"live_locator","cutoffMinute":720,"cutoffNote":"Ora limite di partenza indicata dalla fonte; non coincide necessariamente con ultimo orario di accettazione.","providerCapabilities":{"prePrintReturnLabel":true,"labelFree":true,"shipmentDropOffAndCollection":true,"labelPrinting":true}},
-{"site":"corner-office","network":"dhl_express","pointId":"BRI1Q9","coords":[41.232377,16.495399],"hoursPacked":"mon,tue,wed,thu,fri=510-780/990-1230;sat=510-780/1020-1230;sun=","retrievalMethod":"live_locator","cutoffMinute":720,"cutoffNote":"Ora limite di partenza indicata dalla fonte; non coincide necessariamente con ultimo orario di accettazione.","providerCapabilities":{"prePrintReturnLabel":true,"labelFree":true,"shipmentDropOffAndCollection":true,"labelPrinting":true}},
-{"site":"eni-09033","network":"dhl_express","pointId":"BRI142","coords":[41.2341202,16.510591],"hoursPacked":"mon,tue,wed,thu,fri=390-780/900-1200;sat=390-780;sun=","retrievalMethod":"live_locator","cutoffMinute":780,"cutoffNote":"Ora limite di partenza indicata dalla fonte; non coincide necessariamente con ultimo orario di accettazione.","providerCapabilities":{"prePrintReturnLabel":true,"labelFree":true,"shipmentDropOffAndCollection":false,"labelPrinting":true}},
-{"site":"tabacchi-cavour","network":"inpost","pointId":"ITPBT07090P","coords":[41.24177,16.49454],"hoursPacked":"mon,tue,wed,thu,fri,sat=420-780/960-1200;sun=420-780","sourceUrl":"https://inpost.it/punto-ritiro-itpbt07090p-bisceglie-via-cavour","retrievalMethod":"live_page"},
-{"site":"inpost-famila","network":"inpost","pointId":"ITBIS24842","coords":[41.23155,16.49365],"hoursPacked":"mon,tue,wed,thu,fri,sat,sun=0-1440","sourceUrl":"https://inpost.it/locker-bisceglie-itbis24842-via-nicola-consiglio","retrievalMethod":"live_page"},
-{"site":"inpost-cassetta","network":"inpost","pointId":"ITBIS43460M","coords":[41.23575,16.51449],"hoursPacked":"mon,tue,wed,thu,fri,sat,sun=0-1440","sourceUrl":"https://inpost.it/locker-bisceglie-itbis43460m-via-mauro-giuliani","retrievalMethod":"live_page"},
-{"site":"inpost-ip","network":"inpost","pointId":"ITBIS45221M","coords":[41.23207,16.49824],"hoursPacked":"mon,tue,wed,thu,fri,sat,sun=0-1440","sourceUrl":"https://inpost.it/locker-bisceglie-itbis45221m-via-lamaveta","retrievalMethod":"live_page"},
-{"site":"inpost-iplanet","network":"inpost","pointId":"ITBIS111893F","coords":[41.2324,16.51686],"hoursPacked":"mon,tue,wed,thu,fri,sat,sun=0-1440","sourceUrl":"https://inpost.it/locker-bisceglie-itbis111893f-via-imbriani","retrievalMethod":"live_page"},
-{"site":"inpost-toil","network":"inpost","pointId":"ITBIS108252F","coords":[41.2356,16.5085],"hoursPacked":"mon,tue,wed,thu,fri,sat,sun=0-1440","sourceUrl":"https://inpost.it/locker-bisceglie-itbis108252f-via-imbriani","retrievalMethod":"live_page"}
-]}
+  "schemaVersion": 1,
+  "observedAt": "2026-10-12",
+  "sourceUpdatedAt": null,
+  "scope": "Bisceglie - prima raccolta locale, non completa",
+  "timezone": "Europe/Rome",
+  "maxSourceAgeDays": 30,
+  "coverage": [
+    {
+      "network": "brt",
+      "label": "BRT / Bartolini",
+      "status": "partial_live",
+      "count": 10,
+      "sourceUrl": "https://www.mybrt.it/it/mybrt/parcel-shops/search",
+      "note": "Primi 10 risultati della ricerca Bisceglie. Non certifica completezza del comune o rete nazionale."
+    },
+    {
+      "network": "dhl_express",
+      "label": "DHL Express",
+      "status": "partial_live",
+      "count": 6,
+      "sourceUrl": "https://mydhl.express.dhl/it/it/locator.html",
+      "note": "6 risultati a Bisceglie su 10 restituiti; gli altri 4 erano a Trani/Molfetta. Filtro reso pre-etichettato."
+    },
+    {
+      "network": "inpost",
+      "label": "InPost",
+      "status": "partial_live",
+      "count": 7,
+      "sourceUrl": "https://inpost.it/trova-un-locker",
+      "note": "7 pagine ufficiali ricontrollate live. Non inventario esaustivo."
+    },
+    {
+      "network": "dhl_ecommerce",
+      "label": "DHL eCommerce",
+      "status": "not_verified",
+      "count": 0,
+      "sourceUrl": "https://www.dhl.com/it-it/home/servizio-clienti/servicepoint-finder-dhl-ecommerce-per-i-ritiri-e-linvio-dei-resi-e-commerce.html",
+      "note": "Rete distinta da Express: non assegnata per analogia."
+    },
+    {
+      "network": "ups",
+      "label": "UPS",
+      "status": "not_verified",
+      "count": 0,
+      "sourceUrl": "https://www.ups.com/dropoff?loc=it_IT",
+      "note": "Candidati da elenchi esterni, non confermati nel localizzatore ufficiale in questa raccolta."
+    },
+    {
+      "network": "gls",
+      "label": "GLS",
+      "status": "merchant_only",
+      "count": 0,
+      "sourceUrl": "https://www.gls-italy.com/",
+      "note": "Biblio dichiara GLS sul proprio sito; tipo di servizio e appartenenza ufficiale da verificare."
+    },
+    {
+      "network": "poste",
+      "label": "Poste / Punto Poste",
+      "status": "legacy",
+      "count": 0,
+      "sourceUrl": "https://www.poste.it/cerca/index.html#/",
+      "note": "Punti storici conservati, non ricertificati per i resi o i servizi attuali."
+    },
+    {
+      "network": "amazon",
+      "label": "Amazon / reso da verificare",
+      "status": "label_required",
+      "count": 0,
+      "sourceUrl": "https://www.amazon.it/returns",
+      "note": "Amazon e un negozio: indicare il corriere/rete e il metodo previsti dal reso. Non tutti i locker accettano resi."
+    }
+  ],
+  "pending": [
+    {
+      "name": "InPost Ciuffo Wash",
+      "providerId": "ITBLQ149474B",
+      "address": "Via Mosca 4, Bisceglie",
+      "status": "page_redirect",
+      "sourceUrl": "https://inpost.it/locker-bisceglie-itblq149474b-via-mosca",
+      "finding": "Pagina reindirizza al localizzatore generale; non aggiunto come attivo. Non prova chiusura definitiva."
+    },
+    {
+      "name": "Fatto a Posta",
+      "address": "Via Pietro Mascagni 5, Bisceglie",
+      "status": "page_unavailable",
+      "sourceUrl": "https://www.fermopoint.it/punto-di-ritiro-e-di-spedizione-pacchi/fatto-a-posta--15007",
+      "finding": "Risposta HTTP200 ma pagina di errore; escluso dal planner."
+    },
+    {
+      "name": "Cartolibreria Biblio",
+      "address": "Via Cavour 128, Bisceglie",
+      "status": "merchant_declared",
+      "sourceUrl": "https://www.cartolibreriabiblio.it/",
+      "finding": "Sito negozio dichiara Amazon Hub, GLS, DHL. Solo DHL Express confermato separatamente nel localizzatore in questa versione."
+    },
+    {
+      "name": "UPS Access Point candidato",
+      "address": "Via Alcide De Gasperi 53, Bisceglie",
+      "status": "unverified",
+      "finding": "Directory esterna, non confondere con Nexus al civico40; nessuna membership attiva aggiunta."
+    },
+    {
+      "name": "Mail Boxes Etc / UPS candidato",
+      "address": "Via Lamaveta 92-94, Bisceglie",
+      "status": "unverified",
+      "finding": "BRT confermato; rapporto UPS Access Point e orari domenicali delle directory non verificati."
+    }
+  ],
+  "disclaimer": "Verificato nella fonte non significa disponibilita del negozio o del servizio garantita adesso. Necessari etichetta corretta, peso e ingombri compatibili. Orari festivi e chiusure straordinarie possono mancare.",
+  "networkDefaults": {
+    "brt": {
+      "services": {
+        "dropoff": "conditional",
+        "return_label": "conditional",
+        "pickup": "assigned_only",
+        "return_qr": "unknown"
+      },
+      "conditions": [
+        "Etichetta BRT valida per BRT-fermopoint; per resi e ritiri seguire le istruzioni della specifica spedizione."
+      ],
+      "limits": {
+        "maxWeightKg": 20,
+        "maxLengthCmExclusive": 100,
+        "maxVolumeM3Exclusive": 0.2,
+        "maxPieces": 5
+      },
+      "providerServiceCodes": [
+        "100",
+        "102",
+        "200",
+        "204",
+        "306"
+      ],
+      "defaultSourceUrl": "https://www.mybrt.it/it/mybrt/parcel-shops/search",
+      "brtDigitalStatus": "unknown"
+    },
+    "inpost": {
+      "services": {
+        "dropoff": "conditional",
+        "return_label": "conditional",
+        "return_qr": "unknown",
+        "pickup": "assigned_only"
+      },
+      "conditions": [
+        "Etichetta/codice InPost valido e istruzioni del venditore; la disponibilita del vano non e verificata in tempo reale."
+      ],
+      "limits": {
+        "maxWeightKg": 25,
+        "maxDimensionsCm": [
+          41,
+          38,
+          64
+        ]
+      }
+    },
+    "dhl_express": {
+      "services": {
+        "dropoff": "conditional",
+        "return_label": "confirmed",
+        "return_qr": "confirmed",
+        "pickup": "assigned_only"
+      },
+      "conditions": [
+        "Solo DHL Express, non DHL eCommerce. Reso con lettera di vettura o QR DHL Express emesso per il servizio corretto."
+      ],
+      "limits": {
+        "maxWeightKg": 25,
+        "maxDimensionsCm": [
+          60,
+          60,
+          60
+        ],
+        "maxPieces": 4
+      },
+      "closedDates": [
+        "2026-11-01",
+        "2026-12-08",
+        "2026-12-25",
+        "2026-12-26"
+      ],
+      "defaultSourceUrl": "https://mydhl.express.dhl/it/it/locator.html"
+    }
+  },
+  "physicalSites": [
+    {
+      "id": "deval",
+      "legacyId": 9,
+      "name": "Deval / Tabacchi - Bisceglie",
+      "address": "Via XXIV Maggio 52, Bisceglie",
+      "city": "Bisceglie",
+      "coords": [
+        41.23865260165,
+        16.50261713929
+      ],
+      "kind": "punto",
+      "conflicts": []
+    },
+    {
+      "id": "italiana",
+      "legacyId": null,
+      "name": "Italiana Serv. Post. Bisceglie",
+      "address": "Via Pasubio 17, Bisceglie",
+      "city": "Bisceglie",
+      "coords": [
+        41.2363135,
+        16.50101143
+      ],
+      "kind": "punto",
+      "conflicts": []
+    },
+    {
+      "id": "nexus",
+      "legacyId": null,
+      "name": "Posta Privata Nexus",
+      "address": "Via Alcide De Gasperi 40, Bisceglie",
+      "city": "Bisceglie",
+      "coords": [
+        41.23808852517,
+        16.50006053254
+      ],
+      "kind": "punto",
+      "conflicts": [
+        {
+          "type": "hours",
+          "resolution": "conservative_intersection",
+          "note": "Le fonti dei corrieri non concordano. Il planner usa solo la fascia comune, non una apertura garantita."
+        }
+      ],
+      "mergeBasis": "Stesso nome commerciale e stesso indirizzo/civico (alias controllato manualmente). Non fusione basata solo sulla vicinanza.",
+      "coordinateNote": "Coordinate diverse fra fonti: punto rappresentativo del primo localizzatore; navigare usando indirizzo e verificare ingresso."
+    },
+    {
+      "id": "brescia",
+      "legacyId": null,
+      "name": "Cartolibreria Brescia",
+      "address": "Via Imbriani 179/181, Bisceglie",
+      "city": "Bisceglie",
+      "coords": [
+        41.2365799,
+        16.50763
+      ],
+      "kind": "punto",
+      "conflicts": []
+    },
+    {
+      "id": "edicolandia",
+      "legacyId": 5,
+      "name": "Edicolandia",
+      "address": "Via Fragata 103-105, Bisceglie",
+      "city": "Bisceglie",
+      "coords": [
+        41.2396546,
+        16.5092995
+      ],
+      "kind": "punto",
+      "conflicts": [
+        {
+          "type": "hours",
+          "resolution": "conservative_intersection",
+          "note": "Le fonti dei corrieri non concordano. Il planner usa solo la fascia comune, non una apertura garantita."
+        }
+      ],
+      "mergeBasis": "Stesso nome commerciale e stesso indirizzo/civico (alias controllato manualmente). Non fusione basata solo sulla vicinanza.",
+      "coordinateNote": "Coordinate diverse fra fonti: punto rappresentativo del primo localizzatore; navigare usando indirizzo e verificare ingresso."
+    },
+    {
+      "id": "planetwin",
+      "legacyId": null,
+      "name": "Planetwin 365-Bisceglie",
+      "address": "Via Imbriani 255, Bisceglie",
+      "city": "Bisceglie",
+      "coords": [
+        41.2340908,
+        16.5104304
+      ],
+      "kind": "punto",
+      "conflicts": []
+    },
+    {
+      "id": "mbe",
+      "legacyId": null,
+      "name": "Mail Boxes Etc-Bisceglie",
+      "address": "Via Lamaveta 92-94, Bisceglie",
+      "city": "Bisceglie",
+      "coords": [
+        41.2329508,
+        16.4984304
+      ],
+      "kind": "punto",
+      "conflicts": []
+    },
+    {
+      "id": "ficus",
+      "legacyId": null,
+      "name": "Ficus-Deter Ficus",
+      "address": "Via G. Di Vittorio 128-134, Bisceglie",
+      "city": "Bisceglie",
+      "coords": [
+        41.24215629,
+        16.49134759
+      ],
+      "kind": "punto",
+      "conflicts": [
+        {
+          "type": "address",
+          "note": "BRT: civici 128-134; Fermopoint: 128-130. Mantenute entrambe le evidenze."
+        }
+      ]
+    },
+    {
+      "id": "trentadue",
+      "legacyId": 19,
+      "name": "Tabaccheria Trentadue",
+      "address": "Via Padre Massimiliano Kolbe 31, Bisceglie",
+      "city": "Bisceglie",
+      "coords": [
+        41.23191381,
+        16.49485687
+      ],
+      "kind": "punto",
+      "conflicts": [
+        {
+          "type": "hours",
+          "resolution": "conservative_intersection",
+          "note": "Le fonti dei corrieri non concordano. Il planner usa solo la fascia comune, non una apertura garantita."
+        }
+      ],
+      "mergeBasis": "Stesso nome commerciale e stesso indirizzo/civico (alias controllato manualmente). Non fusione basata solo sulla vicinanza.",
+      "coordinateNote": "Coordinate diverse fra fonti: punto rappresentativo del primo localizzatore; navigare usando indirizzo e verificare ingresso."
+    },
+    {
+      "id": "royal",
+      "legacyId": null,
+      "name": "Bar Royal Cafe",
+      "address": "Via Dottor G. La Notte 18-20, Bisceglie",
+      "city": "Bisceglie",
+      "coords": [
+        41.2295885,
+        16.4917345
+      ],
+      "kind": "punto",
+      "conflicts": [
+        {
+          "type": "coordinates",
+          "note": "Coordinate BRT e Fermopoint differiscono di circa 170 m; usata posizione BRT. Verificare ingresso."
+        }
+      ]
+    },
+    {
+      "id": "app-service",
+      "legacyId": null,
+      "name": "App Service",
+      "address": "Via Francesco Petronelli 7, Bisceglie",
+      "city": "Bisceglie",
+      "coords": [
+        41.2372,
+        16.4998
+      ],
+      "kind": "punto",
+      "conflicts": []
+    },
+    {
+      "id": "biblio",
+      "legacyId": null,
+      "name": "Cartolibreria Biblio",
+      "address": "Via Cavour 128, Bisceglie",
+      "city": "Bisceglie",
+      "coords": [
+        41.241879,
+        16.4921
+      ],
+      "kind": "punto",
+      "conflicts": []
+    },
+    {
+      "id": "corner-office",
+      "legacyId": null,
+      "name": "Corner Office",
+      "address": "Via Carrara Reddito 73, Bisceglie",
+      "city": "Bisceglie",
+      "coords": [
+        41.232377,
+        16.495399
+      ],
+      "kind": "punto",
+      "conflicts": []
+    },
+    {
+      "id": "eni-09033",
+      "legacyId": null,
+      "name": "Distributore Eni 09033",
+      "address": "Via Imbriani 258, Bisceglie",
+      "city": "Bisceglie",
+      "coords": [
+        41.2341202,
+        16.510591
+      ],
+      "kind": "punto",
+      "conflicts": []
+    },
+    {
+      "id": "tabacchi-cavour",
+      "legacyId": null,
+      "name": "Tabaccheria - InPost Point",
+      "address": "Via Cavour 47, Bisceglie",
+      "city": "Bisceglie",
+      "coords": [
+        41.24177,
+        16.49454
+      ],
+      "kind": "punto",
+      "conflicts": []
+    },
+    {
+      "id": "inpost-famila",
+      "legacyId": 301,
+      "name": "InPost Locker - CC Famila",
+      "address": "Via Nicola Consiglio 2, Bisceglie",
+      "city": "Bisceglie",
+      "coords": [
+        41.23155,
+        16.49365
+      ],
+      "kind": "locker_inpost",
+      "conflicts": []
+    },
+    {
+      "id": "inpost-cassetta",
+      "legacyId": 302,
+      "name": "InPost Locker - Cassetta Petroli",
+      "address": "Via Mauro Giuliani 8, Bisceglie",
+      "city": "Bisceglie",
+      "coords": [
+        41.23575,
+        16.51449
+      ],
+      "kind": "locker_inpost",
+      "conflicts": []
+    },
+    {
+      "id": "inpost-ip",
+      "legacyId": 303,
+      "name": "InPost Locker - IP",
+      "address": "Via Lamaveta, Bisceglie",
+      "city": "Bisceglie",
+      "coords": [
+        41.23207,
+        16.49824
+      ],
+      "kind": "locker_inpost",
+      "conflicts": []
+    },
+    {
+      "id": "inpost-iplanet",
+      "legacyId": null,
+      "name": "InPost Locker - IPLANET",
+      "address": "Via Imbriani snc, Bisceglie",
+      "city": "Bisceglie",
+      "coords": [
+        41.2324,
+        16.51686
+      ],
+      "kind": "locker_inpost",
+      "conflicts": []
+    },
+    {
+      "id": "inpost-toil",
+      "legacyId": null,
+      "name": "InPost Locker - TOIL",
+      "address": "Via Imbriani 212, Bisceglie",
+      "city": "Bisceglie",
+      "coords": [
+        41.2356,
+        16.5085
+      ],
+      "kind": "locker_inpost",
+      "conflicts": []
+    }
+  ],
+  "observations": [
+    {
+      "site": "deval",
+      "network": "brt",
+      "pointId": "uJNaXghhOwHoyx-sc6h0nA",
+      "coords": [
+        41.23865260165,
+        16.50261713929
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri,sat=420-780/960-1230;sun=",
+      "sourceDetailsUrl": "https://www.fermopoint.it/punto-di-ritiro-e-di-spedizione-pacchi/deval-s-r-l-7598",
+      "retrievalMethod": "live_locator"
+    },
+    {
+      "site": "italiana",
+      "network": "brt",
+      "pointId": "oemtFvrPk5-w7qKVebir2Q",
+      "coords": [
+        41.2363135,
+        16.50101143
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri=510-720/990-1140;sat,sun=",
+      "sourceDetailsUrl": "https://www.fermopoint.it/punto-di-ritiro-e-di-spedizione-pacchi/italiana-serv-post-bisceglie-19341",
+      "retrievalMethod": "live_locator"
+    },
+    {
+      "site": "nexus",
+      "network": "brt",
+      "pointId": "VQCPUOfcygC0FbBM_zIkRg",
+      "coords": [
+        41.23808852517,
+        16.50006053254
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri=420-750/960-1140;sat=540-720;sun=",
+      "sourceDetailsUrl": "https://www.fermopoint.it/punto-di-ritiro-e-di-spedizione-pacchi/posta-privata-nexus-12532",
+      "retrievalMethod": "live_locator"
+    },
+    {
+      "site": "nexus",
+      "network": "inpost",
+      "pointId": "ITPBT03592P",
+      "coords": [
+        41.23825,
+        16.5
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri=420-750/990-1140;sat=540-720;sun=",
+      "sourceUrl": "https://inpost.it/punto-ritiro-itpbt03592p-bisceglie-via-alcide-de-gasperi",
+      "retrievalMethod": "live_page"
+    },
+    {
+      "site": "brescia",
+      "network": "brt",
+      "pointId": "_x9lh_It8IeuARW8yIO8HQ",
+      "coords": [
+        41.2365799,
+        16.50763
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri,sat=360-780/990-1215;sun=360-780",
+      "sourceDetailsUrl": "https://www.fermopoint.it/punto-di-ritiro-e-di-spedizione-pacchi/cartolibreria-brescia-2702",
+      "retrievalMethod": "live_locator"
+    },
+    {
+      "site": "edicolandia",
+      "network": "brt",
+      "pointId": "_MbM-XoCsf4oYWWE4RgFlg",
+      "coords": [
+        41.2396546,
+        16.5092995
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri,sat=465-780/1020-1230;sun=",
+      "sourceDetailsUrl": "https://www.fermopoint.it/punto-di-ritiro-e-di-spedizione-pacchi/edicolandia-19904",
+      "retrievalMethod": "live_locator",
+      "serviceOverrides": {
+        "return_qr": "not_supported_reported"
+      },
+      "userReport": "Segnalazione utente conservata dal 9 ottobre 2026: Edicolandia NON accetta BRT Digital / Digital Parcel Label (QR senza stampa), ne per spedizioni ne per resi. BRT non digital soltanto (etichetta gia stampata). Non estendere la restrizione a DHL Express.",
+      "brtDigitalStatus": "not_supported_reported"
+    },
+    {
+      "site": "edicolandia",
+      "network": "dhl_express",
+      "pointId": "BRI1L8",
+      "coords": [
+        41.239345,
+        16.510073
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri,sat=480-1230;sun=480-780",
+      "retrievalMethod": "live_locator",
+      "cutoffMinute": 720,
+      "cutoffNote": "Ora limite di partenza indicata dalla fonte; non coincide necessariamente con ultimo orario di accettazione.",
+      "providerCapabilities": {
+        "prePrintReturnLabel": true,
+        "labelFree": true,
+        "shipmentDropOffAndCollection": true,
+        "labelPrinting": true
+      }
+    },
+    {
+      "site": "planetwin",
+      "network": "brt",
+      "pointId": "DniqSjTRP5lFL6Is02cZFw",
+      "coords": [
+        41.2340908,
+        16.5104304
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri=540-1230;sat,sun=570-1230",
+      "sourceDetailsUrl": "https://www.mybrt.it/it/mybrt/parcel-shops/search",
+      "retrievalMethod": "live_locator"
+    },
+    {
+      "site": "mbe",
+      "network": "brt",
+      "pointId": "yQ149OHR7mpV-tKY-CdjEA",
+      "coords": [
+        41.2329508,
+        16.4984304
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri=510-810/990-1140;sat,sun=",
+      "sourceDetailsUrl": "https://www.fermopoint.it/punto-di-ritiro-e-di-spedizione-pacchi/Mail-Boxes-Etc-Bisceglie-17349",
+      "retrievalMethod": "live_locator"
+    },
+    {
+      "site": "ficus",
+      "network": "brt",
+      "pointId": "4QYJfA7y8XoajhMPrOCPlg",
+      "coords": [
+        41.24215629,
+        16.49134759
+      ],
+      "hoursPacked": "mon=1020-1200;tue,wed,thu,fri,sat=510-780/1020-1200;sun=",
+      "sourceDetailsUrl": "https://www.fermopoint.it/punto-di-ritiro-e-di-spedizione-pacchi/ficus-deter-ficus-16824",
+      "retrievalMethod": "live_locator"
+    },
+    {
+      "site": "trentadue",
+      "network": "brt",
+      "pointId": "Yj-nXo7NsdCDV2P9L32h-w",
+      "coords": [
+        41.23191381,
+        16.49485687
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri,sat=300-780/960-1170;sun=",
+      "sourceDetailsUrl": "https://www.fermopoint.it/punto-di-ritiro-e-di-spedizione-pacchi/tabaccheria-trentadue-19500",
+      "retrievalMethod": "live_locator"
+    },
+    {
+      "site": "trentadue",
+      "network": "dhl_express",
+      "pointId": "BRI1T1",
+      "coords": [
+        41.232332,
+        16.494579
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri,sat=330-780/930-1200;sun=",
+      "retrievalMethod": "live_locator",
+      "cutoffMinute": 720,
+      "cutoffNote": "Ora limite di partenza indicata dalla fonte; non coincide necessariamente con ultimo orario di accettazione.",
+      "providerCapabilities": {
+        "prePrintReturnLabel": true,
+        "labelFree": true,
+        "shipmentDropOffAndCollection": true,
+        "labelPrinting": true
+      }
+    },
+    {
+      "site": "royal",
+      "network": "brt",
+      "pointId": "5iVkYAgbz08cGpC6uaUWvQ",
+      "coords": [
+        41.2295885,
+        16.4917345
+      ],
+      "hoursPacked": "mon,tue,thu,fri,sat=330-780/1020-1350;wed=330-780/1020-1320;sun=330-780",
+      "sourceDetailsUrl": "https://www.fermopoint.it/punto-di-ritiro-e-di-spedizione-pacchi/bar-royal-cafe-13937",
+      "retrievalMethod": "live_locator"
+    },
+    {
+      "site": "app-service",
+      "network": "dhl_express",
+      "pointId": "BRI005",
+      "coords": [
+        41.2372,
+        16.4998
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri=540-780/1020-1200;sat=540-780;sun=",
+      "retrievalMethod": "live_locator",
+      "cutoffMinute": 720,
+      "cutoffNote": "Ora limite di partenza indicata dalla fonte; non coincide necessariamente con ultimo orario di accettazione.",
+      "providerCapabilities": {
+        "prePrintReturnLabel": true,
+        "labelFree": true,
+        "shipmentDropOffAndCollection": true,
+        "labelPrinting": true
+      }
+    },
+    {
+      "site": "biblio",
+      "network": "dhl_express",
+      "pointId": "BRI042",
+      "coords": [
+        41.241879,
+        16.4921
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri,sat=450-810/990-1230;sun=",
+      "retrievalMethod": "live_locator",
+      "cutoffMinute": 720,
+      "cutoffNote": "Ora limite di partenza indicata dalla fonte; non coincide necessariamente con ultimo orario di accettazione.",
+      "providerCapabilities": {
+        "prePrintReturnLabel": true,
+        "labelFree": true,
+        "shipmentDropOffAndCollection": true,
+        "labelPrinting": true
+      }
+    },
+    {
+      "site": "corner-office",
+      "network": "dhl_express",
+      "pointId": "BRI1Q9",
+      "coords": [
+        41.232377,
+        16.495399
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri=510-780/990-1230;sat=510-780/1020-1230;sun=",
+      "retrievalMethod": "live_locator",
+      "cutoffMinute": 720,
+      "cutoffNote": "Ora limite di partenza indicata dalla fonte; non coincide necessariamente con ultimo orario di accettazione.",
+      "providerCapabilities": {
+        "prePrintReturnLabel": true,
+        "labelFree": true,
+        "shipmentDropOffAndCollection": true,
+        "labelPrinting": true
+      }
+    },
+    {
+      "site": "eni-09033",
+      "network": "dhl_express",
+      "pointId": "BRI142",
+      "coords": [
+        41.2341202,
+        16.510591
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri=390-780/900-1200;sat=390-780;sun=",
+      "retrievalMethod": "live_locator",
+      "cutoffMinute": 780,
+      "cutoffNote": "Ora limite di partenza indicata dalla fonte; non coincide necessariamente con ultimo orario di accettazione.",
+      "providerCapabilities": {
+        "prePrintReturnLabel": true,
+        "labelFree": true,
+        "shipmentDropOffAndCollection": false,
+        "labelPrinting": true
+      }
+    },
+    {
+      "site": "tabacchi-cavour",
+      "network": "inpost",
+      "pointId": "ITPBT07090P",
+      "coords": [
+        41.24177,
+        16.49454
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri,sat=420-780/960-1200;sun=420-780",
+      "sourceUrl": "https://inpost.it/punto-ritiro-itpbt07090p-bisceglie-via-cavour",
+      "retrievalMethod": "live_page"
+    },
+    {
+      "site": "inpost-famila",
+      "network": "inpost",
+      "pointId": "ITBIS24842",
+      "coords": [
+        41.23155,
+        16.49365
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri,sat,sun=0-1440",
+      "sourceUrl": "https://inpost.it/locker-bisceglie-itbis24842-via-nicola-consiglio",
+      "retrievalMethod": "live_page"
+    },
+    {
+      "site": "inpost-cassetta",
+      "network": "inpost",
+      "pointId": "ITBIS43460M",
+      "coords": [
+        41.23575,
+        16.51449
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri,sat,sun=0-1440",
+      "sourceUrl": "https://inpost.it/locker-bisceglie-itbis43460m-via-mauro-giuliani",
+      "retrievalMethod": "live_page"
+    },
+    {
+      "site": "inpost-ip",
+      "network": "inpost",
+      "pointId": "ITBIS45221M",
+      "coords": [
+        41.23207,
+        16.49824
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri,sat,sun=0-1440",
+      "sourceUrl": "https://inpost.it/locker-bisceglie-itbis45221m-via-lamaveta",
+      "retrievalMethod": "live_page"
+    },
+    {
+      "site": "inpost-iplanet",
+      "network": "inpost",
+      "pointId": "ITBIS111893F",
+      "coords": [
+        41.2324,
+        16.51686
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri,sat,sun=0-1440",
+      "sourceUrl": "https://inpost.it/locker-bisceglie-itbis111893f-via-imbriani",
+      "retrievalMethod": "live_page"
+    },
+    {
+      "site": "inpost-toil",
+      "network": "inpost",
+      "pointId": "ITBIS108252F",
+      "coords": [
+        41.2356,
+        16.5085
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri,sat,sun=0-1440",
+      "sourceUrl": "https://inpost.it/locker-bisceglie-itbis108252f-via-imbriani",
+      "retrievalMethod": "live_page"
+    }
+  ]
+}

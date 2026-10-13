@@ -3,7 +3,10 @@ export const NETWORKS = {
   brt: 'BRT / Bartolini', dhl_express: 'DHL Express', dhl_ecommerce: 'DHL eCommerce',
   inpost: 'InPost', ups: 'UPS', gls: 'GLS', poste: 'Poste / Punto Poste', amazon: 'Amazon: specificare il corriere'
 };
-export const ACTIONS = {dropoff:'Spedizione con etichetta', return_label:'Reso con etichetta', return_qr:'Reso con QR', pickup:'Ritiro gia assegnato'};
+export const ACTIONS = {dropoff:'Spedizione / consegna', return_label:'Reso con etichetta', return_qr:'Reso con QR (senza stampa)', pickup:'Ritiro gia assegnato'};
+export function isBrtDigital(demand) {
+  return demand?.network==='brt' && demand.action!=='pickup' && (demand.brtFormat==='digital'||demand.action==='return_qr');
+}
 const DAYS = ['sun','mon','tue','wed','thu','fri','sat'];
 const clock = new Intl.DateTimeFormat('en-GB', {timeZone:'Europe/Rome',weekday:'short',hour:'2-digit',minute:'2-digit',year:'numeric',month:'2-digit',day:'2-digit',hourCycle:'h23'});
 export function italyTime(at = new Date()) {
@@ -54,14 +57,21 @@ export function validateCatalog(catalog) {
     if(!Array.isArray(s.memberships)||!s.memberships.length) throw new Error('Servizi del punto mancanti');
     for(const m of s.memberships) {
       if(!NETWORKS[m.network]||!m.pointId||!validateHours(m.hours)||!/^https:\/\//.test(m.sourceUrl||'')||!Number.isFinite(Date.parse(m.observedAt))) throw new Error('Fonte o orari del corriere non validi');
+      if(m.network==='brt'&&!['unknown','confirmed','not_supported_reported'].includes(m.brtDigitalStatus)) throw new Error('Stato BRT Digital non valido');
     }
   }
   return true;
 }
-export function canServe(site,demand,{at=new Date(),maxDays=30,openOnly=true}={}) {
+export function canServe(site,demand,{at=new Date(),maxDays=30,openOnly=true,allowProvisionalBrtDigital=false}={}) {
   const m=site.memberships?.find(m=>m.network===demand.network);
   if(!m||m.active!==true||m.evidence!=='official'||!sourceFresh(m,at,maxDays)) return false;
-  const support=m.services?.[demand.action];
+  const digital=isBrtDigital(demand);
+  const digitalStatus=m.brtDigitalStatus??'unknown';
+  if(digital && (digitalStatus==='not_supported_reported'||m.services?.return_qr==='not_supported_reported')) return false;
+  if(digital && digitalStatus!=='confirmed' && !allowProvisionalBrtDigital) return false;
+  let support=m.services?.[demand.action];
+  // Unknown BRT QR is never presented as verified; only an explicit provisional candidate.
+  if(digital && demand.action==='return_qr' && support==='unknown' && (digitalStatus==='confirmed'||allowProvisionalBrtDigital)) support='conditional';
   if(!['confirmed','conditional','assigned_only'].includes(support)) return false;
   if(demand.action==='pickup') {
     if(!demand.assignedPointId||![site.id,m.pointId].includes(demand.assignedPointId)) return false;
@@ -85,18 +95,24 @@ export function planParcels(catalog,demands,options={}) {
   if(!validCoords(origin)) return {status:'origin_required',plans:[],message:'Seleziona Trovami oppure un luogo salvato. Non uso il centro citta al posto della tua posizione.'};
   if(destination!==null&&!validCoords(destination)) return {status:'destination_required',plans:[],message:'Configura le coordinate del luogo di arrivo.'};
   if(!Array.isArray(demands)||demands.length<1||demands.length>4) return {status:'invalid_demands',plans:[],message:'Scegli da uno a quattro pacchi/corrieri.'};
-  if(demands.some(d=>!NETWORKS[d.network]||!ACTIONS[d.action])) return {status:'invalid_demands',plans:[],message:'Corriere o operazione non riconosciuti.'};
+  if(demands.some(d=>!NETWORKS[d.network]||!ACTIONS[d.action]||(d.network==='brt'&&d.brtFormat!=null&&!['digital','printed'].includes(d.brtFormat)))) return {status:'invalid_demands',plans:[],message:'Corriere, formato BRT o operazione non riconosciuti.'};
   if(demands.some(d=>d.network==='amazon')) return {status:'label_required',plans:[],message:'Per Amazon scegli il corriere/rete indicato nelle istruzioni del reso: un Amazon Locker non equivale a un punto resi universale.'};
   if(demands.some(d=>d.action==='pickup'&&!d.assignedPointId)) return {status:'assigned_point_required',plans:[],message:'Un ritiro gia consegnato va effettuato nel punto indicato nell\'avviso. Selezionalo: non posso sostituirlo con un altro negozio.'};
   if(demands.some(d=>d.action!=='pickup'&&d.labelConfirmed!==true)) return {status:'label_required',plans:[],message:'Conferma che etichetta/QR e limiti del pacco sono compatibili con la rete selezionata.'};
   if(!Number.isFinite(radiusKm)||radiusKm<=0||radiusKm>100||!Number.isInteger(maxStops)||maxStops<1||maxStops>4) throw new Error('Limiti di ricerca non validi');
   const maxDays=catalog.maxSourceAgeDays??30, full=(1<<demands.length)-1;
-  const eligible=catalog.sites.filter(s=>!excludedSiteIds.includes(s.id)&&metres(origin,s.coords)<=radiusKm*1000)
-    .map(site=>({site,mask:demands.reduce((mask,d,i)=>canServe(site,d,{at,maxDays,openOnly}) ? mask|(1<<i) : mask,0)})).filter(x=>x.mask);
+  const eligibleFor=allowProvisionalBrtDigital=>catalog.sites.filter(s=>!excludedSiteIds.includes(s.id)&&metres(origin,s.coords)<=radiusKm*1000)
+    .map(site=>({site,mask:demands.reduce((mask,d,i)=>canServe(site,d,{at,maxDays,openOnly,allowProvisionalBrtDigital}) ? mask|(1<<i) : mask,0)})).filter(x=>x.mask);
+  let eligible=eligibleFor(false),provisional=false;
+  if(eligible.reduce((mask,x)=>mask|x.mask,0)!==full && demands.some(isBrtDigital)){
+    const candidates=eligibleFor(true);
+    if(candidates.reduce((mask,x)=>mask|x.mask,0)===full){eligible=candidates;provisional=true;}
+    else eligible=candidates;
+  }
   const combined=eligible.reduce((mask,x)=>mask|x.mask,0);
   const missing=demands.map((d,i)=>({d,i})).filter(x=>!(combined&(1<<x.i))).map(x=>x.d);
   const base={metric:'straight_line',objective:'fewest_stops_then_distance',evaluatedAt:new Date(at).toISOString(),radiusKm,openOnly,maxStops,catalogObservedAt:catalog.observedAt,partialCatalog:true};
-  if(combined!==full) return {...base,status:'incomplete_coverage',plans:[],missing,message:'Copertura insufficiente nelle fonti disponibili, nel raggio e negli orari scelti. Non significa che i punti non esistano.'};
+  if(combined!==full) return {...base,status:'incomplete_coverage',plans:[],missing,message:demands.some(isBrtDigital)?'Nessun percorso BRT Digital confermato o candidato negli orari e nel raggio scelti. Edicolandia NON accetta BRT Digital: verifica gli altri punti nel localizzatore BRT.':'Copertura insufficiente nelle fonti disponibili, nel raggio e negli orari scelti. Non significa che i punti non esistano.'};
   let states=[]; const solutions=[];
   for(let i=0;i<eligible.length;i++)states.push({last:i,mask:eligible[i].mask,path:[i],distance:metres(origin,eligible[i].site.coords)});
   for(let depth=1;depth<=Math.min(maxStops,demands.length);depth++) {
@@ -115,10 +131,10 @@ export function planParcels(catalog,demands,options={}) {
   const direct=destination?metres(origin,destination):0;
   const plans=solutions.sort((a,b)=>a.total-b.total).slice(0,3).map(s=>({
     stops:s.path.map(i=>eligible[i].site),distanceMetres:Math.round(s.total),extraMetres:destination?Math.max(0,Math.round(s.total-direct)):null,
-    assignments:demands.map((d,i)=>({demandIndex:i,network:d.network,action:d.action,siteId:s.path.map(j=>eligible[j]).find(p=>p.mask&(1<<i)).site.id})),
-    warnings:['Distanze in linea d\'aria: ordine indicativo, non chilometri stradali.','Orari verificati alla partenza selezionata, non all\'arrivo; verifica chiusure, tempi di viaggio, etichetta, peso e ingombri.',...(s.path.some(i=>siteOpening(eligible[i].site,at,maxDays).conflict)?['Almeno un punto ha orari discordanti: applicata la fascia comune prudenziale.']:[])]
+    assignments:demands.map((d,i)=>{const assigned=s.path.map(j=>eligible[j]).find(p=>p.mask&(1<<i)).site;return {demandIndex:i,network:d.network,action:d.action,brtFormat:isBrtDigital(d)?'digital':d.brtFormat,provisional:isBrtDigital(d)&&assigned.memberships.find(m=>m.network==='brt')?.brtDigitalStatus!=='confirmed',siteId:assigned.id};}),
+    warnings:['Distanze in linea d\'aria: ordine indicativo, non chilometri stradali.','Orari verificati alla partenza selezionata, non all\'arrivo; verifica chiusure, tempi di viaggio, etichetta, peso e ingombri.',...(s.path.some(i=>siteOpening(eligible[i].site,at,maxDays).conflict)?['Almeno un punto ha orari discordanti: applicata la fascia comune prudenziale.']:[]),...(provisional?['BRT Digital / QR NON confermato per i punti proposti: questi sono solo CANDIDATI da contattare prima di partire. Edicolandia esclusa per segnalazione di mancata accettazione.']:[])]
   }));
-  return {...base,status:'ok',plans,missing:[]};
+  return {...base,status:provisional?'provisional':'ok',plans,missing:[]};
 }
 export function navigationUrl(plan,{origin,destination=null}={}) {
   const stops=plan.stops.map(s=>s.address); if(destination)stops.push(destination.join(','));
@@ -133,5 +149,5 @@ export function interpretCarrierText(text) {
   if(/in\s?post/.test(t))networks.push('inpost');if(/\bups\b/.test(t))networks.push('ups');if(/\bgls\b/.test(t))networks.push('gls');
   if(/poste|sda/.test(t))networks.push('poste');
   const amazon=/amazon/.test(t);
-  return {networks:[...new Set(networks)],amazon,needsClarification:networks.includes('dhl_unspecified')||(amazon&&!networks.length),action:/ritirar|ritiro/.test(t)?'pickup':/reso|restitui/.test(t)?(/\bqr\b/.test(t)?'return_qr':'return_label'):'dropoff',towardHome:/verso casa|torn.*casa|and.*casa/.test(t)};
+  return {networks:[...new Set(networks)],amazon,needsClarification:networks.includes('dhl_unspecified')||(amazon&&!networks.length),brtFormat:/non[ -]?digital|cartace|stampat|etichetta fisica/.test(t)?'printed':'digital',action:/ritirar|ritiro/.test(t)?'pickup':/reso|restitui/.test(t)?(/\bqr\b/.test(t)?'return_qr':'return_label'):'dropoff',towardHome:/verso casa|torn.*casa|and.*casa/.test(t)};
 }

@@ -51,3 +51,13 @@ Calcolo locale, nessun costo Gemini o invio di coordinate al modello per questo 
 Build: node scripts/build-carrier-bundle.mjs. Pubblicare dist nel sito Netlify esistente, non la radice del repo. Il build usa l'index.html corrente e conserva le correzioni mobile, Firebase, Google login. Nessun cambiamento a firestore.rules e nessuna nuova regola richiesta.
 
 Test: node --test tests/carrier-planner.test.mjs (28 test per dati, orari, DST, conflitti, etichette, pesi/ingombri forniti, multi-stop e ritorno a casa). Prova locale DOM desktop1366x900 e mobile390x844 con dipendenze di rete simulate:45 schede, filtri10/6/7, unione DHL+BRT, chiarimento DHL ambiguo. Questa simulazione non prova le tile online, Firebase o un accesso utente reale. Il workflow GitHub genera gli archivi, non esegue deploy su Netlify.
+
+## Aggiornamento BRT Digital - 13 ottobre 2026
+
+La Digital Parcel Label BRT e un QR senza stampa, per spedizioni e resi (fonte: https://www.brt.it/it/brt-per-ecommerce/). La pagina BRT descrive il servizio in generale, ma non certifica quali singoli negozi lo accettino.
+
+**Edicolandia**: la segnalazione dell'utente del 9 ottobre 2026 indica mancata accettazione del servizio BRT Digital, pur mantenendo BRT con etichetta stampata. E una segnalazione sul campo e non un attestato di BRT; non implica un divieto per DHL Express.
+
+La UI ora chiede il formato (BRT Digital QR o etichetta cartacea) per spedizioni e resi; il formato QR e predefinito in quanto piu richiesto dall'utente. Edicolandia e esclusa da ogni itinerario BRT Digital e segnalata nella scheda. Gli altri punti senza prova individuale Digital sono solo candidati provvisori, da contattare prima di andare: la scelta di una combinazione non significa abilitazione certificata. Il planner preferisce risultati interamente confermati quando disponibili.
+
+Nessuna data delle osservazioni ufficiali e stata aggiornata artificialmente. Le fonti correnti sono quelle consultate il 12 ottobre 2026. Non sono state effettuate telefonate o conferme BRT Digital per gli altri punti.
