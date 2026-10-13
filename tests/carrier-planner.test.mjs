@@ -122,3 +122,16 @@ test('source dataset has no private account fields',()=>{
 });
 test('normalization rejects incomplete or duplicate weeks',()=>{assert.throws(()=>unpackHours('mon=0-1440'));assert.throws(()=>unpackHours('mon,mon,tue,wed,thu,fri,sat,sun=0-1440'));});
 test('Edicolandia user report non digital is retained',()=>{assert.equal(site('edicolandia').memberships[0].services.return_qr,'not_supported_reported');assert.ok(site('edicolandia').memberships[0].userReport.includes('NON accetta BRT Digital'));});
+
+test('Removed Amazon Veridiana ex PENNY is not an active static map location',()=>{
+ const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+ assert.ok(!/\\bid:\\s*402\\s*,\\s*kind:\\s*["']locker_amazon/.test(html),'obsolete Veridiana pin is still active');
+ assert.match(html,/Amazon Locker Veridiana .*DISATTIVATO/);
+});
+test('ENI Amazon Melezio lead is informational, never a falsely verified carrier membership',()=>{
+ const eno=site('eni-09033');
+ assert.deepEqual(eno.memberships.map(m=>m.network),['dhl_express']);
+ const ui=readFileSync(new URL('../src/carrier-ui.mjs',import.meta.url),'utf8');
+ assert.match(ui,/Amazon Locker Melezio/);
+ assert.match(ui,/NON e confermata dal selettore ufficiale Amazon/);
+});

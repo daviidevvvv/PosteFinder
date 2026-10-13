@@ -61,3 +61,22 @@ La Digital Parcel Label BRT e un QR senza stampa, per spedizioni e resi (fonte: 
 La UI ora chiede il formato (BRT Digital QR o etichetta cartacea) per spedizioni e resi; il formato QR e predefinito in quanto piu richiesto dall'utente. Edicolandia e esclusa da ogni itinerario BRT Digital e segnalata nella scheda. Gli altri punti senza prova individuale Digital sono solo candidati provvisori, da contattare prima di andare: la scelta di una combinazione non significa abilitazione certificata. Il planner preferisce risultati interamente confermati quando disponibili.
 
 Nessuna data delle osservazioni ufficiali e stata aggiornata artificialmente. Le fonti correnti sono quelle consultate il 12 ottobre 2026. Non sono state effettuate telefonate o conferme BRT Digital per gli altri punti.
+
+## Correzione mappa Amazon e controllo InPost - 13 ottobre 2026
+
+### Punto rimosso dalla mappa
+- **Amazon Hub Locker Veridiana - ex PENNY**, via Matteo Renato Imbriani 344, storico ID app 402: il 13/10/2026 l'utente ha riferito sul posto che l'area e ora un supermercato ARD e il locker non esiste piu. **Pin tolto**, senza ricrearlo sotto altro nome. Anche se una directory esterna continua a mostrarne altri, non equivale a prova attuale di disponibilita nel checkout Amazon.
+- La rimozione non cancella le preferenze Firestore e non attribuisce un nuovo servizio al supermercato ARD.
+
+### Segnalazioni ENI / zona Imbriani da verificare
+- **Amazon Locker Melezio**: https://moovitapp.com/index/it/mezzi_pubblici-Amazon_Locker_Melezio-Bari-site_262841264-3342 - pagina terza conferma il nome ma non un civico univoco o la disponibilita attuale nel checkout. L'utente segnala un punto in zona ENI. **Non aggiunto come Amazon attivo o compatibile con resi** finche il selettore Amazon non lo conferma.
+- **Amazon Counter Eni Cafe**, via Matteo Renato Imbriani 258: https://moovitapp.com/index/it/mezzi_pubblici-Amazon_Counter_Eni_Cafe-Bari-site_262841260-3342 - nome e civico sono riportati in una directory terza; disponibilita e orari di ritiro Amazon **non ricontrollati dal selettore Amazon**.
+- **ENI 09033**, via Matteo Renato Imbriani 258, resta nella rete DHL Express gia censita; il nuovo avviso e informativo, senza creare false membership Amazon o InPost.
+- **InPost IPLANET (ITBIS111893F)**: https://inpost.it/locker-bisceglie-itbis111893f-via-imbriani , via Imbriani senza civico: gia censito, non va automaticamente sovrapposto al distributore ENI.
+- **InPost TOIL (ITBIS108252F)**: https://inpost.it/locker-bisceglie-itbis108252f-via-imbriani , via Imbriani 212: gia censito separatamente. Un impianto ENI e un locker InPost non sono la stessa rete o lo stesso punto per definizione.
+
+### Altri candidati non promossi a punti attivi
+- **InPost Ciuffo Wash**, via Mosca: il riferimento online https://inpost.it/locker-bisceglie-itblq149474b-via-mosca rimanda al localizzatore e non offre una conferma puntuale sufficiente con coordinate ingresso aggiornate. Non aggiunto come attivo.
+
+### Limiti di audit
+Non e stato disponibile un elenco completo scaricabile/autenticato degli Hub Amazon del checkout nel territorio; la visualizzazione dei punti disponibili puo dipendere dall'ordine e dal tipo di articolo. Non e corretta una dichiarazione che *tutti* gli Amazon Locker siano verificati con i risultati di Google Maps o directory generiche. I punti Amazon legacy rimanenti sono storici e richiedono una successiva verifica diretta. Nessun altro punto e stato rimosso basandosi soltanto su risultati incompleti di ricerca.
