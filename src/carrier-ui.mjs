@@ -202,42 +202,81 @@ async function start(){
  panel.querySelector('#parcel-back-packages').addEventListener('click',()=>setWizardStep(1));
  panel.querySelector('#parcel-edit-packages').addEventListener('click',()=>setWizardStep(1));
  panel.querySelector('#parcel-edit-location').addEventListener('click',()=>setWizardStep(2));
- function addRow(network='brt',action='dropoff',brtFormat='digital'){
-  if(rows.children.length>=4)return;
-  const row=document.createElement('div');row.className='parcel-row border border-slate-200 rounded-lg p-2 bg-white';
-  row.innerHTML=`<div class="flex gap-1 mb-1"><select class="parcel-network min-w-0 flex-1 border rounded p-1" aria-label="Corriere"><option value="dhl_unspecified">DHL: scegli Express o eCommerce</option>${Object.entries(NETWORKS).map(([v,t])=>`<option value="${v}">${escape(t)}</option>`).join('')}</select><button type="button" class="parcel-remove px-2 text-red-600" aria-label="Rimuovi pacco">×</button></div>
-  <select class="parcel-action w-full border rounded p-1 mb-1" aria-label="Operazione">${Object.entries(ACTIONS).map(([v,t])=>`<option value="${v}">${escape(t)}</option>`).join('')}</select>
-  <label class="parcel-label flex items-start gap-1 text-[10px]"><input class="parcel-confirm mt-0.5" type="checkbox">Etichetta/QR emessi per questa rete; ho verificato limiti e istruzioni del venditore.</label>
-  <select class="parcel-assigned hidden w-full border rounded p-1 text-[10px]" aria-label="Punto assegnato nell'avviso"></select>`;
-  // The BRT Digital Parcel Label (QR) is not the same as a printed label.
-  const formatWrap=document.createElement('label');
-  formatWrap.className='parcel-brt-format-wrap block mb-1 text-[11px]';
-  formatWrap.textContent='Formato etichetta BRT';
-  const formatSelect=document.createElement('select');
-  formatSelect.className='parcel-brt-format block w-full border rounded p-1 bg-white';
-  formatSelect.setAttribute('aria-label','Formato etichetta BRT');
-  for(const [v,label] of [['digital','BRT Digital / QR (senza stampa)'],['printed','BRT tradizionale (etichetta stampata)']]){
-    const opt=document.createElement('option');opt.value=v;opt.textContent=label;formatSelect.append(opt);
-  }
-  formatWrap.append(formatSelect);row.querySelector('.parcel-action').after(formatWrap);
-  const formatNote=document.createElement('p');
-  formatNote.className='parcel-brt-note text-[10px] text-amber-800 mb-1';
-  formatNote.textContent='Edicolandia NON accetta BRT Digital. Per gli altri punti il servizio QR e da confermare prima di partire.';
-  formatWrap.after(formatNote);
-  row.querySelector('.parcel-network').value=network;row.querySelector('.parcel-action').value=action;formatSelect.value=brtFormat;
-  const update=()=>{
-   const net=row.querySelector('.parcel-network').value,isPickup=row.querySelector('.parcel-action').value==='pickup',isBrt=net==='brt';
-   row.querySelector('.parcel-brt-format-wrap').classList.toggle('hidden',!isBrt||isPickup||row.querySelector('.parcel-action').value==='return_qr');
-   row.querySelector('.parcel-brt-note').classList.toggle('hidden',!isBrt||isPickup);
+ function addRow(network='brt',action='dropoff',brtFormat=''){
+  if(rows.children.length>=MAX_PARCELS)return;
+  const row=document.createElement('div');
+  row.className='parcel-row border border-slate-200 rounded-xl p-3 bg-white space-y-2';
+  row.innerHTML=`<div class="flex items-center justify-between gap-2">
+     <strong class="parcel-number text-slate-800">Pacco</strong>
+     <button type="button" class="parcel-remove text-red-600 underline text-[11px]">Rimuovi</button>
+   </div>
+   <label class="block font-medium text-slate-700">Corriere
+     <select class="parcel-network block w-full mt-1 border rounded-lg p-2 bg-white" aria-label="Corriere del pacco">
+       <option value="dhl_unspecified">DHL (specifica Express o eCommerce)</option>
+       ${Object.entries(NETWORKS).map(([v,t])=>`<option value="${v}">${escape(t)}</option>`).join('')}
+     </select>
+   </label>
+   <label class="block font-medium text-slate-700">Che cosa devi fare?
+     <select class="parcel-action block w-full mt-1 border rounded-lg p-2 bg-white" aria-label="Operazione del pacco">
+       ${Object.entries(ACTIONS).map(([v,t])=>`<option value="${v}">${escape(t)}</option>`).join('')}
+     </select>
+   </label>
+   <label class="parcel-brt-format-wrap block font-semibold text-blue-800">È BRT Digital?
+     <select class="parcel-brt-format block w-full mt-1 border border-blue-200 rounded-lg p-2 bg-blue-50" aria-label="BRT Digital oppure etichetta stampata">
+       <option value="">Seleziona tipo di etichetta...</option>
+       <option value="digital">Sì · BRT Digital / QR, senza stampare</option>
+       <option value="printed">No · etichetta tradizionale stampata</option>
+     </select>
+   </label>
+   <p class="parcel-brt-note rounded bg-amber-50 text-amber-900 text-[11px] p-2 hidden"></p>
+   <label class="parcel-label flex items-start gap-2 text-[11px] text-slate-700">
+     <input class="parcel-confirm mt-0.5" type="checkbox">Ho controllato il QR/etichetta del pacco e le istruzioni del venditore.
+   </label>
+   <label class="parcel-assigned-wrap hidden block text-[11px] font-medium text-slate-700">Dove è già stato consegnato?
+     <select class="parcel-assigned block w-full border rounded-lg p-2 mt-1 bg-white" aria-label="Punto assegnato nell'avviso"></select>
+   </label>
+   <p class="parcel-network-warning text-[11px] text-amber-900 hidden"></p>`;
+  row.querySelector('.parcel-network').value=network;
+  row.querySelector('.parcel-action').value=action;
+  row.querySelector('.parcel-brt-format').value=brtFormat||'';
+  const update=(resetConfirm=false)=>{
+   const net=row.querySelector('.parcel-network').value;
+   const operation=row.querySelector('.parcel-action').value;
+   const isPickup=operation==='pickup',isBrt=net==='brt';
+   const mode=operation==='return_qr'?'digital':row.querySelector('.parcel-brt-format').value;
+   row.querySelector('.parcel-brt-format-wrap').classList.toggle('hidden',!isBrt||isPickup||operation==='return_qr');
+   const note=row.querySelector('.parcel-brt-note');
+   note.classList.toggle('hidden',!isBrt||isPickup||mode!=='digital');
+   note.textContent='Edicolandia NON accetta BRT Digital / QR (segnalazione utente). Gli altri punti sono candidati da verificare.';
    row.querySelector('.parcel-label').classList.toggle('hidden',isPickup);
-   const select=row.querySelector('.parcel-assigned');select.classList.toggle('hidden',!isPickup);
-   select.innerHTML='<option value="">Punto indicato nell\'avviso di consegna...</option>'+catalog.sites.filter(s=>s.memberships.some(m=>m.network===net)).map(s=>`<option value="${s.id}">${escape(s.name)} — ${escape(s.address)}</option>`).join('');
-   row.querySelector('.parcel-confirm').checked=false;
+   row.querySelector('.parcel-assigned-wrap').classList.toggle('hidden',!isPickup);
+   const assigned=row.querySelector('.parcel-assigned');
+   const previous=assigned.value;
+   assigned.innerHTML='<option value="">Seleziona il punto indicato nell\'avviso...</option>'+catalog.sites
+     .filter(s=>s.memberships.some(m=>m.network===net))
+     .map(s=>`<option value="${escape(s.id)}">${escape(s.name)} — ${escape(s.address)}</option>`).join('');
+   if(previous&&[...assigned.options].some(o=>o.value===previous))assigned.value=previous;
+   const warning=row.querySelector('.parcel-network-warning');
+   const coverage=catalog.coverage.find(c=>c.network===net);
+   const notVerified=net==='amazon'||net==='dhl_unspecified'||!coverage||!coverage.count||coverage.status==='not_verified'||coverage.status==='legacy';
+   warning.classList.toggle('hidden',!notVerified);
+   warning.textContent=net==='amazon'?'Per Amazon devi scegliere il corriere indicato nelle istruzioni di reso.':
+     net==='dhl_unspecified'?'DHL Express e DHL eCommerce usano reti diverse: seleziona quella sull’etichetta.':
+     notVerified?'La rete '+(NETWORKS[net]||net)+' non ha ancora punti ricontrollati in questo catalogo: le combinazioni potrebbero risultare non disponibili.':'';
+   if(resetConfirm)row.querySelector('.parcel-confirm').checked=false;
+   reportWizardError('parcel-parcel-error','');
   };
-  row.querySelector('.parcel-network').addEventListener('change',update);row.querySelector('.parcel-action').addEventListener('change',update);row.querySelector('.parcel-brt-format').addEventListener('change',update);
-  row.querySelector('.parcel-remove').addEventListener('click',()=>{if(rows.children.length>1)row.remove();});rows.appendChild(row);update();
+  for(const cls of ['parcel-network','parcel-action','parcel-brt-format']){
+   row.querySelector('.'+cls).addEventListener('change',()=>update(true));
+  }
+  row.querySelector('.parcel-remove').addEventListener('click',()=>{
+   if(rows.children.length<=1)return;
+   row.remove();renumberParcels();
+  });
+  rows.appendChild(row);update();renumberParcels();
  }
- addRow('dhl_express');addRow('brt');panel.querySelector('#parcel-add').addEventListener('click',()=>addRow());
+ addRow('brt','dropoff','');
+ panel.querySelector('#parcel-add').addEventListener('click',()=>addRow());
  function point(value,state){if(value==='gps')return state.gps;if(value==='reference')return state.reference;if(value.startsWith('place:'))return state.places.find(p=>String(p.id)===value.slice(6))?.coords??null;return null;}
  panel.querySelector('#parcel-calculate').addEventListener('click',()=>{
   const state=bridge.state(),origin=point(panel.querySelector('#parcel-origin').value,state),target=panel.querySelector('#parcel-destination').value;
