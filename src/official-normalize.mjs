@@ -93,7 +93,7 @@ function conservativeOverlap(a,b){
 function numericKey(id){
  let hash=2166136261;
  for(const char of id){hash=Math.imul(hash^char.charCodeAt(0),16777619)>>>0;}
- return 100000+hash%900000000;
+ return 100000+hash%800000; // <= 899999: required by Firestore favorites/removedIds schema
 }
 function staticCoordinates(html){
  const out=new Map();let current=null;
