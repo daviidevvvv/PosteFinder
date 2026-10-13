@@ -41,6 +41,7 @@ test('Each carrier code and stable app pin ID is unique, old dynamic IDs unchang
  const codes=new Set(),pinIds=new Set();
  for(const s of c.sites){
   assert.ok(Number.isSafeInteger(s.appId??s.legacyId));
+  assert.ok((s.appId??s.legacyId)<=1000000,'Firestore profile preference IDs must be <= 1000000');
   const id=s.legacyId??s.appId;assert.ok(!pinIds.has(id));pinIds.add(id);
   for(const m of s.memberships){
    const key=m.network+':'+m.pointId;
