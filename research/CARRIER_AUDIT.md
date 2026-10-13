@@ -80,3 +80,19 @@ Nessuna data delle osservazioni ufficiali e stata aggiornata artificialmente. Le
 
 ### Limiti di audit
 Non e stato disponibile un elenco completo scaricabile/autenticato degli Hub Amazon del checkout nel territorio; la visualizzazione dei punti disponibili puo dipendere dall'ordine e dal tipo di articolo. Non e corretta una dichiarazione che *tutti* gli Amazon Locker siano verificati con i risultati di Google Maps o directory generiche. I punti Amazon legacy rimanenti sono storici e richiedono una successiva verifica diretta. Nessun altro punto e stato rimosso basandosi soltanto su risultati incompleti di ricerca.
+
+## Revisione ufficiale integrata - 13 ottobre 2026
+
+**Stato aggiornato (sostituisce i riferimenti antecedenti a GLS non verificato e Amazon Melezio non confermato):** l'app integra **58 sedi fisiche** a Bisceglie e **126 appartenenze a reti**, non 126 segnaposti distinti. Le rilevazioni sono conservate con provenienza e data:
+
+- Amazon: [40 risultati grezzi, due ricerche da 20](official-amazon-bisceglie-2026-10-13.json) nel selettore https://www.amazon.it/ulp/view, normalizzati a **28 sedi**. Inclusi Melezio ENI PV9033 via Imbriani 258 e MARISTELLA Tamoil, entrambi H24. Veridiana ex PENNY resta rimosso per segnalazione dell'utente; l'autocomplete "peppinay" non prova che il Locker sia selezionabile.
+- DHL Finder eCommerce/partner: [30 sedi con codici, servizi e orari settimanali](official-dhl-finder-bisceglie-2026-10-13.json) da https://www.dhl.com/global-en/microsites/ec/dhl-finder.html. Dei 50 risultati nell'area, **30 sono a Bisceglie e 20 fuori comune**. Ci sono **25 PuntoPoste/Fermoposta** e **5 DHL ServicePoint**, sempre distinguendo queste osservazioni dalle sei precedenti DHL Express.
+- GLS: [20 GLS Point nel CAP 76011](official-gls-bisceglie-2026-10-13.json) da https://store.gls-italy.com/it/depot/?q=76011, con orari. La pagina non espone civici o ID ufficiali per tutte le sedi e non attesta resi o QR: non inventarli.
+- [Mappatura manuale di negozi e alias](official-site-mapping-bisceglie-2026-10-13.json): negozi diversi non vengono unificati soltanto per vicinanza o civico.
+- Coordinate solo indicative: [batch A](geocodes-batch-a-20261013.json), [batch B](geocodes-batch-b-20261013.json), [batch C](geocodes-batch-c-20261013.json). OSM/Nominatim serve SOLO a posizionare indicativamente i pin, non a certificare la sede o il servizio. La scheda segnala pin approssimativi; quelli basati soltanto su una posizione proxy vicina non sono proposti automaticamente per spedire.
+
+**Compatibilita:** Amazon conferma il punto per il **ritiro di ordini**, non per qualsiasi reso; seguire il checkout e le opzioni di restituzione del singolo ordine. DHL Finder comprende sia DHL eCommerce sia partner PuntoPoste: la dicitura "Drop-off return with label" indica etichetta **stampata**, non QR senza stampa; la specifica lettera di vettura puo avere ulteriori vincoli. GLS conferma sedi GLS Point, non ogni categoria di reso e QR. Edicolandia **NON accetta BRT Digital**, secondo segnalazione diretta utente; il divieto non si estende a DHL, Poste, Amazon, GLS. I 7 InPost e 10 BRT originari mantengono la data effettiva **12/10/2026** e non risultano artificialmente ricertificati il 13.
+
+**Orari:** per una spedizione si consulta SOLO l'orario della rete scelta, senza richiedere che tutte le reti co-localizzate siano simultaneamente aperte. Le schede generiche indicano "almeno una rete aperta" quando i corrieri differiscono. Non garantisce ferie, saturazione del locker o apertura futura all'arrivo.
+
+**Mappa:** il filtro predefinito presenta sedi con riscontro ufficiale; l'utente puo aprire anche le posizioni storiche non ricontrollate. Copertura **parziale**, non censimento esaustivo. UPS ancora senza risultati locali verificati nel locator ufficiale. InPost Ciuffo Wash rimane da ricontrollare (URL precedente reindirizza al locator generico).
