@@ -335,16 +335,16 @@ async function start(){
    if(!s){el.textContent='Dato storico: corrieri e orari non ricontrollati.';card.append(el);continue;}
    const nets=s.memberships.map(m=>NETWORKS[m.network]);
    el.innerHTML=`<div class="flex flex-wrap gap-1">${nets.map(n=>`<span class="rounded border border-blue-100 bg-blue-50 text-blue-800 px-1">${escape(n)}</span>`).join('')}</div><p class="mt-1">Fonti consultate: ${escape([...new Set(s.memberships.map(m=>m.observedAt))].join(', '))} · non verifica in tempo reale</p>${s.conflicts.length?'<p class="text-amber-800">Dati discordanti: controlla le fonti.</p>':''}<details class="mt-1"><summary>Orari, limiti e fonti per corriere</summary>${s.memberships.map(m=>`<div class="mt-2"><a class="underline font-bold" target="_blank" rel="noopener noreferrer" href="${escape(sourceLink(m.sourceDetailsUrl||m.sourceUrl))}">${escape(NETWORKS[m.network])} · ${escape(m.pointId)}</a><p>${Object.entries(dayLabels).map(([d,t])=>t+' '+(m.hours[d].length?m.hours[d].map(([a,b])=>hh(a)+'–'+hh(b)).join(', '):'chiuso')).join('<br>')}</p><p>${escape(m.conditions.join(' '))}</p>${m.userReport?'<p class="text-amber-800">'+escape(m.userReport)+'</p>':''}<p>Limite peso fonte: ${m.limits?.maxWeightKg??'?'} kg${m.limits?.maxDimensionsCm?' · '+m.limits.maxDimensionsCm.join('×')+' cm':''}${m.cutoffMinute!=null?' · cutoff '+hh(m.cutoffMinute):''}</p>${m.freshnessNote?'<p>'+escape(m.freshnessNote)+'</p>':''}</div>`).join('')}${s.conflicts.map(c=>'<p class="text-amber-800 mt-1">'+escape(c.note)+'</p>').join('')}</details>`;
-   if(s.id==='eni-09033'){
+   if(s.id==='amazon-melezio'){
      const note=document.createElement('p');
      note.className='rounded mt-1 p-1 bg-blue-50 text-blue-900 font-medium';
-     note.textContent='Amazon Locker melezio CONFERMATO nel localizzatore ufficiale Amazon presso ENI PV9033 (ritiro ordini, H24). Il vecchio Amazon Counter Eni Cafe non e confermato nella raccolta. InPost nei civici vicini resta un punto DISTINTO.';
+     note.textContent='Amazon Locker melezio: locker Amazon per ritiro ordini confermato presso ENI PV9033, Via Imbriani 258, H24. Il locker e un punto AUTONOMO rispetto al servizio DHL Express ENI; ingresso preciso del locker da verificare. Il vecchio Counter Eni Cafe non e confermato.';
      el.querySelector('details')?.before(note);
    }
-   if(s.coordinatePrecision==='street_approx'||s.coordinatePrecision==='nearby_proxy'){
+   if(['street_approx','nearby_proxy','shared_area_approx'].includes(s.coordinatePrecision)){
      const pinNote=document.createElement('p');
      pinNote.className='rounded mt-1 p-1 bg-amber-50 text-amber-900 font-medium';
-     pinNote.textContent='Posizione indicativa sulla mappa: le coordinate non identificano con precisione l ingresso. Verifica indirizzo e civico ('+s.address+').';
+     pinNote.textContent='Posizione indicativa sulla mappa: il segnaposto e riferito all area del punto, non all ingresso esatto. Verifica indirizzo e civico ('+s.address+').';
      el.querySelector('details')?.before(pinNote);
    }
    if(s.memberships.some(m=>m.network==='amazon')){
