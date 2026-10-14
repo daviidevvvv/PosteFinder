@@ -8,8 +8,8 @@ const at='2026-10-12T08:30:00Z',origin=[41.2400,16.5040];
 const demand=(network,action='return_label')=>({network,action,labelConfirmed:true});
 const site=id=>c.sites.find(s=>s.id===id);
 const opts={origin,at};
-test('20 physical sites / 23 carrier memberships / stable legacy ids',()=>{
- assert.equal(validateCatalog(c),true);assert.equal(c.sites.length,20);assert.equal(c.sites.reduce((n,s)=>n+s.memberships.length,0),23);
+test('21 physical sites / 24 carrier memberships / stable legacy ids',()=>{
+ assert.equal(validateCatalog(c),true);assert.equal(c.sites.length,21);assert.equal(c.sites.reduce((n,s)=>n+s.memberships.length,0),24);
  assert.equal(site('edicolandia').legacyId,5);assert.equal(site('trentadue').legacyId,19);
 });
 test('DHL Express plus BRT offers one physical stop, not duplicate pins',()=>{
