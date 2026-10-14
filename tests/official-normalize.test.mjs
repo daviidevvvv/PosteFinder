@@ -56,6 +56,21 @@ test('Each carrier code and stable app pin ID is unique, old dynamic IDs unchang
  assert.ok(c.sites.every(s=>!/veridiana|peppinay/i.test(s.name)));
 });
 
+
+test('All Amazon Locker names from the official snapshot are shown as actual locker pins, not hidden in a nearby shop',()=>{
+ const amazon=read('research/official-amazon-bisceglie-2026-10-13.json');
+ const observed=amazon.queries.flatMap(x=>x.results);
+ const aliases=read('research/official-site-mapping-bisceglie-2026-10-13.json').amazon;
+ const confirmed=new Set();
+ for(let i=0;i<observed.length;i++){
+  if(!/Amazon Locker/i.test(observed[i].name))continue;
+  const s=site(aliases[i]);confirmed.add(s.id);
+  assert.equal(s.kind,'locker_amazon',observed[i].name+' should have an Amazon Locker icon and be included in Locker filter');
+  assert.match(s.name,/Amazon Locker/i,'Locker must be searchable by display name');
+  assert.ok(s.memberships.some(m=>m.network==='amazon'));
+ }
+ assert.deepEqual([...confirmed].sort(),['amazon-maristella','amazon-melezio','amazon-milvia']);
+});
 test('InPost official city list: all 8 locations, exactly 6 lockers + 2 staffed points',()=>{
  const snap=read('research/official-inpost-lockers-bisceglie-2026-10-14.json');
  assert.equal(snap.points.length,8);
