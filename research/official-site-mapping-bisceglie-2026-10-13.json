@@ -215,9 +215,9 @@
       "id": "ip322-locker",
       "name": "Punto Poste Locker - Stazione IP",
       "address": "Via Matteo Renato Imbriani 322, Bisceglie",
-      "fallbackLegacyId": 12,
       "kind": "locker_punto_poste",
-      "note": "Locker separato dal banco tabaccheria presso lo stesso civico; coordinate del negozio adiacente"
+      "note": "Locker Poste IP Y3840 (Via Imbriani 322): coordinate e servizi aggiornati dal localizzatore ufficiale Poste Italiane 14/10/2026; distinto dal banco tabaccheria/negozio.",
+      "posteOfficialPointId": "Y3840"
     },
     {
       "id": "amazon-colorado",
