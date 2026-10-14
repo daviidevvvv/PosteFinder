@@ -111,12 +111,25 @@ function sourceCounts(input){
  return Object.fromEntries([...new Set(input.observations.map(o=>o.network))]
    .map(network=>[network,new Set(input.observations.filter(o=>o.network===network).map(o=>o.pointId)).size]));
 }
-export function normalizeOfficialSources(base,{amazon,dhl,gls,mapping,geocodes,html}){
+export function normalizeOfficialSources(base,{amazon,dhl,gls,posteLockers,mapping,geocodes,html}){
  if(base.schemaVersion!==1||mapping.date!==OFFICIAL_DATE)throw Error('Snapshot schema mismatch');
  if(amazon.queries.length!==2||amazon.queries.some(q=>q.results.length!==20)
     ||dhl.results.length!==30||gls.results.length!==20)throw Error('Unexpected source snapshot length; explicit mapping needs review');
  if(mapping.amazon.length!==40||mapping.dhl.length!==30||mapping.gls.length!==20)throw Error('Explicit alias map count mismatch');
  if(![amazon,dhl,gls].every(s=>s.observedAt===OFFICIAL_DATE))throw Error('Observation dates differ');
+ // Poste live official map is a separately dated, narrower filter: PuntoPosteLocker ONLY.
+ if(posteLockers?.observedAt!=='2026-10-14'||posteLockers.results?.length!==2||
+    posteLockers.results.some(x=>x.httpStatus!==200||x.status!=='SUCCESS'||x.bisceglie.length!==1))
+  throw Error('Poste official map evidence missing/partial; do not invent coordinates or completeness');
+ const posteLocal=posteLockers.results[0].bisceglie[0];
+ if(posteLocal.frazionario!=='Y3840'||posteLocal.tipoPunto!=='PuntoPosteLocker'||
+    posteLocal.cap!=='76011'||posteLocal.citta!=='Bisceglie'||
+    JSON.stringify(posteLocal)!==JSON.stringify(posteLockers.results[1].bisceglie[0]))
+  throw Error('Poste local point inconsistent between search windows');
+ const posteCoords=[Number(posteLocal.lat),Number(posteLocal.lon)];
+ if(!posteCoords.every(Number.isFinite)||posteCoords[0]<41.2||posteCoords[0]>41.28||
+    posteCoords[1]<16.4||posteCoords[1]>16.56)
+  throw Error('Poste official point coordinates out of Bisceglie area');
  const input=copy(base),originalObserved=input.observedAt;
  input.observations=input.observations.map(o=>({...o,observedAt:o.observedAt||originalObserved}));
  input.observedAt=OFFICIAL_DATE;
@@ -139,6 +152,11 @@ export function normalizeOfficialSources(base,{amazon,dhl,gls,mapping,geocodes,h
   }else if(spec.geoId&&coordsById.has(spec.geoId)){
    const geocode=coordsById.get(spec.geoId);coord=geocode.coords;precision='street_approx';
    note=(note?note+'. ':'')+'Coordinate stradali approssimative da OpenStreetMap; ingresso non verificato.';
+  }else if(spec.posteOfficialPointId){
+   // Trust official Poste locator coordinates, NOT historic nearby merchant pin.
+   if(spec.posteOfficialPointId!==posteLocal.frazionario)throw Error('Poste locker ID mismatch for '+spec.id);
+   coord=[...posteCoords];precision='official_provider';
+   note=(note?note+'. ':'')+'Coordinate del localizzatore ufficiale Poste del 14/10/2026.';
   }else if(spec.coordinateSiteId){
    // Co-located shops and autonomous lockers are different courier points.
    const nearby=existingById.get(spec.coordinateSiteId);
@@ -252,6 +270,34 @@ export function normalizeOfficialSources(base,{amazon,dhl,gls,mapping,geocodes,h
    sourceName:row.name,sourceAddress:row.address,sourceMethod:'official_dhl_finder',
    serviceOverrides:{...claimed}});
  }
+ // Reconfirm the locker Y3840 against Poste's OWN live map (not merely DHL's partner list).
+ // The 'Paperless' service supports eligible shipments; it does NOT automatically prove
+ // that every vendor's return QR can be used at this locker.
+ const posteObs=input.observations.find(x=>x.site==='ip322-locker'&&x.network==='poste'&&x.pointId===posteLocal.frazionario);
+ if(!posteObs)throw Error('Official Poste locker not joined to the existing PuntoPoste partner record');
+ if(!posteLocal.labelServizi?.includes('Paperless: spedisci senza etichetta')||
+    !posteLocal.labelServizi.includes('Resi e-commerce')||
+    !posteLocal.labelServizi.includes('Ritiro pacchi')||
+    !posteLocal.labelServizi.includes('Spedizione pacchi'))throw Error('Poste locker provider capabilities changed');
+ const days=posteLocal.orari.flatMap(row=>{
+  if(row.orario==='CHIUSO')return [];
+  return row.orario.split(',').map(part=>{
+   const range=part.trim().replace(/\\s*-\\s*/,' - ');
+   return row.giorno+' '+range;
+  });
+ });
+ const postHours=pack(glsHours(days));
+ posteObs.sourceUrl=posteLockers.sourceUrl;
+ posteObs.sourceDetailsUrl=posteLocal.deepLink;
+ posteObs.sourceName=posteLocal.nomePunto;
+ posteObs.sourceAddress=posteLocal.indirizzoPunto;
+ posteObs.sourceMethod='official_poste_live_map';
+ posteObs.observedAt=posteLockers.observedAt;
+ posteObs.coords=[...posteCoords];
+ posteObs.paperlessAvailableForEligibleShipment=true;
+ posteObs.providerCapabilities=[...posteLocal.labelServizi];
+ posteObs.hoursPacked=postHours;
+ posteObs.serviceOverrides={dropoff:'conditional',return_label:'conditional',return_qr:'unknown',pickup:'assigned_only'};
  // GLS official page does not expose point IDs or civic numbers: stable local ID, never claim official point code.
  for(const [index,row] of gls.results.entries()){
   enforceBisceglie(row.address,'GLS '+index);
@@ -272,7 +318,7 @@ export function normalizeOfficialSources(base,{amazon,dhl,gls,mapping,geocodes,h
     :c.network==='dhl_ecommerce'
      ? '30 voci DHL Finder a Bisceglie, comprese sedi PuntoPoste/partner; etichette compatibili da verificare, QR non attestato.'
      :c.network==='poste'
-      ? '25 sedi PuntoPoste/Fermoposta mostrate nel DHL Finder; verificare servizi e orari anche nel localizzatore Poste, non e un inventario Poste esaustivo.'
+      ? '25 sedi PuntoPoste/Fermoposta mostrate nel DHL Finder; il locker IP Y3840 e confermato in proprio dalla mappa ufficiale Poste il 14/10/2026 con Paperless. Il vecchio Famila 00575 NON compare nei risultati locker live: presenza attuale da verificare.'
       : '20 GLS Point dal localizzatore ufficiale; GLs non pubblica identificativo e civico in questa pagina, QR e resi non attestati.';
   }
  }
