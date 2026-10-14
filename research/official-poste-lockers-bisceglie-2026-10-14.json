@@ -1,0 +1,152 @@
+{
+  "observedAt": "2026-10-14",
+  "sourceUrl": "https://www.poste.it/prenotazione/vieni-in-poste?vieni-in-poste",
+  "apiUrl": "https://mapcollection.poste.it/v3/map/geoList",
+  "notes": "Official live map API, only the PuntoPosteLocker filter. Returned only IP Y3840 within Bisceglie, previous Famila locker 00575 NOT present in either search window; absence is NOT proof of physical removal. Stores exact provider coordinates and paperless label.",
+  "results": [
+    {
+      "query": {
+        "lat": 41.239,
+        "lon": 16.505,
+        "spanLat": 0.045,
+        "spanLon": 0.065,
+        "tipoPunto": [
+          "PuntoPosteLocker"
+        ],
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "status": "SUCCESS",
+      "totalRetrieved": 2,
+      "bisceglie": [
+        {
+          "id": "Lkngb6di0u9gxaCRIV3klw",
+          "deepLink": "https://ppayapp.mobile.poste.it/jod-mobile-server/map/pp/share/v1/?merchantID=Lkngb6di0u9gxaCRIV3klw",
+          "tipoPunto": "PuntoPosteLocker",
+          "lon": "16.51682191",
+          "lat": "41.23224981",
+          "nomePunto": "Stazione Di Servizio Ip",
+          "indirizzoPunto": "Via Matteo Renato Imbriani 322",
+          "citta": "Bisceglie",
+          "provincia": "BT",
+          "cap": "76011",
+          "frazionario": "Y3840",
+          "statoApertura": "Aperto",
+          "dettaglioStatoApertura": "Chiude alle 23:59",
+          "orari": [
+            {
+              "giorno": "Mercoledì",
+              "orario": "00:01-23:59"
+            },
+            {
+              "giorno": "Giovedì",
+              "orario": "00:01-23:59"
+            },
+            {
+              "giorno": "Venerdì",
+              "orario": "00:01-23:59"
+            },
+            {
+              "giorno": "Sabato",
+              "orario": "00:01-23:59"
+            },
+            {
+              "giorno": "Domenica",
+              "orario": "00:01-23:59"
+            },
+            {
+              "giorno": "Lunedì",
+              "orario": "00:01-23:59"
+            },
+            {
+              "giorno": "Martedì",
+              "orario": "00:01-23:59"
+            }
+          ],
+          "categorieServizi": [
+            "Spedizioni e Ritiri"
+          ],
+          "labelServizi": [
+            "Resi e-commerce",
+            "Ritiro pacchi",
+            "Spedizione pacchi",
+            "Paperless: spedisci senza etichetta"
+          ]
+        }
+      ]
+    },
+    {
+      "query": {
+        "lat": 41.239,
+        "lon": 16.505,
+        "spanLat": 0.15,
+        "spanLon": 0.15,
+        "tipoPunto": [
+          "PuntoPosteLocker"
+        ],
+        "limit": 100,
+        "offset": 0
+      },
+      "httpStatus": 200,
+      "status": "SUCCESS",
+      "totalRetrieved": 10,
+      "bisceglie": [
+        {
+          "id": "Lkngb6di0u9gxaCRIV3klw",
+          "deepLink": "https://ppayapp.mobile.poste.it/jod-mobile-server/map/pp/share/v1/?merchantID=Lkngb6di0u9gxaCRIV3klw",
+          "tipoPunto": "PuntoPosteLocker",
+          "lon": "16.51682191",
+          "lat": "41.23224981",
+          "nomePunto": "Stazione Di Servizio Ip",
+          "indirizzoPunto": "Via Matteo Renato Imbriani 322",
+          "citta": "Bisceglie",
+          "provincia": "BT",
+          "cap": "76011",
+          "frazionario": "Y3840",
+          "statoApertura": "Aperto",
+          "dettaglioStatoApertura": "Chiude alle 23:59",
+          "orari": [
+            {
+              "giorno": "Mercoledì",
+              "orario": "00:01-23:59"
+            },
+            {
+              "giorno": "Giovedì",
+              "orario": "00:01-23:59"
+            },
+            {
+              "giorno": "Venerdì",
+              "orario": "00:01-23:59"
+            },
+            {
+              "giorno": "Sabato",
+              "orario": "00:01-23:59"
+            },
+            {
+              "giorno": "Domenica",
+              "orario": "00:01-23:59"
+            },
+            {
+              "giorno": "Lunedì",
+              "orario": "00:01-23:59"
+            },
+            {
+              "giorno": "Martedì",
+              "orario": "00:01-23:59"
+            }
+          ],
+          "categorieServizi": [
+            "Spedizioni e Ritiri"
+          ],
+          "labelServizi": [
+            "Resi e-commerce",
+            "Ritiro pacchi",
+            "Spedizione pacchi",
+            "Paperless: spedisci senza etichetta"
+          ]
+        }
+      ]
+    }
+  ]
+}
