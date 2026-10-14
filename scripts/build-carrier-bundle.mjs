@@ -13,6 +13,7 @@ const normalized=normalizeOfficialSources(load('data/carrier-inputs.json'),{
   amazon:load('research/official-amazon-bisceglie-2026-10-13.json'),
   dhl:load('research/official-dhl-finder-bisceglie-2026-10-13.json'),
   gls:load('research/official-gls-bisceglie-2026-10-13.json'),
+  posteLockers:load('research/official-poste-lockers-bisceglie-2026-10-14.json'),
   mapping:load('research/official-site-mapping-bisceglie-2026-10-13.json'),
   geocodes:[...geoById.values()],html:originalHtml
 });
