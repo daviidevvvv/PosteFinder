@@ -23,9 +23,9 @@ const count=network=>c.sites.flatMap(s=>s.memberships).filter(m=>m.network===net
 const at='2026-10-13T10:15:00Z';
 const coords=[41.238,16.505];
 
-test('Bisceglie only: 58 deduplicated places and 126 explicit network memberships',()=>{
+test('Bisceglie only: 59 independently accessible places and 126 explicit network memberships',()=>{
  assert.equal(validateCatalog(c),true);
- assert.equal(c.sites.length,58);
+ assert.equal(c.sites.length,59);
  assert.equal(c.sites.reduce((total,s)=>total+s.memberships.length,0),126);
  assert.equal(count('amazon'),28);
  assert.equal(count('dhl_ecommerce'),30);
@@ -55,18 +55,31 @@ test('Each carrier code and stable app pin ID is unique, old dynamic IDs unchang
  assert.equal(site('amazon-milvia').legacyId,401);
  assert.ok(c.sites.every(s=>!/veridiana|peppinay/i.test(s.name)));
 });
-test('Amazon Melezio at ENI has own Amazon membership, 24h, pickup only',()=>{
- const m=site('eni-09033').memberships.find(x=>x.network==='amazon');
- assert.ok(m);
+test('Amazon Locker melezio is separately visible from ENI DHL Express and searchable as a locker',()=>{
+ const locker=site('amazon-melezio'), eni=site('eni-09033');
+ assert.ok(locker,'Dedicated Amazon Locker melezio must exist');
+ assert.ok(eni,'Original ENI DHL ServicePoint must remain');
+ assert.match(locker.name,/Amazon Locker melezio/i);
+ assert.match(locker.address,/Imbriani 258, Bisceglie/i);
+ assert.equal(locker.kind,'locker_amazon');
+ assert.equal(locker.coordinatePrecision,'shared_area_approx');
+ assert.deepEqual(locker.coords,eni.coords,'Locker and station share approximate area, not an asserted same entrance');
+ assert.notEqual(locker.appId,eni.appId,'Map pins must be separate');
+ assert.ok(Number.isSafeInteger(locker.appId)&&locker.appId<=1000000);
+ assert.deepEqual(locker.memberships.map(m=>m.network),['amazon']);
+ assert.deepEqual(eni.memberships.map(m=>m.network),['dhl_express']);
+ const m=locker.memberships[0];
  assert.match(m.sourceAddresses[0],/ENI Station pv.9033/);
  assert.equal(m.services.pickup,'assigned_only');
  assert.equal(m.services.return_label,'unknown');
  assert.equal(m.providerPointId,null);
- assert.ok(m.sourceUrl.startsWith('https://www.amazon.it/ulp/view'));
  assert.equal(sourceOpen(m,at),true);
- const demand={network:'amazon',action:'pickup',assignedPointId:'eni-09033'};
+ assert.ok(m.sourceUrl.startsWith('https://www.amazon.it/ulp/view'));
+ const demand={network:'amazon',action:'pickup',assignedPointId:'amazon-melezio'};
  assert.equal(validateParcelSelections([demand]).ok,true);
- assert.equal(canServe(site('eni-09033'),demand,{at}),true);
+ assert.equal(canServe(locker,demand,{at}),true);
+ const ui=readFileSync(new URL('../src/carrier-ui.mjs',import.meta.url),'utf8');
+ assert.match(ui,/shared_area_approx/,'Approximate locker pin must show a visible warning');
 });
 test('Amazon returns are never inferred from a pickup listing',()=>{
  const d={network:'amazon',action:'return_label',labelConfirmed:true};
