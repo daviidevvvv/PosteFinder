@@ -282,7 +282,7 @@ export function normalizeOfficialSources(base,{amazon,dhl,gls,posteLockers,mappi
  const days=posteLocal.orari.flatMap(row=>{
   if(row.orario==='CHIUSO')return [];
   return row.orario.split(',').map(part=>{
-   const range=part.trim().replace(/\\s*-\\s*/,' - ');
+   const range=part.trim().replace(/\s*-\s*/,' - ');
    return row.giorno+' '+range;
   });
  });
