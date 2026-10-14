@@ -14,6 +14,7 @@ const input=normalizeOfficialSources(read('data/carrier-inputs.json'),{
  amazon:read('research/official-amazon-bisceglie-2026-10-13.json'),
  dhl:read('research/official-dhl-finder-bisceglie-2026-10-13.json'),
  gls:read('research/official-gls-bisceglie-2026-10-13.json'),
+ posteLockers:read('research/official-poste-lockers-bisceglie-2026-10-14.json'),
  mapping,geocodes:[...allGeo.values()],
  html:readFileSync(new URL('../index.html',import.meta.url),'utf8')
 });
@@ -57,6 +58,44 @@ test('Each carrier code and stable app pin ID is unique, old dynamic IDs unchang
 });
 
 
+
+test('Live Poste map: locker Y3840 is at provider coordinates and supports eligible Paperless shipments',()=>{
+ const report=read('research/official-poste-lockers-bisceglie-2026-10-14.json');
+ assert.equal(report.results.length,2);
+ const [small,large]=report.results;
+ assert.equal(small.httpStatus,200);assert.equal(large.httpStatus,200);
+ assert.equal(small.status,'SUCCESS');assert.equal(large.status,'SUCCESS');
+ assert.equal(small.bisceglie.length,1);assert.equal(large.bisceglie.length,1);
+ assert.deepEqual(small.bisceglie[0],large.bisceglie[0]);
+ const observed=small.bisceglie[0];
+ assert.equal(observed.frazionario,'Y3840');
+ assert.equal(observed.tipoPunto,'PuntoPosteLocker');
+ assert.equal(observed.citta,'Bisceglie');
+ const s=site('ip322-locker');
+ assert.equal(s.kind,'locker_punto_poste');
+ assert.deepEqual(s.coords,[Number(observed.lat),Number(observed.lon)]);
+ assert.equal(s.coordinatePrecision,'official_provider');
+ assert.match(s.name,/Locker/i);
+ const poste=s.memberships.find(m=>m.network==='poste');
+ assert.equal(poste.pointId,'Y3840');
+ assert.equal(poste.sourceUrl,'https://www.poste.it/prenotazione/vieni-in-poste?vieni-in-poste');
+ assert.equal(poste.observedAt,'2026-10-14');
+ assert.equal(poste.sourceMethod,'official_poste_live_map');
+ assert.equal(poste.paperlessAvailableForEligibleShipment,true);
+ assert.ok(poste.providerCapabilities.includes('Paperless: spedisci senza etichetta'));
+ assert.equal(poste.services.return_qr,'unknown','Paperless shipment does not prove an arbitrary return QR');
+ assert.deepEqual(poste.hours.mon,[[1,1439]]);
+ assert.equal(canServe(s,{network:'poste',action:'return_label',labelConfirmed:true},{at:'2026-10-14T10:00:00Z'}),true);
+ assert.equal(s.legacyId,null);
+});
+test('Famila historical locker is not promoted as currently confirmed by Poste maps',()=>{
+ const report=read('research/official-poste-lockers-bisceglie-2026-10-14.json');
+ for(const search of report.results){
+  assert.equal(search.bisceglie.some(x=>/famila/i.test(x.nomePunto+x.indirizzoPunto)),false);
+ }
+ assert.equal(c.sites.some(s=>s.name.includes('Famila')&&s.kind==='locker_punto_poste'),false,
+  'The old Famila static record must not be inserted as a verified live carrier site');
+});
 test('All Amazon Locker names from the official snapshot are shown as actual locker pins, not hidden in a nearby shop',()=>{
  const amazon=read('research/official-amazon-bisceglie-2026-10-13.json');
  const observed=amazon.queries.flatMap(x=>x.results);
@@ -181,8 +220,10 @@ test('Each carrier observation retains its actual verification date, only Ciuffo
   assert.equal(m.observedAt,'2026-10-12');
  for(const m of c.sites.flatMap(s=>s.memberships).filter(m=>m.network==='inpost'))
   assert.equal(m.observedAt,m.pointId==='ITBLQ149474B'?'2026-10-14':'2026-10-12');
- for(const net of ['amazon','poste','gls','dhl_ecommerce'])for(const m of c.sites.flatMap(s=>s.memberships).filter(m=>m.network===net))
+ for(const net of ['amazon','gls','dhl_ecommerce'])for(const m of c.sites.flatMap(s=>s.memberships).filter(m=>m.network===net))
   assert.equal(m.observedAt,'2026-10-13');
+ for(const m of c.sites.flatMap(s=>s.memberships).filter(m=>m.network==='poste'))
+  assert.equal(m.observedAt,m.pointId==='Y3840'?'2026-10-14':'2026-10-13');
 });
 test('Source parsers cover Amazon ranges, DHL compact intervals, GLS split hours',()=>{
  const am=amazonHours(['Mon-Sat: 05:00 - 23:00','Sun: 06:00 - 14:00']);
