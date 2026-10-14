@@ -23,16 +23,16 @@ const count=network=>c.sites.flatMap(s=>s.memberships).filter(m=>m.network===net
 const at='2026-10-13T10:15:00Z';
 const coords=[41.238,16.505];
 
-test('Bisceglie only: 59 independently accessible places and 126 explicit network memberships',()=>{
+test('Bisceglie only: 60 independently accessible places and 127 explicit network memberships',()=>{
  assert.equal(validateCatalog(c),true);
- assert.equal(c.sites.length,59);
- assert.equal(c.sites.reduce((total,s)=>total+s.memberships.length,0),126);
+ assert.equal(c.sites.length,60);
+ assert.equal(c.sites.reduce((total,s)=>total+s.memberships.length,0),127);
  assert.equal(count('amazon'),28);
  assert.equal(count('dhl_ecommerce'),30);
  assert.equal(count('poste'),25);
  assert.equal(count('gls'),20);
  assert.equal(count('brt'),10);
- assert.equal(count('inpost'),7);
+ assert.equal(count('inpost'),8);
  assert.equal(count('dhl_express'),6);
  assert.ok(c.sites.every(s=>/Bisceglie/i.test(s.address)));
  assert.ok(c.sites.every(s=>s.memberships.length>0));
@@ -54,6 +54,54 @@ test('Each carrier code and stable app pin ID is unique, old dynamic IDs unchang
  assert.equal(site('eni-09033').appId,8110);
  assert.equal(site('amazon-milvia').legacyId,401);
  assert.ok(c.sites.every(s=>!/veridiana|peppinay/i.test(s.name)));
+});
+
+
+test('All Amazon Locker names from the official snapshot are shown as actual locker pins, not hidden in a nearby shop',()=>{
+ const amazon=read('research/official-amazon-bisceglie-2026-10-13.json');
+ const observed=amazon.queries.flatMap(x=>x.results);
+ const aliases=read('research/official-site-mapping-bisceglie-2026-10-13.json').amazon;
+ const confirmed=new Set();
+ for(let i=0;i<observed.length;i++){
+  if(!/Amazon Locker/i.test(observed[i].name))continue;
+  const s=site(aliases[i]);confirmed.add(s.id);
+  assert.equal(s.kind,'locker_amazon',observed[i].name+' should have an Amazon Locker icon and be included in Locker filter');
+  assert.match(s.name,/Amazon Locker/i,'Locker must be searchable by display name');
+  assert.ok(s.memberships.some(m=>m.network==='amazon'));
+ }
+ assert.deepEqual([...confirmed].sort(),['amazon-maristella','amazon-melezio','amazon-milvia']);
+});
+test('InPost official city list: all 8 locations, exactly 6 lockers + 2 staffed points',()=>{
+ const snap=read('research/official-inpost-lockers-bisceglie-2026-10-14.json');
+ assert.equal(snap.points.length,8);
+ assert.equal(snap.points.filter(x=>x.type==='locker').length,6);
+ assert.equal(snap.points.filter(x=>x.type==='point').length,2);
+ const members=c.sites.flatMap(s=>s.memberships.filter(m=>m.network==='inpost').map(m=>({id:s.id,kind:s.kind,code:m.pointId})));
+ const actual=new Set(members.map(x=>x.code));
+ const expected=new Set(snap.points.map(x=>x.code));
+ assert.deepEqual(actual,expected,'All eight official InPost city codes must match the catalog (no silent drops or additions)');
+ assert.equal(members.filter(x=>x.kind==='locker_inpost').length,6);
+ assert.equal(members.filter(x=>x.kind!=='locker_inpost').length,2);
+});
+test('New Ciuffo Wash is a separate outdoor H24 InPost locker with an explicitly approximate road pin',()=>{
+ const s=site('inpost-ciuffo-wash');
+ assert.ok(s,'Ciuffo Wash should appear as a live map marker');
+ assert.equal(s.kind,'locker_inpost');
+ assert.equal(s.address,'Via Mosca 4, Bisceglie');
+ assert.match(s.name,/Ciuffo Wash/);
+ assert.equal(s.coordinatePrecision,'street_approx');
+ assert.match(s.coordinateNote,/NON posizione verificata/);
+ assert.deepEqual(s.memberships.map(m=>m.network),['inpost']);
+ const m=s.memberships[0];
+ assert.equal(m.pointId,'ITBLQ149474B');
+ assert.equal(m.observedAt,'2026-10-14');
+ assert.equal(m.sourceUrl,'https://inpost.it/locker-bisceglie-itblq149474b-via-mosca');
+ assert.equal(m.services.pickup,'assigned_only');
+ assert.equal(m.services.return_qr,'unknown','QR returns must not be inferred from H24 listing');
+ assert.equal(sourceOpen(m,at),true);
+ assert.equal(s.appId,8114,'Appending Ciuffo must preserve the pre-existing InPost and BRT favorite IDs');
+ const ui=readFileSync(new URL('../src/carrier-ui.mjs',import.meta.url),'utf8');
+ assert.match(ui,/street_approx/);
 });
 test('Amazon Locker melezio is separately visible from ENI DHL Express and searchable as a locker',()=>{
  const locker=site('amazon-melezio'), eni=site('eni-09033');
@@ -128,10 +176,11 @@ test('Official GLS listings are counted but label-free return is never fabricate
  assert.equal(pin.coordinatePrecision,'nearby_proxy');
  assert.equal(canServe(pin,{network:'gls',action:'dropoff',labelConfirmed:true},{at,openOnly:false}),false);
 });
-test('Historical BRT, InPost and DHL Express observation dates remain unchanged',()=>{
- const old=['brt','inpost','dhl_express'];
- for(const net of old)for(const m of c.sites.flatMap(s=>s.memberships).filter(m=>m.network===net))
+test('Each carrier observation retains its actual verification date, only Ciuffo is new',()=>{
+ for(const net of ['brt','dhl_express'])for(const m of c.sites.flatMap(s=>s.memberships).filter(m=>m.network===net))
   assert.equal(m.observedAt,'2026-10-12');
+ for(const m of c.sites.flatMap(s=>s.memberships).filter(m=>m.network==='inpost'))
+  assert.equal(m.observedAt,m.pointId==='ITBLQ149474B'?'2026-10-14':'2026-10-12');
  for(const net of ['amazon','poste','gls','dhl_ecommerce'])for(const m of c.sites.flatMap(s=>s.memberships).filter(m=>m.network===net))
   assert.equal(m.observedAt,'2026-10-13');
 });

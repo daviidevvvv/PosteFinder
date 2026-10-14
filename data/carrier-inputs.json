@@ -26,9 +26,9 @@
       "network": "inpost",
       "label": "InPost",
       "status": "partial_live",
-      "count": 7,
-      "sourceUrl": "https://inpost.it/trova-un-locker",
-      "note": "7 pagine ufficiali ricontrollate live. Non inventario esaustivo."
+      "count": 8,
+      "sourceUrl": "https://inpost.pl/en/parcel-lockers-bisceglie",
+      "note": "8 codici elencati nella pagina ufficiale InPost per Bisceglie: 6 locker esterni e 2 InPost Point. Ciuffo Wash (ITBLQ149474B) aggiunto dalla pagina ufficiale, H24; pin collocato indicativamente sulla strada (non ingresso). Stato vano e disponibilita effettiva non verificati in tempo reale."
     },
     {
       "network": "dhl_ecommerce",
@@ -72,14 +72,6 @@
     }
   ],
   "pending": [
-    {
-      "name": "InPost Ciuffo Wash",
-      "providerId": "ITBLQ149474B",
-      "address": "Via Mosca 4, Bisceglie",
-      "status": "page_redirect",
-      "sourceUrl": "https://inpost.it/locker-bisceglie-itblq149474b-via-mosca",
-      "finding": "Pagina reindirizza al localizzatore generale; non aggiunto come attivo. Non prova chiusura definitiva."
-    },
     {
       "name": "Fatto a Posta",
       "address": "Via Pietro Mascagni 5, Bisceglie",
@@ -476,6 +468,21 @@
       ],
       "kind": "locker_inpost",
       "conflicts": []
+    },
+    {
+      "id": "inpost-ciuffo-wash",
+      "legacyId": null,
+      "name": "InPost Locker - Ciuffo Wash (ITBLQ149474B)",
+      "address": "Via Mosca 4, Bisceglie",
+      "city": "Bisceglie",
+      "coords": [
+        41.2298912,
+        16.5011131
+      ],
+      "kind": "locker_inpost",
+      "coordinatePrecision": "street_approx",
+      "coordinateNote": "Coordinate approssimative: punto centrale di Via Mosca (OSM), NON posizione verificata dell'ingresso del locker. Usare Via Mosca 4 per navigare.",
+      "conflicts": []
     }
   ],
   "observations": [
@@ -801,6 +808,28 @@
       "hoursPacked": "mon,tue,wed,thu,fri,sat,sun=0-1440",
       "sourceUrl": "https://inpost.it/locker-bisceglie-itbis108252f-via-imbriani",
       "retrievalMethod": "live_page"
+    },
+    {
+      "site": "inpost-ciuffo-wash",
+      "network": "inpost",
+      "pointId": "ITBLQ149474B",
+      "coords": [
+        41.2298912,
+        16.5011131
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri,sat,sun=0-1440",
+      "sourceUrl": "https://inpost.it/locker-bisceglie-itblq149474b-via-mosca",
+      "sourceDetailsUrl": "https://inpost.pl/en/parcel-lockers-bisceglie",
+      "retrievalMethod": "official_provider_city_index_and_detail_page",
+      "observedAt": "2026-10-14",
+      "sourceIndexUrl": "https://inpost.pl/en/parcel-lockers-bisceglie",
+      "pointType": "outdoor_locker",
+      "serviceOverrides": {
+        "dropoff": "conditional",
+        "return_label": "conditional",
+        "return_qr": "unknown",
+        "pickup": "assigned_only"
+      }
     }
   ]
 }
