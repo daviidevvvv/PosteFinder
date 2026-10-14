@@ -99,7 +99,7 @@ test('New Ciuffo Wash is a separate outdoor H24 InPost locker with an explicitly
  assert.equal(m.services.pickup,'assigned_only');
  assert.equal(m.services.return_qr,'unknown','QR returns must not be inferred from H24 listing');
  assert.equal(sourceOpen(m,at),true);
- assert.equal(s.appId,8120,'Adding a point must not reshuffle existing app/favorite IDs');
+ assert.equal(s.appId,8114,'Appending Ciuffo must preserve the pre-existing InPost and BRT favorite IDs');
  const ui=readFileSync(new URL('../src/carrier-ui.mjs',import.meta.url),'utf8');
  assert.match(ui,/street_approx/);
 });
@@ -176,10 +176,11 @@ test('Official GLS listings are counted but label-free return is never fabricate
  assert.equal(pin.coordinatePrecision,'nearby_proxy');
  assert.equal(canServe(pin,{network:'gls',action:'dropoff',labelConfirmed:true},{at,openOnly:false}),false);
 });
-test('Historical BRT, InPost and DHL Express observation dates remain unchanged',()=>{
- const old=['brt','inpost','dhl_express'];
- for(const net of old)for(const m of c.sites.flatMap(s=>s.memberships).filter(m=>m.network===net))
+test('Each carrier observation retains its actual verification date, only Ciuffo is new',()=>{
+ for(const net of ['brt','dhl_express'])for(const m of c.sites.flatMap(s=>s.memberships).filter(m=>m.network===net))
   assert.equal(m.observedAt,'2026-10-12');
+ for(const m of c.sites.flatMap(s=>s.memberships).filter(m=>m.network==='inpost'))
+  assert.equal(m.observedAt,m.pointId==='ITBLQ149474B'?'2026-10-14':'2026-10-12');
  for(const net of ['amazon','poste','gls','dhl_ecommerce'])for(const m of c.sites.flatMap(s=>s.memberships).filter(m=>m.network===net))
   assert.equal(m.observedAt,'2026-10-13');
 });
