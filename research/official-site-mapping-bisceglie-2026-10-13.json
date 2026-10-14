@@ -10,7 +10,8 @@
     "Arrays are indexed to immutable source snapshots and map explicitly to distinct physical shops; never derive a merger only from distance.",
     "Edicolandia BRT Digital not accepted; Amazon Veridiana decommissioned.",
     "Same address with different shop names remains distinct unless ownership confirmed.",
-    "Road-level coordinates are approximate and not evidence of physical shop."
+    "Road-level coordinates are approximate and not evidence of physical shop.",
+    "Amazon Locker melezio e DHL ServicePoint ENI PV9033 sono due punti operativi distinti: icone e servizi separati anche se condividono l'area/indirizzo."
   ],
   "dhl": [
     "tabaccheria-n2",
@@ -50,7 +51,7 @@
     "tabaccheria-n2",
     "caffe-frisari",
     "amazon-maristella",
-    "eni-09033",
+    "amazon-melezio",
     "deval",
     "edicola-corso",
     "tabaccheria-n9",
@@ -65,7 +66,7 @@
     "nexus",
     "target-caffe",
     "bombini",
-    "eni-09033",
+    "amazon-melezio",
     "tabaccheria-n34",
     "amazon-maristella",
     "planetwin",
@@ -354,6 +355,14 @@
       "name": "Roko Coffee Point",
       "address": "Via Matteo Renato Imbriani 98, Bisceglie",
       "legacyId": 6
+    },
+    {
+      "id": "amazon-melezio",
+      "name": "Amazon Locker melezio (ENI PV9033)",
+      "address": "Via Matteo Renato Imbriani 258, Bisceglie",
+      "coordinateSiteId": "eni-09033",
+      "kind": "locker_amazon",
+      "note": "Locker Amazon H24 presso ENI PV9033, autonomo rispetto al DHL ServicePoint della stazione. Pin indicativo dell'area ENI; verificare l'ingresso esatto in loco."
     }
   ]
 }
