@@ -4,12 +4,12 @@
   "officialIndex": "https://inpost.pl/en/parcel-lockers-bisceglie",
   "officialPointDetailsDomain": "inpost.it",
   "type": "official_provider_listing",
-  "count": 8,
+  "count": 9,
   "recordCountByType": {
     "locker": 6,
-    "point": 2
+    "point": 3
   },
-  "verificationNotes": "Official InPost city listing enumerates all 8 Bisceglie IDs; individual InPost Italy page for Ciuffo Wash states Disponibile, H24, outdoor, max 25 kg. The Italian live locator currently blocks automated browser (Cloudflare), so availability is not independently checked in a completed live map transaction. Coordinate from OSM road centre is APPROXIMATE, not entrance.",
+  "verificationNotes": "Official InPost city page currently lists 9 Bisceglie IDs (6 lockers, 3 staffed ParcelPoints). Newly found staffed InPost Point ITPBT09528P at Tabaccheria Trentadue, official point page says Mon-Sat 05:00-13:00 16:00-20:00 and a printed label is required. All point-type distinctions must be kept; outdated initial 8-point snapshot from earlier same day is superseded.",
   "points": [
     {
       "code": "ITPBT03592P",
@@ -79,6 +79,24 @@
       "address": "Via Nicola Consiglio 2",
       "name": "CC Famila",
       "url": "https://inpost.it/locker-bisceglie-itbis24842-via-nicola-consiglio"
+    },
+    {
+      "code": "ITPBT09528P",
+      "type": "point",
+      "name": "Tabaccheria Trentadue",
+      "address": "Via Padre Massimiliano Kolbe 31",
+      "url": "https://inpost.pl/en/parcel-service-point-itpbt09528p-bisceglie-via-padre-massimiliano-kolbe-31-76011-bisceglie-bt-italy",
+      "officialLat": 41.23204,
+      "officialLon": 16.49503,
+      "openingHours": "MON-SAT 05:00-13:00 16:00-20:00",
+      "printingRequirement": "A printed label is required",
+      "maxWeightKg": 25,
+      "maxDimensionsCm": [
+        39,
+        38,
+        64
+      ],
+      "confirmedAt": "2026-10-14"
     }
   ]
 }
