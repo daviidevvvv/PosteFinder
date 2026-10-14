@@ -112,3 +112,19 @@ La nuova interrogazione delle pagine ufficiali InPost ha individuato un'importan
 **Amazon Hub:** le due ricerche ufficiali salvate il 13 ottobre individuavano tre locker Amazon denominati **melezio** (ENI via Imbriani 258), **MARISTELLA** (Tamoil via Vittorio Veneto) e **milvia** (PENNY via Bovio 324/326); il resto dei 28 Amazon Hub deduplicati comprende Counter o partner PuntoPoste. Non sono state provate assenze in altri quartieri: il 14 ottobre il selettore Amazon non ha restituito nuovi risultati interrogabili, quindi non dichiarare esaustiva la raccolta Amazon.
 
 **Punto Poste:** il PDF ufficiale https://business.poste.it/business/files/1476488734051/locker-puntoposte-orari-ubicazione.pdf elenca il Locker Famila Market Bisceglie **00575**, via Nicola Consiglio 2, gia presente come punto storico della mappa; DHL Finder aveva confermato l'altro Locker Stazione IP **Y3840** via Imbriani 322. L'elenco PDF non e una verifica di presenza odierna sul campo e il localizzatore Poste moderno non e ancora stato interrogato con esito completo: non promuovere altri locker Poste senza conferma.
+
+### POSTE: verifica diretta dei Locker tramite mappe ufficiali - 14 ottobre 2026
+
+Questa verifica aggiorna e **supera** la nota precedente secondo cui la mappa Poste non era interrogabile: esaminando le richieste pubbliche effettuate dall'applicazione ufficiale [Vieni in Poste](https://www.poste.it/prenotazione/vieni-in-poste?vieni-in-poste) e usando ESATTAMENTE il filtro `PuntoPosteLocker`, abbiamo ricavato due risposte dal servizio della stessa azienda `https://mapcollection.poste.it/v3/map/geoList` (POST `tipoPunto=["PuntoPosteLocker"]`, centro Bisceglie, due finestre geografiche di dimensione diversa, HTTP 200 `SUCCESS`).
+
+**Risultato:** in entrambi i riquadri, un solo locker con `citta=Bisceglie`:
+- **Punto Poste Locker Stazione di Servizio IP**, Via Matteo Renato Imbriani **322**, CAP 76011, codice `Y3840`, ID ufficiale `Lkngb6di0u9gxaCRIV3klw`, coordinate ufficiali **41.23224981, 16.51682191**.
+- Orario pubblicato **00:01-23:59 tutti i giorni**.
+- Servizi dichiarati espressamente: `Resi e-commerce`, `Ritiro pacchi`, `Spedizione pacchi`, `Paperless: spedisci senza etichetta`. La dicitura Paperless non autorizza a presumere che qualsiasi QR di reso di un venditore possa essere usato qui.
+- Snapshot di entrambe le interrogazioni: [official-poste-lockers-bisceglie-2026-10-14.json](official-poste-lockers-bisceglie-2026-10-14.json). Sono conservate le due risposte con payload, orari, coordinate e ID esattamente come fornite da Poste.
+
+**Correzione app:** il locker IP esisteva gia nel catalogo dai partner DHL Finder, ma il pin usava una posizione *proxy* basata su un banco tabacchi. Ora il suo pin usa le coordinate **ufficiali Poste**, senza cambiare ID del punto, senza fondere locker/negozio e senza attribuire il servizio Paperless a DHL eCommerce, BRT o altre reti.
+
+**Storico non riconfermato:** il PDF ufficiale Poste precedentemente utilizzato elenca `00575 – PuntoPoste Locker Famila Market Bisceglie`, Via Nicola Consiglio 2, tuttavia **in nessuna delle due ricerche live Poste appare una scheda Famila a Bisceglie**. La sua presenza fisica NON puo essere dedotta ne negata da questi dati: il punto `201` resta consultabile soltanto come **STORICO / DA VERIFICARE**, senza orari H24 presentati come certi e senza membership Poste ufficiale attuale nel planner.
+
+**Amazon:** nel browser automatico del 14/10/2026 il selettore Amazon `https://www.amazon.it/ulp/view` restituisce ripetutamente schermate prive di punti dopo la scelta di Bisceglie; persino il controllo della localita di consegna restituisce un errore Amazon. Non trattare questa assenza di risultati come prova di rimozione o inventario completo. I tre locker Amazon rimangono attestati soltanto dalle **due ricerche ufficiali del 13/10/2026**, con indisponibilita di verifica live al 14/10/2026.
