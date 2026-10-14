@@ -139,6 +139,13 @@ export function normalizeOfficialSources(base,{amazon,dhl,gls,mapping,geocodes,h
   }else if(spec.geoId&&coordsById.has(spec.geoId)){
    const geocode=coordsById.get(spec.geoId);coord=geocode.coords;precision='street_approx';
    note=(note?note+'. ':'')+'Coordinate stradali approssimative da OpenStreetMap; ingresso non verificato.';
+  }else if(spec.coordinateSiteId){
+   // Co-located shops and autonomous lockers are different courier points.
+   const nearby=existingById.get(spec.coordinateSiteId);
+   if(!nearby||!Array.isArray(nearby.coords)||nearby.coords.length!==2)
+    throw Error('Unknown co-located site for '+spec.id);
+   coord=[...nearby.coords];precision='shared_area_approx';
+   note=(note?note+'. ':'')+'Posizione indicativa presso '+nearby.name+'; ingresso del locker da verificare.';
   }else if(spec.fallbackLegacyId!=null){
    coord=oldGeo.get(spec.fallbackLegacyId);precision='nearby_proxy';
    note=(note?note+'. ':'')+'Pin di riferimento vicino, non ingresso verificato.';
@@ -210,8 +217,10 @@ export function normalizeOfficialSources(base,{amazon,dhl,gls,mapping,geocodes,h
    const site=existingById.get(item.site);
    site.conflicts.push({type:'amazon_alias',note:'Piu denominazioni nel selettore Amazon; usa il nome indicato nell ordine/avviso: '+[...item.names].join(' / ')});
   }
-  if(item.site==='eni-09033'){
+  if(item.site==='amazon-melezio'){
    const site=existingById.get(item.site);
+   if(site.kind!=='locker_amazon'||site.coordinatePrecision!=='shared_area_approx')
+    throw Error('Melezio must have its own Amazon locker icon and approximate ENI-area pin');
    site.conflicts.push({type:'address',note:'Amazon Locator per Melezio segnala erroneamente CAP 70052; citta Bisceglie, indirizzo canonico 76011.'});
   }
  }

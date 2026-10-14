@@ -83,7 +83,7 @@ Non e stato disponibile un elenco completo scaricabile/autenticato degli Hub Ama
 
 ## Revisione ufficiale integrata - 13 ottobre 2026
 
-**Stato aggiornato (sostituisce i riferimenti antecedenti a GLS non verificato e Amazon Melezio non confermato):** l'app integra **58 sedi fisiche** a Bisceglie e **126 appartenenze a reti**, non 126 segnaposti distinti. Le rilevazioni sono conservate con provenienza e data:
+**Stato aggiornato (sostituisce i riferimenti antecedenti a GLS non verificato e Amazon Melezio non confermato):** l'app integra **59 punti operativi distinti** a Bisceglie e **126 appartenenze a reti**: Amazon Locker melezio e il DHL ServicePoint ENI condividono l'area, ma non sono lo stesso sportello. Le rilevazioni sono conservate con provenienza e data:
 
 - Amazon: [40 risultati grezzi, due ricerche da 20](official-amazon-bisceglie-2026-10-13.json) nel selettore https://www.amazon.it/ulp/view, normalizzati a **28 sedi**. Inclusi Melezio ENI PV9033 via Imbriani 258 e MARISTELLA Tamoil, entrambi H24. Veridiana ex PENNY resta rimosso per segnalazione dell'utente; l'autocomplete "peppinay" non prova che il Locker sia selezionabile.
 - DHL Finder eCommerce/partner: [30 sedi con codici, servizi e orari settimanali](official-dhl-finder-bisceglie-2026-10-13.json) da https://www.dhl.com/global-en/microsites/ec/dhl-finder.html. Dei 50 risultati nell'area, **30 sono a Bisceglie e 20 fuori comune**. Ci sono **25 PuntoPoste/Fermoposta** e **5 DHL ServicePoint**, sempre distinguendo queste osservazioni dalle sei precedenti DHL Express.
@@ -96,3 +96,7 @@ Non e stato disponibile un elenco completo scaricabile/autenticato degli Hub Ama
 **Orari:** per una spedizione si consulta SOLO l'orario della rete scelta, senza richiedere che tutte le reti co-localizzate siano simultaneamente aperte. Le schede generiche indicano "almeno una rete aperta" quando i corrieri differiscono. Non garantisce ferie, saturazione del locker o apertura futura all'arrivo.
 
 **Mappa:** il filtro predefinito presenta sedi con riscontro ufficiale; l'utente puo aprire anche le posizioni storiche non ricontrollate. Copertura **parziale**, non censimento esaustivo. UPS ancora senza risultati locali verificati nel locator ufficiale. InPost Ciuffo Wash rimane da ricontrollare (URL precedente reindirizza al locator generico).
+
+### Correzione di visibilita Amazon Locker Melezio - 14 ottobre 2026
+
+Il vecchio modello aggregava Amazon Locker Melezio come membership della sede fisica **Distributore Eni 09033**. Questo rendeva il locker invisibile alla ricerca per parola «melezio», al filtro «Locker» e all'icona dei locker Amazon, nonostante fosse nei dati ufficiali. Ora la mappatura crea un punto separato **Amazon Locker melezio (ENI PV9033)** con tipo `locker_amazon`, orari 24 ore su 24 e membership Amazon per il ritiro ordini, mantenendo la stazione come punto **DHL Express** autonomo. Le coordinate del locker sono quelle indicative dell'area ENI, con ingresso esatto non verificato; il pin separato sara visibile con lieve scostamento cartografico quando i due punti sono visualizzati insieme. Numero sedi operative: 59; appartenenze totali: 126 (invariate).

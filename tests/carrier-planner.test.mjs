@@ -133,10 +133,11 @@ test('Removed Amazon Veridiana ex PENNY is not an active static map location',()
  assert.ok(!/\\bid:\\s*402\\s*,\\s*kind:\\s*["']locker_amazon/.test(html),'obsolete Veridiana pin is still active');
  assert.match(html,/Amazon Locker Veridiana .*DISATTIVATO/);
 });
-test('ENI Melezio stays separate from historical DHL Express base until official import',()=>{
+test('Amazon Melezio has a dedicated locker card, separate from ENI DHL card',()=>{
  const eno=site('eni-09033');
  assert.deepEqual(eno.memberships.map(m=>m.network),['dhl_express']);
  const ui=readFileSync(new URL('../src/carrier-ui.mjs',import.meta.url),'utf8');
- assert.match(ui,/Amazon Locker melezio CONFERMATO nel localizzatore ufficiale Amazon/);
+ assert.match(ui,/if\(s.id==='amazon-melezio'\)/);
+ assert.match(ui,/Amazon Locker melezio: locker Amazon per ritiro ordini/);
  assert.doesNotMatch(ui,/La loro presenza\/abilitazione oggi NON e confermata/);
 });
