@@ -1,0 +1,84 @@
+{
+  "observedAt": "2026-10-14",
+  "scope": "76011 Bisceglie (BT)",
+  "officialIndex": "https://inpost.pl/en/parcel-lockers-bisceglie",
+  "officialPointDetailsDomain": "inpost.it",
+  "type": "official_provider_listing",
+  "count": 8,
+  "recordCountByType": {
+    "locker": 6,
+    "point": 2
+  },
+  "verificationNotes": "Official InPost city listing enumerates all 8 Bisceglie IDs; individual InPost Italy page for Ciuffo Wash states Disponibile, H24, outdoor, max 25 kg. The Italian live locator currently blocks automated browser (Cloudflare), so availability is not independently checked in a completed live map transaction. Coordinate from OSM road centre is APPROXIMATE, not entrance.",
+  "points": [
+    {
+      "code": "ITPBT03592P",
+      "type": "point",
+      "address": "Via Alcide De Gasperi 40",
+      "name": "Posta Privata Nexus",
+      "url": "https://inpost.it/punto-ritiro-itpbt03592p-bisceglie-via-alcide-de-gasperi"
+    },
+    {
+      "code": "ITPBT07090P",
+      "type": "point",
+      "address": "Via Cavour 47",
+      "name": "Tabaccheria",
+      "url": "https://inpost.it/punto-ritiro-itpbt07090p-bisceglie-via-cavour"
+    },
+    {
+      "code": "ITBIS108252F",
+      "type": "locker",
+      "address": "Via Imbriani 212",
+      "name": "Stazione di servizio TOIL",
+      "url": "https://inpost.it/locker-bisceglie-itbis108252f-via-imbriani"
+    },
+    {
+      "code": "ITBIS111893F",
+      "type": "locker",
+      "address": "Via Imbriani snc",
+      "name": "Stazione di servizio IPLANET",
+      "url": "https://inpost.it/locker-bisceglie-itbis111893f-via-imbriani"
+    },
+    {
+      "code": "ITBIS45221M",
+      "type": "locker",
+      "address": "Via Lamaveta",
+      "name": "Stazione di servizio IP",
+      "url": "https://inpost.it/locker-bisceglie-itbis45221m-via-lamaveta"
+    },
+    {
+      "code": "ITBIS43460M",
+      "type": "locker",
+      "address": "Via Mauro Giuliani 8",
+      "name": "Cassetta Petroli",
+      "url": "https://inpost.it/locker-bisceglie-itbis43460m-via-mauro-giuliani"
+    },
+    {
+      "code": "ITBLQ149474B",
+      "type": "locker",
+      "address": "Via Mosca 4",
+      "name": "Ciuffo Wash",
+      "url": "https://inpost.it/locker-bisceglie-itblq149474b-via-mosca",
+      "hourStatus": "H24",
+      "maxWeightKg": 25,
+      "maxDimensionsCm": [
+        41,
+        38,
+        64
+      ],
+      "coordsRoad": [
+        41.2298912,
+        16.5011131
+      ],
+      "coordsPrecision": "road_approx",
+      "coordinateSource": "https://www.openstreetmap.org/way/211261624"
+    },
+    {
+      "code": "ITBIS24842",
+      "type": "locker",
+      "address": "Via Nicola Consiglio 2",
+      "name": "CC Famila",
+      "url": "https://inpost.it/locker-bisceglie-itbis24842-via-nicola-consiglio"
+    }
+  ]
+}
