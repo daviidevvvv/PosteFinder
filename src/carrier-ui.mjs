@@ -505,6 +505,46 @@ async function start(){
    const state=siteOpening(s);return {isOpen:state.open===true,text:state.label,class:state.open===true?'status-open':state.open===false?'status-closed':'status-warning',score:state.open===true?3:state.open===false?0:-1};
   },
   chat:text=>{
+   // A short answer such as "express" or "reso Amazon" updates the existing three-package trip.
+   // Never replace that trip with a fresh carrier-only search.
+   if(activeChatRequest&&rows.children.length){
+    const follow=applyRouteFollowup(text,collectedParcels(),catalog.sites);
+    if(follow.handled){
+     bridge.consumeMessage();bridge.message(text,'user');
+     activeChatRequest.parcels=follow.parcels;
+     if(follow.destination)activeChatRequest.destination=follow.destination;
+     if(follow.maxStops)activeChatRequest.maxStops=follow.maxStops;
+     for(const [i,d] of follow.parcels.entries()){
+      const row=rows.children[i];if(!row)continue;
+      const network=row.querySelector('.parcel-network');network.value=d.network;
+      network.dispatchEvent(new Event('change',{bubbles:true}));
+      const action=row.querySelector('.parcel-action');action.value=d.action||'';
+      action.dispatchEvent(new Event('change',{bubbles:true}));
+      const format=row.querySelector('.parcel-brt-format');format.value=d.brtFormat||'';
+      format.dispatchEvent(new Event('change',{bubbles:true}));
+      row.querySelector('.parcel-assigned').value=d.assignedPointId||'';
+     }
+     const options=originOptions(bridge.state());
+     if(follow.destination){
+      const saved=options.find(o=>o.kind==='place'&&o.label.trim().toLowerCase()===follow.destination);
+      panel.querySelector('#parcel-destination').value=saved?.value||'none';
+     }
+     if(follow.maxStops)panel.querySelector('#parcel-max-stops').value=String(follow.maxStops);
+     const validation=validateParcelSelections(collectedParcels());
+     const summary=collectedParcels().map((p,i)=>'Pacco '+(i+1)+': '+describeParcel(p)).join('\n');
+     panel.querySelector('#parcel-request-banner').textContent=collectedParcels().length+' pacchi nel giro · '+(activeChatRequest.destination==='choose'?'Casa/Palestra da scegliere':activeChatRequest.destination||'arrivo libero')+' · massimo '+(activeChatRequest.maxStops||2)+' soste.';
+     const destinationMissing=activeChatRequest.destination==='choose'&&panel.querySelector('#parcel-destination').value==='none';
+     const next=validation.ok?(destinationMissing?'Scegli Casa oppure Palestra per questo giro.':'I dati necessari ci sono: calcolo il giro, usando soltanto i punti censiti.') : validation.message;
+     bridge.message(follow.message+'\n\n**Situazione aggiornata (non ho eliminato pacchi):**\n'+summary+'\n\n'+next);
+     organizer.open=true;stateSelects();updateStepSummary();setWizardStep(validation.ok?2:1);bridge.showOrganizer();
+     if(validation.ok&&!destinationMissing){
+      const origin=resolveOrigin(panel.querySelector('#parcel-origin').value,bridge.state());
+      const destField=panel.querySelector('#parcel-destination').value;
+      if(origin&&(destField==='none'||resolveOrigin(destField,bridge.state())))panel.querySelector('#parcel-quick-go').click();
+     }
+     return true;
+    }
+   }
    const parsed=parseRouteIntent(text);
    if(!parsed.recognized)return false; // General courier questions stay in Gemini chat.
    bridge.consumeMessage();bridge.message(text,'user');
