@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {makeCatalog} from '../src/carrier-catalog.mjs';
 import {normalizeOfficialSources,amazonHours,dhlHours,glsHours} from '../src/official-normalize.mjs';
 import {validateCatalog,canServe,planParcels,siteOpening,sourceOpen} from '../src/carrier-planner.mjs';
-import {validateParcelSelections} from '../src/parcel-wizard.mjs';
+import {validateParcelSelections,routeDemandPartition} from '../src/parcel-wizard.mjs';
 
 const read=p=>JSON.parse(readFileSync(new URL('../'+p,import.meta.url),'utf8'));
 const mapping=read('research/official-site-mapping-bisceglie-2026-10-13.json');
@@ -178,7 +178,8 @@ test('Amazon Locker melezio is separately visible from ENI DHL Express and searc
 });
 test('Amazon returns are never inferred from a pickup listing',()=>{
  const d={network:'amazon',action:'return_label',labelConfirmed:true};
- assert.equal(validateParcelSelections([d]).ok,false);
+ assert.equal(validateParcelSelections([d]).ok,true,'Choosing a parcel operation alone is allowed without extra modal confirmation');
+ assert.equal(routeDemandPartition([d]).pending.length,1,'But no Amazon Hub dropoff can be inferred from pickup-only membership');
  const r=planParcels(c,[d],{origin:coords,at});
  assert.equal(r.status,'label_required');
  assert.equal(site('amazon-maristella').memberships.find(m=>m.network==='amazon').services.return_qr,'unknown');
