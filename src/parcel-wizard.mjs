@@ -32,9 +32,6 @@ export function validateParcelSelections(demands){
     if(d.action==='pickup' && !d.assignedPointId){
       return {ok:false,index:i,message:prefix+'se il pacco e gia in consegna devi ritirarlo soltanto nel punto indicato nell\'avviso.'};
     }
-    if(d.action!=='pickup' && d.labelConfirmed!==true){
-      return {ok:false,index:i,message:prefix+'conferma il QR o l\'etichetta e le istruzioni del venditore prima di cercare.'};
-    }
   }
   return {ok:true,index:-1,message:''};
 }
