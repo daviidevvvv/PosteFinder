@@ -44,15 +44,14 @@ export function parseRouteIntent(text){
   let action=localAction||'dropoff';
   if(net==='brt'&&action==='return_label'&&digital&&!printed)action='return_qr';
   if(net==='amazon'){
-   // Amazon Hub is usable only for an explicitly assigned pickup.
-   // Amazon returns need the actual carrier specified in the return instructions.
-   action='pickup';
-   if(localAction!=='pickup')issues.push('Amazon: chiarisci se devi ritirare un ordine oppure effettuare un reso; per il reso serve il corriere indicato da Amazon.');
+   // Keep unspecified Amazon items unresolved, never invent a pickup or return carrier.
+   action=localAction==='pickup'?'pickup':localAction==='return_label'?'return_label':'';
+   if(!action)issues.push('Amazon: è un ritiro o un reso? Per il reso indica la rete prevista da Amazon; per il ritiro il Locker/Counter assegnato.');
   }
   if(net==='dhl_unspecified')issues.push('DHL: scegli Express oppure eCommerce come riportato sull’etichetta.');
   if(net==='brt'&&!brtFormat&&action!=='pickup')issues.push('BRT: specifica Digital / QR oppure etichetta stampata.');
   for(let n=0;n<count;n++){
-   parcels.push({network:net,action,brtFormat,assignedPointId:null,labelConfirmed:false});
+   parcels.push({network:net,action,brtFormat,assignedPointId:null});
   }
  }
  if(parcels.length>4)issues.push('Puoi organizzare al massimo quattro pacchi in un giro.');
@@ -63,5 +62,5 @@ export function parseRouteIntent(text){
  else if(/\b(?:verso|a|fino a|per|rientr\w* a|torn\w* a)\s+casa\b|\btorno a casa\b/.test(t))destination='casa';
  const onlyOne=/\b(?:una|1)\s+(?:sola\s+)?(?:sosta|tappa)\b|\bin (?:una|1) (?:botta|colpo)\b/.test(t)&&!/\b(?:due|2)\s+(?:sost[ea]|tapp[ea])\b|\b(?:max|massimo|piu)\s*(?:due|2)\b/.test(t);
  const maxStops=onlyOne?1:2;
- return {recognized:true,parcels,issues,origin,destination,maxStops,explicitAction:Boolean(genericAction),sourceText:String(text),needsReview:issues.length>0||parcels.some(d=>!d.labelConfirmed||d.action==='pickup'&&!d.assignedPointId)};
+ return {recognized:true,parcels,issues,origin,destination,maxStops,explicitAction:Boolean(genericAction),sourceText:String(text),needsReview:issues.length>0||parcels.some(d=>!d.action||d.action==='pickup'&&!d.assignedPointId)};
 }
