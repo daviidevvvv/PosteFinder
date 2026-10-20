@@ -55,7 +55,7 @@ async function start(){
          <select id="parcel-destination" class="block w-full mt-1 border rounded-lg p-2 bg-white"></select>
        </label>
        <div id="parcel-destination-shortcuts" class="flex flex-wrap gap-2" aria-label="Destinazione rapida"></div>
-       <details id="parcel-advanced" class="border rounded-lg bg-white p-2>
+       <details id="parcel-advanced" class="border rounded-lg bg-white p-2">
          <summary class="cursor-pointer font-semibold text-slate-700">Orari e distanza · opzioni avanzate</summary>
          <div class="space-y-2 pt-2">
            <div class="grid grid-cols-2 gap-2">
