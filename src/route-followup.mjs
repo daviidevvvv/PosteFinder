@@ -31,10 +31,10 @@ export function applyRouteFollowup(text,previous,sites=[]){
    }
    return {handled:true,parcels:change(previous,amazon,{action:'return_label'}),message:'Pacco '+(amazon+1)+': reso Amazon. Indica ora il corriere e il tipo di reso mostrati dall’app Amazon; non tutti i locker accettano resi.'};
   }
-  if(previous[amazon].action==='return_label'||previous[amazon].action==='return_qr'){
+  if(['dropoff','return_label','return_qr'].includes(previous[amazon].action)){
    const direct=courier(t);
    if(direct){
-    return {handled:true,parcels:change(previous,amazon,{network:direct,assignedPointId:null}),message:'Il reso Amazon (pacco '+(amazon+1)+') utilizzerà '+direct+'. Il totale resta '+previous.length+' pacchi.'};
+    return {handled:true,parcels:change(previous,amazon,{network:direct,assignedPointId:null}),message:'Pacco '+(amazon+1)+' Amazon: rete '+direct+' impostata per la '+(previous[amazon].action==='dropoff'?'spedizione':'restituzione')+'. Verifica che sia la rete indicata dalle istruzioni Amazon. Il totale resta '+previous.length+' pacchi.'};
    }
   }
   // A named locker can only be selected if a single active, officially catalogued Amazon site matches.
