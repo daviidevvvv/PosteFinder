@@ -490,6 +490,39 @@ async function start(){
    el.addEventListener('click',e=>e.stopPropagation());card.append(el);
   }
  }
+ // Compact, query-filtered official carrier memberships for Gemini general questions.
+ // No GPS, private places, account data, keys or unverified services.
+ bridge.assistantCatalog=(question='')=>{
+  const q=String(question).toLowerCase(),selected=new Set();
+  if(/dhl/.test(q)){
+   if(/express/.test(q))selected.add('dhl_express');
+   else if(/e[\s-]*commerce/.test(q))selected.add('dhl_ecommerce');
+   else{selected.add('dhl_express');selected.add('dhl_ecommerce');}
+  }
+  if(/\bbrt\b|bartolini/.test(q))selected.add('brt');
+  if(/\bin[\s-]*post\b/.test(q))selected.add('inpost');
+  if(/\bups\b/.test(q))selected.add('ups');
+  if(/\bgls\b/.test(q))selected.add('gls');
+  if(/\bposte\b|\bpunto poste\b|\bsda\b/.test(q))selected.add('poste');
+  if(/\bamazon\b/.test(q))selected.add('amazon');
+  const hidden=new Set(bridge.state().removedIds),output=[];
+  for(const site of catalog.sites){
+   if(hidden.has(site.appId))continue;
+   const memberships=site.memberships.filter(m=>m.active===true&&(selected.size===0||selected.has(m.network)));
+   if(!memberships.length)continue;
+   output.push({
+    id:site.id,name:site.name,address:site.address,coordinatePrecision:site.coordinatePrecision,
+    memberships:memberships.map(m=>({network:m.network,carrier:NETWORKS[m.network],pointId:m.pointId,
+     status:sourceOpen(m)===true?'within_source_hours':sourceOpen(m)===false?'outside_source_hours':'hours_or_recency_uncertain',
+     services:m.services,brtDigitalStatus:m.brtDigitalStatus||null,
+     observedAt:m.observedAt,hours:m.hours,limitations:(m.conditions||[]).slice(0,3),
+     sourceUrl:m.sourceDetailsUrl||m.sourceUrl,providerCapabilities:m.providerCapabilities||null}))
+   });
+  }
+  return {scope:'Bisceglie (BT), copertura parziale',catalogObservedAt:catalog.observedAt,
+   warning:'CONDITIONAL non significa accettazione certa; QR ignoto non si inventa. Ritiro assegnato non si sposta. Dati non in tempo reale.',
+   selectedNetworks:[...selected],sites:output};
+ };
  bridge.install({beforeRefresh:audit,decorate,
   baseFilter:l=>bridge.state().filter==='poste'&&byLegacy.has(l.id)?byLegacy.get(l.id).memberships.some(m=>m.network==='poste'):null,
   filter:l=>selectedNetwork==='all'||Boolean(byLegacy.get(l.id)?.memberships.some(m=>m.active===true&&(selectedNetwork==='verified'||(selectedNetwork==='brt_digital'?(m.network==='brt'&&m.brtDigitalStatus!=='not_supported_reported'):m.network===selectedNetwork)))),
