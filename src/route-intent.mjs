@@ -59,7 +59,7 @@ export function parseRouteIntent(text){
  const origin=/\bda(?:lla)?\s+palestra\b/.test(t)?'palestra':/\bda\s+casa\b/.test(t)?'casa':'gps';
  let destination=null;
  if(/\bcasa\s*(?:o|oppure|\/)\s*(?:la\s+)?palestra\b|\bpalestra\s*(?:o|oppure|\/)\s*casa\b/.test(t))destination='choose';
- else if(/\b(?:verso|a|alla|fino a|per|rientr\w* a|torn\w* a)\s+(?:la\s+)?palestra\b/.test(t))destination='palestra';
+ else if(/\b(?:verso|a|alla|in|fino a|per|rientr\w* a|torn\w* a)\s+(?:la\s+)?palestra\b/.test(t))destination='palestra';
  else if(/\b(?:verso|a|fino a|per|rientr\w* a|torn\w* a)\s+casa\b|\btorno a casa\b/.test(t))destination='casa';
  const onlyOne=/\b(?:una|1)\s+(?:sola\s+)?(?:sosta|tappa)\b|\bin (?:una|1) (?:botta|colpo)\b/.test(t)&&!/\b(?:due|2)\s+(?:sost[ea]|tapp[ea])\b|\b(?:max|massimo|piu)\s*(?:due|2)\b/.test(t);
  const maxStops=onlyOne?1:2;
