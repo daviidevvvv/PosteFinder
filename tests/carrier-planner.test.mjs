@@ -78,7 +78,7 @@ test('DHL eCommerce is never silently substituted with Express',()=>{
  const p=planParcels(c,[demand('dhl_ecommerce')],opts);assert.equal(p.status,'incomplete_coverage');assert.equal(p.missing[0].network,'dhl_ecommerce');
 });
 test('Amazon requires actual label carrier',()=>assert.equal(planParcels(c,[demand('amazon')],opts).status,'label_required'));
-test('correct label confirmation is mandatory',()=>assert.equal(planParcels(c,[{network:'brt',action:'dropoff'}],opts).status,'label_required'));
+test('No artificial QR checkbox gate in route planning',()=>assert.equal(planParcels(c,[{network:'brt',action:'dropoff'}],opts).status,'ok'));
 test('delivered pickup cannot move to another shop',()=>{
  assert.equal(planParcels(c,[demand('brt','pickup')],opts).status,'assigned_point_required');
  const p=planParcels(c,[{...demand('brt','pickup'),assignedPointId:'nexus'}],opts);
