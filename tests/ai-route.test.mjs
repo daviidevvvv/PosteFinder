@@ -11,12 +11,12 @@ test('One colloquial message becomes three separate packages, GPS to Casa/Palest
  assert.equal(result.recognized,true);
  assert.deepEqual(result.parcels.map(p=>p.network),['dhl_unspecified','brt','amazon']);
  assert.equal(result.parcels[1].brtFormat,'digital');
- assert.equal(result.parcels[2].action,'');
+ assert.equal(result.parcels[2].action,'dropoff');
  assert.equal(result.origin,'gps');
  assert.equal(result.destination,'choose');
  assert.equal(result.maxStops,2);
  assert.ok(result.issues.some(i=>i.includes('DHL')));
- assert.ok(result.issues.some(i=>i.includes('Amazon')));
+ assert.ok(!result.issues.some(i=>/ritiro o reso/i.test(i)));
  assert.ok(result.parcels.every(p=>!Object.hasOwn(p,'labelConfirmed')));
 });
 test('Casa o in palestra is a two-destination choice, not just Palestra',()=>{
@@ -41,6 +41,27 @@ test('Amazon return handled by explicit carrier is not a phantom extra parcel',(
  const r=parseRouteIntent('Ho 1 reso Amazon con DHL Express, da qui a casa');
  assert.deepEqual(r.parcels.map(p=>p.network),['dhl_express']);
  assert.equal(r.parcels[0].action,'return_label');
+});
+test('Ordinary Amazon parcel defaults to shipping instead of a pickup/return question',()=>{
+ const p=parseRouteIntent('Ho un pacco Amazon e uno BRT, devo andare da qui a casa');
+ assert.equal(p.parcels[0].network,'amazon');
+ assert.equal(p.parcels[0].action,'dropoff');
+ assert.equal(p.parcels[1].action,'dropoff');
+ assert.equal(p.parcels[1].brtFormat,'printed');
+ assert.doesNotMatch(p.issues.join(' '),/ritiro o reso/i);
+});
+test('Amazon with an explicit shipping carrier does not count as two physical parcels',()=>{
+ const p=parseRouteIntent('Ho 1 pacco Amazon con Poste, tornando a casa');
+ assert.equal(p.parcels.length,1);
+ assert.equal(p.parcels[0].network,'poste');
+ assert.equal(p.parcels[0].action,'dropoff');
+});
+test('UI keeps operation choice collapsed and never requires a ritiro-vs-reso answer by default',()=>{
+ const ui=readFileSync(new URL('../src/carrier-ui.mjs',import.meta.url),'utf8');
+ assert.match(ui,/<details class="parcel-operation-details/);
+ assert.match(ui,/Operazione diversa dalla spedizione\? \(facoltativo\)/);
+ assert.doesNotMatch(ui,/Seleziona cosa devi fare|specifica se è un ritiro o un reso/);
+ assert.match(ui,/PERCORSO PARZIALE/);
 });
 test('One stop only is distinguished from two stops',()=>{
  assert.equal(parseRouteIntent('Spedisco un pacco BRT Digital in una sola sosta andando a casa').maxStops,1);
