@@ -29,7 +29,7 @@ export function parseRouteIntent(text){
  const recognized=hits.length>0&&(tripWords||hasParcelWords&&hits.length>1||hasParcelWords&&!/\b(?:cos.e|significa|differenza|quanto costa)\b/.test(t));
  if(!recognized)return {recognized:false,parcels:[],issues:[]};
  const parcels=[],issues=[];
- const genericAction=actionAround('',t.replace(CARRIERS,' '));
+ const genericAction=actionAround(t.slice(0,hits[0].start),'');
  for(let i=0;i<hits.length;i++){
   const hit=hits[i],before=t.slice(i?hits[i-1].end:0,hit.start);
   const after=t.slice(hit.end,i+1<hits.length?hits[i+1].start:t.length);
