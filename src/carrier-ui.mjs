@@ -294,11 +294,47 @@ async function start(){
  }
  addRow('brt','dropoff','');
  panel.querySelector('#parcel-add').addEventListener('click',()=>addRow());
+ panel.querySelector('#parcel-quick-go').addEventListener('click',()=>{
+  const validation=validateParcelSelections(collectedParcels());
+  if(!validation.ok){setWizardStep(1);reportWizardError('parcel-parcel-error',validation.message);return;}
+  panel.querySelector('#parcel-max-stops').value=String(activeChatRequest?.maxStops??2);
+  stateSelects();updateStepSummary();setWizardStep(2);
+  const selectedDestination=panel.querySelector('#parcel-destination').value;
+  if(activeChatRequest?.destination==='choose'&&selectedDestination==='none'){
+   reportWizardError('parcel-location-error','Scegli la destinazione: Casa oppure Palestra.');
+   return;
+  }
+  if(activeChatRequest?.destination&&activeChatRequest.destination!=='choose'&&selectedDestination==='none'){
+   reportWizardError('parcel-location-error','La destinazione richiesta deve essere configurata e selezionata.');
+   return;
+  }
+  if(panel.querySelector('#parcel-origin').value==='gps'&&!resolveOrigin('gps',bridge.state())){
+   reportWizardError('parcel-location-error','Autorizza il GPS del browser: il percorso deve partire dalla posizione reale.');
+   if(quickGpsInterval)clearInterval(quickGpsInterval);
+   bridge.locate(); // Only in response to an explicit user click.
+   let checks=0;
+   quickGpsInterval=setInterval(()=>{
+    checks++;
+    if(resolveOrigin('gps',bridge.state())){
+     clearInterval(quickGpsInterval);quickGpsInterval=null;
+     stateSelects();panel.querySelector('#parcel-origin').value='gps';
+     panel.querySelector('#parcel-calculate').click();
+    }else if(checks>=24){
+     clearInterval(quickGpsInterval);quickGpsInterval=null;
+     reportWizardError('parcel-location-error','GPS non disponibile: consenti la posizione a PosteFinder oppure scegli un luogo di partenza salvato.');
+    }
+   },500);
+   return;
+  }
+  panel.querySelector('#parcel-calculate').click();
+ });
  panel.querySelector('#parcel-calculate').addEventListener('click',()=>{
   const demands=collectedParcels(),validation=validateParcelSelections(demands);
   if(!validation.ok){reportWizardError('parcel-parcel-error',validation.message);setWizardStep(1);return;}
   const state=bridge.state(),origin=resolveOrigin(panel.querySelector('#parcel-origin').value,state);
   const target=panel.querySelector('#parcel-destination').value;
+  if(activeChatRequest?.destination==='choose'&&target==='none'){reportWizardError('parcel-location-error','Scegli Casa oppure Palestra per questo giro.');return;}
+  if(activeChatRequest?.destination&&activeChatRequest.destination!=='choose'&&target==='none'){reportWizardError('parcel-location-error','Seleziona la destinazione richiesta.');return;}
   const destination=target==='none'?null:resolveOrigin(target,state);
   if(!origin){
    reportWizardError('parcel-location-error',panel.querySelector('#parcel-origin').value==='gps'
@@ -314,7 +350,7 @@ async function start(){
   updateStepSummary();setWizardStep(3);
   const liveIds=new Set(bridge.locations().map(l=>l.id));
   const exclusions=catalog.sites.filter(s=>state.removedIds.includes(s.appId)||!liveIds.has(s.appId)).map(s=>s.id);
-  const plan=planParcels(catalog,demands,{origin,destination,openOnly:panel.querySelector('#parcel-open').checked,radiusKm:Number(panel.querySelector('#parcel-radius').value),maxStops:Number(panel.querySelector('#parcel-max-stops').value),excludedSiteIds:exclusions});
+  const plan=planParcels(catalog,demands,{origin,destination,openOnly:panel.querySelector('#parcel-open').checked,radiusKm:Number(panel.querySelector('#parcel-radius').value),maxStops:Number(panel.querySelector('#parcel-max-stops').value),maxResults:8,excludedSiteIds:exclusions});
   result.replaceChildren();
   if(plan.status!=='ok'&&plan.status!=='provisional'){
    const p=document.createElement('p');p.className='rounded border border-amber-200 bg-amber-50 p-2';p.textContent=plan.message;
@@ -431,5 +467,5 @@ async function start(){
  });
  bridge.replaceLocations([...original,...additions]);bridge.refresh();
  timer=setInterval(()=>{if(organizer.open&&wizardStep===2)stateSelects();},30000);
- window.addEventListener('pagehide',()=>{clearInterval(timer);if(geolocationPoll)clearInterval(geolocationPoll);},{once:true});
+ window.addEventListener('pagehide',()=>{clearInterval(timer);if(geolocationPoll)clearInterval(geolocationPoll);if(quickGpsInterval)clearInterval(quickGpsInterval);},{once:true});
 }
