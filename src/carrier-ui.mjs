@@ -1,5 +1,6 @@
 import {NETWORKS,ACTIONS,validateCatalog,siteOpening,sourceOpen,planParcels,navigationUrl,metres} from './carrier-planner.mjs';
 import {parseRouteIntent} from './route-intent.mjs';
+import {applyRouteFollowup} from './route-followup.mjs';
 import {rankRoadPlans} from './road-routing.mjs';
 import {MAX_PARCELS,describeParcel,validateParcelSelections,originOptions,defaultOrigin,resolveOrigin} from './parcel-wizard.mjs';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
