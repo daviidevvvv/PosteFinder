@@ -8,9 +8,32 @@ const at='2026-10-12T08:30:00Z',origin=[41.2400,16.5040];
 const demand=(network,action='return_label')=>({network,action,labelConfirmed:true});
 const site=id=>c.sites.find(s=>s.id===id);
 const opts={origin,at};
-test('21 physical sites / 24 carrier memberships / stable legacy ids',()=>{
- assert.equal(validateCatalog(c),true);assert.equal(c.sites.length,21);assert.equal(c.sites.reduce((n,s)=>n+s.memberships.length,0),24);
+test('21 physical sites / 25 carrier memberships / stable legacy ids',()=>{
+ assert.equal(validateCatalog(c),true);assert.equal(c.sites.length,21);assert.equal(c.sites.reduce((n,s)=>n+s.memberships.length,0),25);
  assert.equal(site('edicolandia').legacyId,5);assert.equal(site('trentadue').legacyId,19);
+});
+test('Trentadue is one physical shop for BRT, DHL Express and official InPost print-only',()=>{
+ const s=site('trentadue'),inpost=s.memberships.find(m=>m.network==='inpost');
+ assert.ok(inpost);
+ assert.equal(s.legacyId,19);
+ assert.equal(inpost.pointId,'ITPBT09528P');
+ assert.equal(inpost.observedAt,'2026-10-20');
+ assert.deepEqual(inpost.limits.maxDimensionsCm,[39,38,64]);
+ assert.match(inpost.conditions.join(' '),/etichetta stampata/i);
+ assert.equal(inpost.services.return_qr,'unknown');
+ assert.equal(canServe(s,demand('inpost','return_qr'),{at:'2026-10-20T17:40:00Z'}),false);
+ assert.equal(canServe(s,demand('inpost'),{at:'2026-10-20T17:40:00Z'}),true);
+ assert.equal(canServe(s,demand('brt'),{at:'2026-10-20T17:40:00Z'}),false,'BRT closes at 19:30, independently of InPost at 20:00');
+ assert.equal(canServe(s,{...demand('inpost'),dimensionsCm:[40,38,64]},{at:'2026-10-20T17:40:00Z'}),false);
+});
+test('Ciuffo Wash is pending, not declared closed or offered for routes',()=>{
+ const s=site('inpost-ciuffo-wash'),m=s.memberships.find(v=>v.network==='inpost');
+ assert.equal(m.verificationStatus,'pending_recheck');
+ assert.equal(m.active,false);
+ assert.equal(m.observedAt,'2026-10-14');
+ assert.match(m.verificationNote,/IN SOSPESO/);
+ assert.equal(canServe(s,demand('inpost'),{at:'2026-10-20T10:00:00Z',openOnly:false}),false);
+ assert.equal(siteOpening(s,'2026-10-20T10:00:00Z').open,null);
 });
 test('DHL Express plus BRT offers one physical stop, not duplicate pins',()=>{
  const p=planParcels(c,[demand('dhl_express'),demand('brt')],opts);assert.equal(p.status,'ok');
