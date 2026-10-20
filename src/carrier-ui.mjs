@@ -349,8 +349,17 @@ async function start(){
   updateStepSummary();setWizardStep(3);
   const liveIds=new Set(bridge.locations().map(l=>l.id));
   const exclusions=catalog.sites.filter(s=>state.removedIds.includes(s.appId)||!liveIds.has(s.appId)).map(s=>s.id);
-  const plan=planParcels(catalog,demands,{origin,destination,openOnly:panel.querySelector('#parcel-open').checked,radiusKm:Number(panel.querySelector('#parcel-radius').value),maxStops:Number(panel.querySelector('#parcel-max-stops').value),maxResults:8,excludedSiteIds:exclusions});
+  const partition=routeDemandPartition(demands);
+  const pending=partition.pending;
+  const plan=partition.plannable.length?planParcels(catalog,partition.plannable,{origin,destination,openOnly:panel.querySelector('#parcel-open').checked,radiusKm:Number(panel.querySelector('#parcel-radius').value),maxStops:Number(panel.querySelector('#parcel-max-stops').value),maxResults:8,excludedSiteIds:exclusions}):
+    {status:'incomplete_coverage',message:'Non ci sono ancora pacchi associati a una rete con servizio di consegna verificato.',missing:[],plans:[]};
   result.replaceChildren();
+  if(pending.length){
+   const note=document.createElement('p');
+   note.className='rounded border border-amber-300 bg-amber-50 px-3 py-2 text-amber-950 font-medium text-xs';
+   note.textContent='PERCORSO PARZIALE: '+partition.plannable.length+' pacchi su '+demands.length+' con rete specificata. '+pending.map(item=>'Pacco '+(item.index+1)+' Amazon NON incluso: i Locker non sono abilitati universalmente alle spedizioni. Indica il corriere o punto abilitato nelle istruzioni Amazon.').join(' ');
+   result.append(note);
+  }
   if(plan.status!=='ok'&&plan.status!=='provisional'){
    const p=document.createElement('p');p.className='rounded border border-amber-200 bg-amber-50 p-2';p.textContent=plan.message;
    if(plan.missing?.length)p.textContent+=' Da coprire: '+plan.missing.map(d=>NETWORKS[d.network]).join(', ');
@@ -359,7 +368,7 @@ async function start(){
    return;
   }
   const summary=document.createElement('p');summary.className='font-semibold text-slate-700';
-  summary.textContent='Risultati sul catalogo disponibile (non tutta la rete). Orari fonte alla partenza: '+new Date(plan.evaluatedAt).toLocaleString('it-IT',{timeZone:'Europe/Rome'});
+  summary.textContent=(pending.length?'Giro PARZIALE per '+partition.plannable.length+' di '+demands.length+' pacchi. ':'Giro per '+demands.length+' pacchi. ')+'Risultati sul catalogo disponibile. Orari fonte alla partenza: '+new Date(plan.evaluatedAt).toLocaleString('it-IT',{timeZone:'Europe/Rome'});
   result.append(summary);
   if(plan.status==='provisional'){
    const caution=document.createElement('p');caution.className='rounded border border-amber-300 bg-amber-50 p-2 font-semibold text-amber-900';
@@ -406,7 +415,7 @@ async function start(){
     const link=document.createElement('a');
     link.className='block text-center rounded bg-blue-600 text-white py-2 mt-2 font-semibold';
     link.target='_blank';link.rel='noopener noreferrer';link.href=navigationUrl(p,{origin,destination});
-    link.textContent='Apri il giro in Google Maps';
+    link.textContent=pending.length?'Apri il giro PARZIALE in Google Maps':'Apri il giro in Google Maps';
     el.append(link);cardList.append(el);
    }
   };
@@ -415,7 +424,8 @@ async function start(){
    const best=plan.plans[0];
    const stopText=best.stops.map((v,i)=>(i+1)+'. '+v.name+' — '+v.address).join('\n');
    const warning=plan.status==='provisional'?'**BRT Digital: punti candidati, QR da confermare prima di partire.**\n\n':'';
-   bridge.message(warning+'Ho trovato un giro di '+best.stops.length+' '+(best.stops.length===1?'sosta':'soste')+' partendo dal luogo selezionato, passando dai seguenti punti:\n'+stopText+'\n\nLa distanza iniziale è **indicativa, in linea d’aria**, non una stima di guida. [Apri su Google Maps]('+navigationUrl(best,{origin,destination})+'). Per verificare la distanza su strada, usa il pulsante nel riepilogo.');
+   const coverage=pending.length?'**Giro parziale: '+partition.plannable.length+'/'+demands.length+' pacchi coperti. Il pacco Amazon resta nell’elenco ma non è incluso nelle soste finché non si conosce la rete abilitata.**\n\n':'';
+   bridge.message(coverage+warning+'Ho trovato un giro di '+best.stops.length+' '+(best.stops.length===1?'sosta':'soste')+' partendo dal luogo selezionato, passando dai seguenti punti:\n'+stopText+'\n\nLa distanza iniziale è **indicativa, in linea d’aria**, non una stima di guida. [Apri su Google Maps]('+navigationUrl(best,{origin,destination})+'). Per verificare la distanza su strada, usa il pulsante nel riepilogo.');
   }
   const roadPanel=document.createElement('div');roadPanel.className='border-t border-slate-200 pt-2 mt-2 space-y-1';
   const roadButton=document.createElement('button');roadButton.type='button';
@@ -435,7 +445,7 @@ async function start(){
     roadStatus.textContent='Ordinati per tempo di guida stimato OSRM (senza traffico e senza attesa nei negozi). Confronta il percorso finale in Google Maps.';
     if(activeChatRequest){
      const best=ranked.plans[0];
-     bridge.message('Confronto su strade completato: '+best.stops.length+' '+(best.stops.length===1?'sosta':'soste')+', circa '+(best.roadDistanceMetres/1000).toFixed(2)+' km e '+Math.max(1,Math.round(best.roadDurationSeconds/60))+' min di guida stimata. [Apri in Google Maps]('+navigationUrl(best,{origin,destination})+'). Non include traffico in tempo reale né tempi di consegna.');
+     bridge.message((pending.length?'**Giro parziale per '+partition.plannable.length+'/'+demands.length+' pacchi, Amazon non incluso.**\n\n':'')+'Confronto su strade completato: '+best.stops.length+' '+(best.stops.length===1?'sosta':'soste')+', circa '+(best.roadDistanceMetres/1000).toFixed(2)+' km e '+Math.max(1,Math.round(best.roadDurationSeconds/60))+' min di guida stimata. [Apri in Google Maps]('+navigationUrl(best,{origin,destination})+'). Non include traffico in tempo reale né tempi di consegna.');
     }
    }catch(err){
     roadStatus.textContent='Stima stradale non disponibile: '+(err?.name==='AbortError'?'tempo scaduto':err?.message||'connessione non riuscita')+'. Restano validi i suggerimenti geometrici.';
