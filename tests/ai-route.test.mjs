@@ -19,6 +19,11 @@ test('One colloquial message becomes three separate packages, GPS to Casa/Palest
  assert.ok(result.issues.some(i=>i.includes('Amazon')));
  assert.ok(result.parcels.every(p=>!Object.hasOwn(p,'labelConfirmed')));
 });
+test('Casa o in palestra is a two-destination choice, not just Palestra',()=>{
+ const p=parseRouteIntent('Ho 1 pacco DHL express, 1 Bartolini Digital e 1 Amazon. Parto da qui, devo andare a casa o in palestra. Trovami il giro con massimo 2 soste.');
+ assert.equal(p.destination,'choose');
+ assert.equal(p.parcels.length,3);
+});
 test('Explicit DHL Express and gym destination are preserved',()=>{
  const r=parseRouteIntent('Parto da qui: devo spedire 1 DHL Express e 1 Bartolini con etichetta stampata, andando in palestra, massimo 2 soste.');
  assert.deepEqual(r.parcels.map(p=>p.network),['dhl_express','brt']);
