@@ -79,7 +79,7 @@ export function canServe(site,demand,{at=new Date(),maxDays=30,openOnly=true,all
   if(!['confirmed','conditional','assigned_only'].includes(support)) return false;
   if(demand.action==='pickup') {
     if(!demand.assignedPointId||![site.id,m.pointId].includes(demand.assignedPointId)) return false;
-  } else if(demand.labelConfirmed!==true) return false;
+  }
   const limit=m.limits||{};
   if(demand.weightKg!=null&&(!Number.isFinite(demand.weightKg)||demand.weightKg<=0||demand.weightKg>(limit.maxWeightKg??Infinity))) return false;
   if(demand.pieces!=null&&(!Number.isInteger(demand.pieces)||demand.pieces<1||demand.pieces>(limit.maxPieces??Infinity))) return false;
@@ -97,15 +97,14 @@ export function canServe(site,demand,{at=new Date(),maxDays=30,openOnly=true,all
 // Minimum physical stops, then geometric route length. Not a street-routing optimum.
 export function planParcels(catalog,demands,options={}) {
   validateCatalog(catalog);
-  const {origin,destination=null,at=new Date(),openOnly=true,radiusKm=10,maxStops=3,excludedSiteIds=[]}=options;
+  const {origin,destination=null,at=new Date(),openOnly=true,radiusKm=10,maxStops=3,maxResults=3,excludedSiteIds=[]}=options;
   if(!validCoords(origin)) return {status:'origin_required',plans:[],message:'Seleziona Trovami oppure un luogo salvato. Non uso il centro citta al posto della tua posizione.'};
   if(destination!==null&&!validCoords(destination)) return {status:'destination_required',plans:[],message:'Configura le coordinate del luogo di arrivo.'};
   if(!Array.isArray(demands)||demands.length<1||demands.length>4) return {status:'invalid_demands',plans:[],message:'Scegli da uno a quattro pacchi/corrieri.'};
   if(demands.some(d=>!NETWORKS[d.network]||!ACTIONS[d.action]||(d.network==='brt'&&d.brtFormat!=null&&!['digital','printed'].includes(d.brtFormat)))) return {status:'invalid_demands',plans:[],message:'Corriere, formato BRT o operazione non riconosciuti.'};
   if(demands.some(d=>d.network==='amazon'&&d.action!=='pickup')) return {status:'label_required',plans:[],message:'I punti Amazon Hub verificati consentono la selezione per il RITIRO di un ordine; per un reso scegli il corriere e il metodo proposti nell ordine.'};
   if(demands.some(d=>d.action==='pickup'&&!d.assignedPointId)) return {status:'assigned_point_required',plans:[],message:'Un ritiro gia consegnato va effettuato nel punto indicato nell\'avviso. Selezionalo: non posso sostituirlo con un altro negozio.'};
-  if(demands.some(d=>d.action!=='pickup'&&d.labelConfirmed!==true)) return {status:'label_required',plans:[],message:'Conferma che etichetta/QR e limiti del pacco sono compatibili con la rete selezionata.'};
-  if(!Number.isFinite(radiusKm)||radiusKm<=0||radiusKm>100||!Number.isInteger(maxStops)||maxStops<1||maxStops>4) throw new Error('Limiti di ricerca non validi');
+  if(!Number.isFinite(radiusKm)||radiusKm<=0||radiusKm>100||!Number.isInteger(maxStops)||maxStops<1||maxStops>4||!Number.isInteger(maxResults)||maxResults<1||maxResults>12) throw new Error('Limiti di ricerca non validi');
   const maxDays=catalog.maxSourceAgeDays??30, full=(1<<demands.length)-1;
   const eligibleFor=allowProvisionalBrtDigital=>catalog.sites.filter(s=>!excludedSiteIds.includes(s.id)&&metres(origin,s.coords)<=radiusKm*1000)
     .map(site=>({site,mask:demands.reduce((mask,d,i)=>canServe(site,d,{at,maxDays,openOnly,allowProvisionalBrtDigital}) ? mask|(1<<i) : mask,0)})).filter(x=>x.mask);
@@ -135,7 +134,7 @@ export function planParcels(catalog,demands,options={}) {
   }
   if(!solutions.length)return {...base,status:'stop_limit',plans:[],missing:[],message:`Nessuna combinazione trovata entro ${maxStops} soste. Aumenta il limite o dividi i pacchi.`};
   const direct=destination?metres(origin,destination):0;
-  const plans=solutions.sort((a,b)=>a.total-b.total).slice(0,3).map(s=>({
+  const plans=solutions.sort((a,b)=>a.total-b.total).slice(0,maxResults).map(s=>({
     stops:s.path.map(i=>eligible[i].site),distanceMetres:Math.round(s.total),extraMetres:destination?Math.max(0,Math.round(s.total-direct)):null,
     assignments:demands.map((d,i)=>{const assigned=s.path.map(j=>eligible[j]).find(p=>p.mask&(1<<i)).site;return {demandIndex:i,network:d.network,action:d.action,brtFormat:isBrtDigital(d)?'digital':d.brtFormat,provisional:isBrtDigital(d)&&assigned.memberships.find(m=>m.network==='brt')?.brtDigitalStatus!=='confirmed',siteId:assigned.id};}),
     warnings:['Distanze in linea d\'aria: ordine indicativo, non chilometri stradali.','Orari verificati alla partenza selezionata, non all\'arrivo; verifica chiusure, tempi di viaggio, etichetta, peso e ingombri.',...(s.path.some(i=>siteOpening(eligible[i].site,at,maxDays).conflict)?['Orari discordanti fra reti sullo stesso negozio: il planner ha controllato il singolo corriere richiesto.']:[]),...(s.path.some(i=>eligible[i].site.coordinatePrecision==='street_approx')?['Alcuni pin sono geocodificati sulla strada, NON presso l ingresso: confronta il civico prima di partire.']:[]),...(provisional?['BRT Digital / QR NON confermato per i punti proposti: questi sono solo CANDIDATI da contattare prima di partire. Edicolandia esclusa per segnalazione di mancata accettazione.']:[])]

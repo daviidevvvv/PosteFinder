@@ -476,6 +476,7 @@
     let customPlaces = JSON.parse(localStorage.getItem('custom_places') || '[]');
     let userApiKey = localStorage.getItem('gemini_api_key') || "";
     const GEMINI_MODEL = 'gemini-3.8-flash';
+    const geminiChatHistory = []; // In-memory only, bounded context for follow-up questions.
 
     // ============================================================
     // ICONS
@@ -1375,12 +1376,11 @@
       const loadingId = addLoadingMessage();
 
       try {
-        const activeLocations = LOCATIONS_DATA
+        const activeLocations = window.PosteFinderCarriers?.assistantCatalog?.(message) || LOCATIONS_DATA
           .filter(l => !removedIds.includes(l.id))
           .map(l => {
             const status = getOpeningStatus(l.schedule);
-            return { name:l.realName, status:status.text, type:l.kind, services:l.services,
-                     address:l.address, coords:l.coords };
+            return {name:l.realName,status:status.text,type:l.kind,services:l.services,address:l.address};
           });
 
         // Send private route context only when the user explicitly asks about their journey.
@@ -1395,17 +1395,23 @@ Sei "Assistente Postale" di PosteFinder, un'app di Bisceglie.
 Rispondi in italiano in modo chiaro e sintetico. Utilizza soltanto i punti elencati.
 Non inventare corrieri accettati, orari, disponibilità o percorsi stradali.
 Gli orari sono indicativi e da verificare; distinguere servizi confermati e dati non verificati.
-Per richieste "di strada verso casa" usa coordinate e direzione solo se presenti: non hai un navigatore stradale.
-Se manca la posizione o quella di Casa, chiedi all'utente di configurarle.
+Per ogni corriere usa ESCLUSIVAMENTE le membership nel catalogo: una sede con DHL eCommerce NON è automaticamente abilitata a DHL Express o viceversa.
+Interpreta services: "confirmed" è una conferma solo dell'operazione specifica; "conditional" richiede condizioni aggiuntive; "unknown" significa NON VERIFICATO; "assigned_only" vale soltanto per il punto indicato nell'ordine.
+BRT Digital/QR è confermato solo con brtDigitalStatus="confirmed"; non consigliarlo come verificato se "unknown" o "not_supported_reported".
+Amazon Hub non è una rete generica di resi. Il reso segue il corriere e le istruzioni dell'ordine; non cancellare pacchi da una lista soltanto perché è ambiguo.
+Per domande su 2 o più spedizioni o sul tragitto usa il calcolatore dedicato Organizza pacchi; tu puoi spiegare i dati ma NON inventare il percorso ottimo.
+Non inventare orari, disponibilità né tempi di percorrenza. Se manca il GPS o Casa, chiedi di configurare i luoghi.
 CONTESTO TRAGITTO (solo se richiesto): ${JSON.stringify(routeContext)}.
-LISTA PUNTI + STATO: ${JSON.stringify(activeLocations)}.
+CATALOGO UFFICIALE STRUTTURATO (osservazioni puntuali per rete): ${JSON.stringify(activeLocations)}.
         `.trim();
 
+        const recentTurns=geminiChatHistory.slice(-8);
+        while(recentTurns.length&&recentTurns[0].role!=='user')recentTurns.shift();
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`, {
           method:'POST',
           headers:{ 'Content-Type':'application/json', 'x-goog-api-key': keyToUse },
           body: JSON.stringify({
-            contents:[{ parts:[{ text: message }] }],
+            contents:recentTurns.length?recentTurns:[{role:'user',parts:[{text:message}]}],
             systemInstruction:{ parts:[{ text: systemPrompt }] },
             generationConfig:{ thinkingConfig:{ thinkingLevel:'low' } }
           })
@@ -1449,6 +1455,10 @@ LISTA PUNTI + STATO: ${JSON.stringify(activeLocations)}.
     }
 
     function addMessage(text, sender) {
+      if(sender==='user'||sender==='ai'){
+        geminiChatHistory.push({role:sender==='user'?'user':'model',parts:[{text:String(text).slice(0,2300)}]});
+        if(geminiChatHistory.length>10)geminiChatHistory.splice(0,geminiChatHistory.length-10);
+      }
       const container = document.getElementById('chat-messages');
       const div = document.createElement('div');
 

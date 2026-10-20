@@ -5,7 +5,7 @@ import {ACTIONS,NETWORKS,isBrtDigital,validCoords} from './carrier-planner.mjs';
 export const MAX_PARCELS=4;
 
 export function describeParcel(demand){
-  const carrier=NETWORKS[demand?.network]||'Corriere da scegliere';
+  const carrier=demand?.network==='amazon'&&demand?.action!=='pickup'?'Amazon (rete di consegna da verificare)':NETWORKS[demand?.network]||'Corriere da scegliere';
   if(demand?.action==='pickup')return carrier+' · Ritiro nel punto assegnato';
   const mode=demand?.network==='brt'
     ? (isBrtDigital(demand)?' · Digital / QR':' · Etichetta stampata')
@@ -19,24 +19,35 @@ export function validateParcelSelections(demands){
   }
   for(let i=0;i<demands.length;i++){
     const d=demands[i],prefix='Pacco '+(i+1)+': ';
+    if(d.network==='dhl_unspecified')return {ok:false,index:i,message:prefix+'DHL Express oppure DHL eCommerce? Basta indicarlo.'};
     if(!NETWORKS[d.network] || !ACTIONS[d.action]){
-      return {ok:false,index:i,message:prefix+'scegli un corriere e un\'operazione.'};
-    }
-    if(d.network==='amazon'&&d.action!=='pickup'){
-      return {ok:false,index:i,message:prefix+'gli Amazon Hub sono confermati come punti di RITIRO ordini; per un reso scegli il corriere indicato nelle istruzioni Amazon.'};
+      return {ok:false,index:i,message:prefix+'scegli il corriere e il tipo di operazione.'};
     }
     if(d.network==='brt' && d.action!=='pickup' &&
-       d.action!=='return_qr' && !['digital','printed'].includes(d.brtFormat)){
-      return {ok:false,index:i,message:prefix+'scegli BRT Digital / QR oppure etichetta stampata.'};
+       d.action!=='return_qr' && d.brtFormat!=null && !['digital','printed'].includes(d.brtFormat)){
+      return {ok:false,index:i,message:prefix+'tipo BRT non riconosciuto.'};
     }
     if(d.action==='pickup' && !d.assignedPointId){
       return {ok:false,index:i,message:prefix+'se il pacco e gia in consegna devi ritirarlo soltanto nel punto indicato nell\'avviso.'};
     }
-    if(d.action!=='pickup' && d.labelConfirmed!==true){
-      return {ok:false,index:i,message:prefix+'conferma il QR o l\'etichetta e le istruzioni del venditore prima di cercare.'};
-    }
   }
   return {ok:true,index:-1,message:''};
+}
+
+
+// Amazon is a marketplace label, not proof that an arbitrary Hub accepts outbound parcels.
+// Provide a usable route for verified carriers, keeping unknown Amazon handoffs visible
+// and explicitly unassigned rather than claiming a fully completed multi-parcel trip.
+export function routeDemandPartition(demands){
+  const plannable=[],pending=[];
+  for(const [index,d] of (Array.isArray(demands)?demands:[]).entries()){
+    if(d.network==='amazon'&&d.action!=='pickup'){
+      pending.push({index,demand:d,reason:'Il catalogo Amazon Hub attesta il ritiro ordini, non il conferimento universale dei pacchi. Per includere questo pacco serve la rete o il punto autorizzato dalle istruzioni Amazon.'});
+    }else{
+      plannable.push({index,demand:d});
+    }
+  }
+  return {plannable:plannable.map(p=>p.demand),coveredIndexes:plannable.map(p=>p.index),pending};
 }
 
 export function originOptions(state){

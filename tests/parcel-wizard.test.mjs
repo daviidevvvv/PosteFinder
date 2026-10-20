@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {MAX_PARCELS,describeParcel,validateParcelSelections,originOptions,defaultOrigin,resolveOrigin} from '../src/parcel-wizard.mjs';
+import {MAX_PARCELS,describeParcel,validateParcelSelections,routeDemandPartition,originOptions,defaultOrigin,resolveOrigin} from '../src/parcel-wizard.mjs';
 
 const brt=(format='digital')=>({network:'brt',action:'dropoff',brtFormat:format,labelConfirmed:true});
 test('one package with BRT Digital is described explicitly',()=>{
@@ -12,12 +12,31 @@ test('multiple parcels can mix BRT Digital and Poste without relabeling services
  assert.equal(validateParcelSelections(parcels).ok,true);
  assert.match(describeParcel(parcels[1]),/Poste/);
 });
-test('unconfirmed shipping label cannot silently become a valid route',()=>{
+test('QR/label acknowledgement no longer blocks a valid route',()=>{
  const p=validateParcelSelections([{...brt(),labelConfirmed:false}]);
- assert.equal(p.ok,false);assert.equal(p.index,0);
+ assert.equal(p.ok,true);
 });
-test('Amazon requires the actual network on the return',()=>{
- assert.match(validateParcelSelections([{network:'amazon',action:'return_label',labelConfirmed:true}]).message,/corriere/);
+test('Default Amazon parcel is treated as shipping, not forced through pickup/return selection',()=>{
+ const all=[brt(),{network:'amazon',action:'dropoff'}];
+ assert.equal(validateParcelSelections(all).ok,true);
+ const parts=routeDemandPartition(all);
+ assert.equal(parts.plannable.length,1);
+ assert.equal(parts.pending.length,1);
+ assert.equal(parts.pending[0].index,1);
+ assert.equal(parts.pending[0].demand.action,'dropoff');
+ assert.match(parts.pending[0].reason,/non il conferimento universale/i);
+ assert.match(describeParcel(all[1]),/Amazon.*rete di consegna da verificare/i);
+});
+test('Assigned Amazon pickup stays in the verified route partition',()=>{
+ const selected={network:'amazon',action:'pickup',assignedPointId:'amazon-melezio'};
+ assert.equal(validateParcelSelections([selected]).ok,true);
+ assert.deepEqual(routeDemandPartition([selected]).plannable,[selected]);
+ assert.equal(routeDemandPartition([selected]).pending.length,0);
+});
+test('Explicit Amazon return without a carrier remains pending but does not ask reso or ritiro',()=>{
+ const parcels=[{network:'amazon',action:'return_label'}];
+ assert.equal(validateParcelSelections(parcels).ok,true);
+ assert.equal(routeDemandPartition(parcels).pending.length,1);
 });
 test('pickup requires the assigned point ID',()=>{
  const p=validateParcelSelections([{network:'brt',action:'pickup'}]);assert.equal(p.ok,false);
