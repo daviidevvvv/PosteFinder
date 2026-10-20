@@ -354,20 +354,97 @@ async function start(){
   result.replaceChildren();
   if(plan.status!=='ok'&&plan.status!=='provisional'){
    const p=document.createElement('p');p.className='rounded border border-amber-200 bg-amber-50 p-2';p.textContent=plan.message;
-   if(plan.missing?.length)p.textContent+=' Da coprire: '+plan.missing.map(d=>NETWORKS[d.network]).join(', ');result.appendChild(p);return;
+   if(plan.missing?.length)p.textContent+=' Da coprire: '+plan.missing.map(d=>NETWORKS[d.network]).join(', ');
+   result.appendChild(p);
+   if(activeChatRequest)bridge.message('Non posso proporre un percorso affidabile entro il limite scelto: '+p.textContent+' Non considero confermati i punti non verificati.');
+   return;
   }
-  const summary=document.createElement('p');summary.className='font-semibold text-slate-700';summary.textContent='Risultati sui punti censiti, non su tutta la rete. Riferimento orari: '+new Date(plan.evaluatedAt).toLocaleString('it-IT',{timeZone:'Europe/Rome'});result.append(summary);
+  const summary=document.createElement('p');summary.className='font-semibold text-slate-700';
+  summary.textContent='Risultati sul catalogo disponibile (non tutta la rete). Orari fonte alla partenza: '+new Date(plan.evaluatedAt).toLocaleString('it-IT',{timeZone:'Europe/Rome'});
+  result.append(summary);
   if(plan.status==='provisional'){
-    const caution=document.createElement('p');caution.className='rounded border border-amber-300 bg-amber-50 p-2 font-semibold text-amber-900';
-    caution.textContent='ATTENZIONE: i punti BRT Digital qui sono CANDIDATI NON VERIFICATI. Chiedi conferma prima di partire. Edicolandia esclusa: non accetta BRT Digital / QR (segnalazione utente).';
-    result.append(caution);
+   const caution=document.createElement('p');caution.className='rounded border border-amber-300 bg-amber-50 p-2 font-semibold text-amber-900';
+   caution.textContent='ATTENZIONE: BRT Digital NON verificato nei punti proposti. Prima di partire, conferma che accettino il QR; Edicolandia è esclusa (segnalazione utente).';
+   result.append(caution);
   }
-  for(const [i,p] of plan.plans.entries()){
-   const el=document.createElement('article');el.className='rounded-lg border border-blue-200 bg-white p-2 space-y-1';
-   el.innerHTML=`<b>${i+1}. ${p.stops.length} ${p.stops.length===1?'sosta':'soste'} · ${(p.distanceMetres/1000).toFixed(2)} km in linea d'aria</b>${p.extraMetres!==null?`<p>Deviazione geometrica indicativa: ${(p.extraMetres/1000).toFixed(2)} km</p>`:''}${p.stops.map((s,j)=>`<p><button type="button" data-site="${s.id}" class="text-blue-700 underline font-bold">${j+1}. ${escape(s.name)}</button><br>${escape(s.address)}<br><span class="text-[10px]">${p.assignments.filter(a=>a.siteId===s.id).map(a=>escape(NETWORKS[a.network])+' · '+escape(ACTIONS[a.action])+(a.network==='brt'&&a.brtFormat==='digital'?' · BRT Digital'+(a.provisional?' (DA CONFERMARE)':''):'')).join('; ')}</span></p>`).join('')}<p class="text-[10px] text-amber-800">${p.warnings.map(escape).join(' ')}</p><a class="block text-center rounded bg-blue-600 text-white py-1 mt-1" target="_blank" rel="noopener noreferrer" href="${escape(navigationUrl(p,{origin,destination}))}">Apri percorso stradale in Google Maps</a>`;
-   el.querySelectorAll('[data-site]').forEach(b=>b.addEventListener('click',()=>bridge.focus(byId.get(b.dataset.site).appId)));result.appendChild(el);
+  const cardList=document.createElement('div');cardList.className='space-y-2';result.append(cardList);
+  const paintPlans=(plans,onRoad=false)=>{
+   cardList.replaceChildren();
+   for(const [i,p] of plans.slice(0,3).entries()){
+    const el=document.createElement('article');el.className='rounded-lg border border-blue-200 bg-white p-3 space-y-1';
+    const heading=document.createElement('strong');heading.className='block text-sm';
+    const km=(onRoad?p.roadDistanceMetres:p.distanceMetres)/1000;
+    heading.textContent=(i+1)+'. '+p.stops.length+(p.stops.length===1?' sosta':' soste')+' · '+km.toFixed(2)+(onRoad?' km su strada (stima)':' km in linea d’aria');
+    el.append(heading);
+    if(onRoad){
+     const duration=document.createElement('p');duration.className='text-blue-800 font-medium text-xs';
+     duration.textContent='Tempo di guida stimato: circa '+Math.max(1,Math.round(p.roadDurationSeconds/60))+' min (senza traffico live)';
+     el.append(duration);
+    }
+    const extra=onRoad?p.roadExtraMetres:p.extraMetres;
+    if(extra!==null&&extra!==undefined){
+     const note=document.createElement('p');note.className='text-xs text-slate-600';
+     note.textContent='Deviazione rispetto al tragitto diretto: +'+(extra/1000).toFixed(2)+(onRoad?' km su strada (stima)':' km geometrici');
+     el.append(note);
+    }
+    if(p.stops.length===2){
+     const near=document.createElement('p');near.className='text-xs text-slate-600';
+     near.textContent='Distanza tra i due punti: circa '+Math.round(metres(p.stops[0].coords,p.stops[1].coords))+' m in linea d’aria.';
+     el.append(near);
+    }
+    for(const [j,stop] of p.stops.entries()){
+     const detail=document.createElement('p');detail.className='text-xs';
+     const name=document.createElement('button');name.type='button';name.className='text-blue-700 underline font-bold';
+     name.textContent=(j+1)+'. '+stop.name;name.addEventListener('click',()=>bridge.focus(byId.get(stop.id).appId));
+     detail.append(name,document.createElement('br'),document.createTextNode(stop.address),document.createElement('br'));
+     const tasks=document.createElement('span');tasks.className='text-[10px]';
+     tasks.textContent=p.assignments.filter(a=>a.siteId===stop.id).map(a=>(NETWORKS[a.network]||a.network)+' · '+(ACTIONS[a.action]||a.action)+(a.network==='brt'&&a.brtFormat==='digital'?' · Digital / QR'+(a.provisional?' (DA CONFERMARE)':''):'')).join(' ; ');
+     detail.append(tasks);el.append(detail);
+    }
+    const cautions=document.createElement('p');cautions.className='text-[10px] text-amber-800';
+    cautions.textContent=p.warnings.filter(w=>!onRoad||!w.startsWith('Distanze in linea d')).join(' ');
+    el.append(cautions);
+    const link=document.createElement('a');
+    link.className='block text-center rounded bg-blue-600 text-white py-2 mt-2 font-semibold';
+    link.target='_blank';link.rel='noopener noreferrer';link.href=navigationUrl(p,{origin,destination});
+    link.textContent='Apri il giro in Google Maps';
+    el.append(link);cardList.append(el);
+   }
+  };
+  paintPlans(plan.plans);
+  if(activeChatRequest){
+   const best=plan.plans[0];
+   const stopText=best.stops.map((v,i)=>(i+1)+'. '+v.name+' — '+v.address).join('\n');
+   const warning=plan.status==='provisional'?'**BRT Digital: punti candidati, QR da confermare prima di partire.**\n\n':'';
+   bridge.message(warning+'Ho trovato un giro di '+best.stops.length+' '+(best.stops.length===1?'sosta':'soste')+' partendo dal luogo selezionato, passando dai seguenti punti:\n'+stopText+'\n\nLa distanza iniziale è **indicativa, in linea d’aria**, non una stima di guida. [Apri su Google Maps]('+navigationUrl(best,{origin,destination})+'). Per verificare la distanza su strada, usa il pulsante nel riepilogo.');
   }
-  if(plan.plans[0].stops.length>3&&destination){const note=document.createElement('p');note.textContent='Con quattro soste piu arrivo, Google Maps mobile puo limitare i punti intermedi: verifica che siano tutti presenti.';result.append(note);}
+  const roadPanel=document.createElement('div');roadPanel.className='border-t border-slate-200 pt-2 mt-2 space-y-1';
+  const roadButton=document.createElement('button');roadButton.type='button';
+  roadButton.className='w-full rounded border border-blue-300 bg-white text-blue-800 font-bold py-2 px-2';
+  roadButton.textContent='Ottimizza per tempi stradali (OSRM)';
+  const roadDisclosure=document.createElement('p');roadDisclosure.className='text-[10px] text-slate-600';
+  roadDisclosure.textContent='Facoltativo: premendo, condividi con il servizio routing esterno OSRM le coordinate di partenza, dei punti e di arrivo. Tempo stimato senza traffico; se non disponibile resta il confronto in linea d’aria.';
+  const roadStatus=document.createElement('p');roadStatus.className='text-[11px] text-blue-800';roadStatus.setAttribute('role','status');
+  roadPanel.append(roadButton,roadDisclosure,roadStatus);result.append(roadPanel);
+  roadButton.addEventListener('click',async()=>{
+   roadButton.disabled=true;roadStatus.textContent='Confronto dei tempi stradali in corso...';
+   const controller=new AbortController();
+   const cancel=setTimeout(()=>controller.abort(),8500);
+   try{
+    const ranked=await rankRoadPlans(plan.plans,{origin,destination,signal:controller.signal});
+    paintPlans(ranked.plans,true);
+    roadStatus.textContent='Ordinati per tempo di guida stimato OSRM (senza traffico e senza attesa nei negozi). Confronta il percorso finale in Google Maps.';
+    if(activeChatRequest){
+     const best=ranked.plans[0];
+     bridge.message('Confronto su strade completato: '+best.stops.length+' '+(best.stops.length===1?'sosta':'soste')+', circa '+(best.roadDistanceMetres/1000).toFixed(2)+' km e '+Math.max(1,Math.round(best.roadDurationSeconds/60))+' min di guida stimata. [Apri in Google Maps]('+navigationUrl(best,{origin,destination})+'). Non include traffico in tempo reale né tempi di consegna.');
+    }
+   }catch(err){
+    roadStatus.textContent='Stima stradale non disponibile: '+(err?.name==='AbortError'?'tempo scaduto':err?.message||'connessione non riuscita')+'. Restano validi i suggerimenti geometrici.';
+   }finally{clearTimeout(cancel);roadButton.disabled=false;}
+  });
+  if(plan.plans[0].stops.length>3&&destination){
+   const note=document.createElement('p');note.textContent='Con quattro soste più arrivo, Google Maps mobile può limitare le tappe intermedie: verifica che siano tutte presenti.';result.append(note);
+  }
  });
  panel.querySelector('#carrier-filter').addEventListener('change',e=>{selectedNetwork=e.target.value;bridge.refresh();if(selectedNetwork!=='all'&&selectedNetwork!=='verified'&&selectedNetwork!=='brt_digital'&&!catalog.sites.some(s=>s.memberships.some(m=>m.network===selectedNetwork))){organizer.open=true;setWizardStep(1);reportWizardError('parcel-parcel-error','Per questa rete non ho ancora punti verificati: puoi aggiungere il pacco, ma la ricerca non inventera luoghi compatibili.');}});
  function audit(){
