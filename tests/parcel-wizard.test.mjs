@@ -12,12 +12,16 @@ test('multiple parcels can mix BRT Digital and Poste without relabeling services
  assert.equal(validateParcelSelections(parcels).ok,true);
  assert.match(describeParcel(parcels[1]),/Poste/);
 });
-test('unconfirmed shipping label cannot silently become a valid route',()=>{
+test('QR/label acknowledgement no longer blocks a valid route',()=>{
  const p=validateParcelSelections([{...brt(),labelConfirmed:false}]);
- assert.equal(p.ok,false);assert.equal(p.index,0);
+ assert.equal(p.ok,true);
 });
 test('Amazon requires the actual network on the return',()=>{
- assert.match(validateParcelSelections([{network:'amazon',action:'return_label',labelConfirmed:true}]).message,/corriere/);
+ assert.match(validateParcelSelections([{network:'amazon',action:'return_label'}]).message,/corriere/);
+});
+test('Unknown Amazon parcel asks just reso versus ritiro',()=>{
+ const p=validateParcelSelections([brt(),{network:'amazon',action:''}]);
+ assert.equal(p.ok,false);assert.equal(p.index,1);assert.match(p.message,/Amazon.*ritiro.*reso/);
 });
 test('pickup requires the assigned point ID',()=>{
  const p=validateParcelSelections([{network:'brt',action:'pickup'}]);assert.equal(p.ok,false);
