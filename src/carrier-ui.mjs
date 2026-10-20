@@ -2,7 +2,7 @@ import {NETWORKS,ACTIONS,validateCatalog,siteOpening,sourceOpen,planParcels,navi
 import {parseRouteIntent} from './route-intent.mjs';
 import {applyRouteFollowup} from './route-followup.mjs';
 import {rankRoadPlans} from './road-routing.mjs';
-import {MAX_PARCELS,describeParcel,validateParcelSelections,originOptions,defaultOrigin,resolveOrigin} from './parcel-wizard.mjs';
+import {MAX_PARCELS,describeParcel,validateParcelSelections,routeDemandPartition,originOptions,defaultOrigin,resolveOrigin} from './parcel-wizard.mjs';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const hh=n=>String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
 const dayLabels={mon:'Lun',tue:'Mar',wed:'Mer',thu:'Gio',fri:'Ven',sat:'Sab',sun:'Dom'};
@@ -35,7 +35,7 @@ async function start(){
      </div>
      <section id="parcel-stage-parcels" class="space-y-2" aria-label="Pacchi e corrieri">
        <h4 class="font-bold text-slate-800 text-sm">Quali pacchi devi gestire?</h4>
-       <p class="text-slate-600">Per ogni pacco scegli il corriere e poi il tipo di servizio. BRT Digital e BRT con etichetta stampata sono differenti.</p>
+       <p class="text-slate-600">Di base stai spedendo un pacco. Specifica soltanto eventuali eccezioni (BRT Digital, un reso particolare o un ritiro già assegnato).</p>
        <div id="parcel-rows" class="space-y-2"></div>
        <button type="button" id="parcel-add" class="w-full rounded-lg border border-blue-200 bg-blue-50 px-2 py-2 text-blue-800 font-semibold">+ Aggiungi un altro pacco (max 4)</button>
        <p id="parcel-parcel-error" role="alert" class="hidden rounded border border-amber-300 bg-amber-50 p-2 text-amber-900"></p>
@@ -215,7 +215,7 @@ async function start(){
  panel.querySelector('#parcel-back-packages').addEventListener('click',()=>setWizardStep(1));
  panel.querySelector('#parcel-edit-packages').addEventListener('click',()=>setWizardStep(1));
  panel.querySelector('#parcel-edit-location').addEventListener('click',()=>setWizardStep(2));
- function addRow(network='brt',action='dropoff',brtFormat=''){
+ function addRow(network='brt',action='dropoff',brtFormat='printed'){
   if(rows.children.length>=MAX_PARCELS)return;
   const row=document.createElement('div');
   row.className='parcel-row border border-slate-200 rounded-xl p-3 bg-white space-y-2';
@@ -226,15 +226,17 @@ async function start(){
    <label class="block font-medium text-slate-700">Corriere
      <select class="parcel-network block w-full mt-1 border rounded-lg p-2 bg-white" aria-label="Corriere del pacco">
        <option value="dhl_unspecified">DHL (specifica Express o eCommerce)</option>
-       ${Object.entries(NETWORKS).map(([v,t])=>`<option value="${v}">${escape(t)}</option>`).join('')}
+       ${Object.entries(NETWORKS).map(([v,t])=>`<option value="${v}">${escape(v==='amazon'?'Amazon (pacco da consegnare)':t)}</option>`).join('')}
      </select>
    </label>
-   <label class="block font-medium text-slate-700">Che cosa devi fare?
-     <select class="parcel-action block w-full mt-1 border rounded-lg p-2 bg-white" aria-label="Operazione del pacco">
-       <option value="">Seleziona cosa devi fare...</option>
-       ${Object.entries(ACTIONS).map(([v,t])=>`<option value="${v}">${escape(t)}</option>`).join('')}
-     </select>
-   </label>
+   <details class="parcel-operation-details rounded-lg border border-slate-200 bg-slate-50 p-2">
+     <summary class="cursor-pointer text-[11px] text-slate-600 font-medium">Operazione diversa dalla spedizione? (facoltativo)</summary>
+     <label class="block font-medium text-slate-700 mt-2">Tipo di operazione
+       <select class="parcel-action block w-full mt-1 border rounded-lg p-2 bg-white" aria-label="Operazione del pacco">
+         ${Object.entries(ACTIONS).map(([v,t])=>`<option value="${v}">${escape(t)}</option>`).join('')}
+       </select>
+     </label>
+   </details>
    <label class="parcel-brt-format-wrap block font-semibold text-blue-800">È BRT Digital?
      <select class="parcel-brt-format block w-full mt-1 border border-blue-200 rounded-lg p-2 bg-blue-50" aria-label="BRT Digital oppure etichetta stampata">
        <option value="">Seleziona tipo di etichetta...</option>
@@ -248,13 +250,13 @@ async function start(){
    </label>
    <p class="parcel-network-warning text-[11px] text-amber-900 hidden"></p>`;
   row.querySelector('.parcel-network').value=network;
-  row.querySelector('.parcel-action').value=action;
-  row.querySelector('.parcel-brt-format').value=brtFormat||'';
+  row.querySelector('.parcel-action').value=action||'dropoff';
+  row.querySelector('.parcel-brt-format').value=brtFormat||'printed';
   const update=()=>{
    const net=row.querySelector('.parcel-network').value;
    const actionField=row.querySelector('.parcel-action');
-   for(const option of actionField.options)option.disabled=(net==='amazon'&&option.value==='dropoff');
-   if(net==='amazon'&&actionField.value==='dropoff')actionField.value='';
+   // Default shipment does not imply that arbitrary Amazon Hub sites accept parcels.
+   for(const option of actionField.options)option.disabled=false;
    const operation=actionField.value;
    const isPickup=operation==='pickup',isBrt=net==='brt';
    const mode=operation==='return_qr'?'digital':row.querySelector('.parcel-brt-format').value;
@@ -263,6 +265,7 @@ async function start(){
    note.classList.toggle('hidden',!isBrt||isPickup||mode!=='digital');
    note.textContent='Edicolandia NON accetta BRT Digital / QR (segnalazione utente). Gli altri punti sono candidati da verificare.';
    row.querySelector('.parcel-assigned-wrap').classList.toggle('hidden',!isPickup);
+   row.querySelector('.parcel-operation-details').open=operation!=='dropoff';
    const assigned=row.querySelector('.parcel-assigned');
    const previous=assigned.value;
    assigned.innerHTML='<option value="">Seleziona il punto indicato nell\'avviso...</option>'+catalog.sites
@@ -273,14 +276,14 @@ async function start(){
    const coverage=catalog.coverage.find(c=>c.network===net);
    const notVerified=net==='amazon'||net==='dhl_ecommerce'||net==='dhl_unspecified'||!coverage||!coverage.count||coverage.status==='not_verified'||coverage.status==='legacy';
    warning.classList.toggle('hidden',!notVerified);
-   warning.textContent=net==='amazon'?(operation==='pickup'?'Ritiro Amazon: seleziona il Locker/Counter assegnato dall’ordine.':operation==='return_label'||operation==='return_qr'?'Reso Amazon: cambia il CORRIERE scegliendo quello indicato nelle istruzioni Amazon. I locker Amazon non accettano tutti i resi.':'Amazon: specifica se è un ritiro o un reso. Per il reso serve il corriere effettivo.'):
+   warning.textContent=net==='amazon'?(operation==='pickup'?'Ritiro Amazon: seleziona il punto indicato nell’avviso.':'Pacco Amazon da consegnare: lo tengo nel giro, ma non considero i Locker punti di spedizione generici. Per includerlo serve il corriere o il punto abilitato dalle istruzioni Amazon.'):
      net==='dhl_ecommerce'?'DHL Finder include partner PuntoPoste: verifica che il punto sia abilitato per la tua specifica etichetta DHL eCommerce; QR NON attestato.':
      net==='dhl_unspecified'?'DHL Express e DHL eCommerce usano reti diverse: seleziona quella sull’etichetta.':
      notVerified?'La rete '+(NETWORKS[net]||net)+' non ha ancora punti ricontrollati in questo catalogo: le combinazioni potrebbero risultare non disponibili.':'';
    reportWizardError('parcel-parcel-error','');
   };
   for(const cls of ['parcel-network','parcel-action','parcel-brt-format']){
-   row.querySelector('.'+cls).addEventListener('change',()=>{if(cls==='parcel-network'&&row.querySelector('.parcel-network').value==='amazon')row.querySelector('.parcel-action').value='';update();});
+   row.querySelector('.'+cls).addEventListener('change',()=>{if(cls==='parcel-network'&&row.querySelector('.parcel-network').value==='brt'&&!row.querySelector('.parcel-brt-format').value)row.querySelector('.parcel-brt-format').value='printed';update();});
   }
   row.querySelector('.parcel-remove').addEventListener('click',()=>{
    if(rows.children.length<=1)return;
@@ -603,7 +606,7 @@ async function start(){
    if(parsed.destination==='choose')issues.push('Scegli Casa oppure Palestra come destinazione.');
    if(parsed.destination&&parsed.destination!=='choose'&&!dest?.available)issues.push('La destinazione salvata '+parsed.destination+' non ha ancora coordinate utilizzabili.');
    if(parsed.origin!=='gps'&&!origin?.available)issues.push('La partenza salvata '+parsed.origin+' non ha coordinate utilizzabili.');
-   issues.push('Scegli soltanto le informazioni mancanti: tipo di servizio e, per il ritiro, punto assegnato.');
+   if(parsed.parcels.some(p=>p.network==='amazon'&&p.action!=='pickup'))issues.push('Il pacco Amazon resta nell’elenco; intanto ottimizzo il giro dei corrieri verificabili. Per includere Amazon servirà una rete o un punto di consegna abilitato.');
    if(parsed.parcels.some(p=>p.network==='brt'&&p.brtFormat==='digital'))
     issues.push('BRT Digital: Edicolandia esclusa; gli altri punti sono soltanto candidati da confermare.');
    setWizardStep(1);updateStepSummary();
