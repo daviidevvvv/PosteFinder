@@ -40,16 +40,16 @@ export function parseRouteIntent(text){
   const localAction=actionAround(before,after)||genericAction;
   const printed=/\bcartace|\bstampat|\bnon[\s-]?digital|\betichetta fisica/.test(normal(before.slice(-22)+' '+after));
   const digital=/\bdigital\b|\bqr\b|\bsenza stampa/.test(normal(before.slice(-22)+' '+after));
-  const brtFormat=net==='brt'?(printed?'printed':digital?'digital':''):undefined;
+  const brtFormat=net==='brt'?(printed?'printed':digital?'digital':'printed'):undefined;
   let action=localAction||'dropoff';
   if(net==='brt'&&action==='return_label'&&digital&&!printed)action='return_qr';
   if(net==='amazon'){
-   // Keep unspecified Amazon items unresolved, never invent a pickup or return carrier.
-   action=localAction==='pickup'?'pickup':localAction==='return_label'?'return_label':'';
-   if(!action)issues.push('Amazon: è un ritiro o un reso? Per il reso indica la rete prevista da Amazon; per il ritiro il Locker/Counter assegnato.');
+   // Like all other parcels, Amazon defaults to a shipment. This does NOT mean Amazon Hub accepts dropoffs.
+   // A shipment/return will be marked as pending carrier verification by routeDemandPartition.
+   action=localAction||'dropoff';
   }
   if(net==='dhl_unspecified')issues.push('DHL: scegli Express oppure eCommerce come riportato sull’etichetta.');
-  if(net==='brt'&&!brtFormat&&action!=='pickup')issues.push('BRT: specifica Digital / QR oppure etichetta stampata.');
+  // BRT paper label is the default; Digital / QR is an explicit non-default service.
   for(let n=0;n<count;n++){
    parcels.push({network:net,action,brtFormat,assignedPointId:null});
   }
@@ -62,5 +62,5 @@ export function parseRouteIntent(text){
  else if(/\b(?:verso|a|fino a|per|rientr\w* a|torn\w* a)\s+casa\b|\btorno a casa\b/.test(t))destination='casa';
  const onlyOne=/\b(?:una|1)\s+(?:sola\s+)?(?:sosta|tappa)\b|\bin (?:una|1) (?:botta|colpo)\b/.test(t)&&!/\b(?:due|2)\s+(?:sost[ea]|tapp[ea])\b|\b(?:max|massimo|piu)\s*(?:due|2)\b/.test(t);
  const maxStops=onlyOne?1:2;
- return {recognized:true,parcels,issues,origin,destination,maxStops,explicitAction:Boolean(genericAction),sourceText:String(text),needsReview:issues.length>0||parcels.some(d=>!d.action||d.action==='pickup'&&!d.assignedPointId)};
+ return {recognized:true,parcels,issues,origin,destination,maxStops,explicitAction:Boolean(genericAction),sourceText:String(text),needsReview:issues.length>0||parcels.some(d=>d.action==='pickup'&&!d.assignedPointId)};
 }
