@@ -79,7 +79,7 @@ export function canServe(site,demand,{at=new Date(),maxDays=30,openOnly=true,all
   if(!['confirmed','conditional','assigned_only'].includes(support)) return false;
   if(demand.action==='pickup') {
     if(!demand.assignedPointId||![site.id,m.pointId].includes(demand.assignedPointId)) return false;
-  } else if(demand.labelConfirmed!==true) return false;
+  }
   const limit=m.limits||{};
   if(demand.weightKg!=null&&(!Number.isFinite(demand.weightKg)||demand.weightKg<=0||demand.weightKg>(limit.maxWeightKg??Infinity))) return false;
   if(demand.pieces!=null&&(!Number.isInteger(demand.pieces)||demand.pieces<1||demand.pieces>(limit.maxPieces??Infinity))) return false;
@@ -104,7 +104,6 @@ export function planParcels(catalog,demands,options={}) {
   if(demands.some(d=>!NETWORKS[d.network]||!ACTIONS[d.action]||(d.network==='brt'&&d.brtFormat!=null&&!['digital','printed'].includes(d.brtFormat)))) return {status:'invalid_demands',plans:[],message:'Corriere, formato BRT o operazione non riconosciuti.'};
   if(demands.some(d=>d.network==='amazon'&&d.action!=='pickup')) return {status:'label_required',plans:[],message:'I punti Amazon Hub verificati consentono la selezione per il RITIRO di un ordine; per un reso scegli il corriere e il metodo proposti nell ordine.'};
   if(demands.some(d=>d.action==='pickup'&&!d.assignedPointId)) return {status:'assigned_point_required',plans:[],message:'Un ritiro gia consegnato va effettuato nel punto indicato nell\'avviso. Selezionalo: non posso sostituirlo con un altro negozio.'};
-  if(demands.some(d=>d.action!=='pickup'&&d.labelConfirmed!==true)) return {status:'label_required',plans:[],message:'Conferma che etichetta/QR e limiti del pacco sono compatibili con la rete selezionata.'};
   if(!Number.isFinite(radiusKm)||radiusKm<=0||radiusKm>100||!Number.isInteger(maxStops)||maxStops<1||maxStops>4||!Number.isInteger(maxResults)||maxResults<1||maxResults>12) throw new Error('Limiti di ricerca non validi');
   const maxDays=catalog.maxSourceAgeDays??30, full=(1<<demands.length)-1;
   const eligibleFor=allowProvisionalBrtDigital=>catalog.sites.filter(s=>!excludedSiteIds.includes(s.id)&&metres(origin,s.coords)<=radiusKm*1000)
