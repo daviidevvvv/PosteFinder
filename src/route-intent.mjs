@@ -35,8 +35,8 @@ export function parseRouteIntent(text){
   const after=t.slice(hit.end,i+1<hits.length?hits[i+1].start:t.length);
   const count=countBefore(before);
   const net=hit.network;
-  // 'Reso Amazon con DHL': Amazon is the merchant, not an extra carrier stop.
-  if(net==='amazon'&&i+1<hits.length&&/^\s*(?:con|tramite|via)\s*$/.test(after)&&/\bres[oi]\b|\brestitui/.test(before))continue;
+  // 'Pacco Amazon con DHL/Poste': Amazon is the merchant, not a second physical package.
+  if(net==='amazon'&&i+1<hits.length&&/^\s*(?:con|tramite|via)\s*$/.test(after))continue;
   const localAction=actionAround(before,after)||genericAction;
   const printed=/\bcartace|\bstampat|\bnon[\s-]?digital|\betichetta fisica/.test(normal(before.slice(-22)+' '+after));
   const digital=/\bdigital\b|\bqr\b|\bsenza stampa/.test(normal(before.slice(-22)+' '+after));
