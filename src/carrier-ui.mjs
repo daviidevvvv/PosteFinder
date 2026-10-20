@@ -396,12 +396,37 @@ async function start(){
    const state=siteOpening(s);return {isOpen:state.open===true,text:state.label,class:state.open===true?'status-open':state.open===false?'status-closed':'status-warning',score:state.open===true?3:state.open===false?0:-1};
   },
   chat:text=>{
-   const parsed=interpretCarrierText(text);if(!parsed.networks.length&&!parsed.amazon)return false;
-   bridge.consumeMessage();bridge.message(text,'user');organizer.open=true;stateSelects();rows.replaceChildren();
-   const networks=parsed.networks.length?parsed.networks:['amazon'];networks.slice(0,4).forEach(n=>addRow(n,parsed.action,n==='brt'?parsed.brtFormat:''));renumberParcels();setWizardStep(1);
-   if(parsed.towardHome){const home=bridge.state().places.find(p=>p.id===-101||p.name.toLowerCase()==='casa');if(home)panel.querySelector('#parcel-destination').value='place:'+home.id;}
-   const message=parsed.needsClarification?'Prima serve il servizio esatto: DHL Express e DHL eCommerce sono reti diverse; per Amazon conta il corriere indicato nelle istruzioni del reso. Ho aperto Organizza pacchi: conferma la rete, l\'operazione e l\'etichetta.':'Ho impostato i corrieri in Organizza pacchi, nella barra laterale. Conferma operazione, etichetta e partenza, poi premi Trova la combinazione. Il calcolo confronta le fonti verificate e le soste senza inventare compatibilita.';
-   bridge.message(message);reportWizardError('parcel-parcel-error',message);bridge.showOrganizer();return true;
+   const parsed=parseRouteIntent(text);
+   if(!parsed.recognized)return false; // General courier questions stay in Gemini chat.
+   bridge.consumeMessage();bridge.message(text,'user');
+   if(parsed.parcels.length>4){
+    bridge.message('Puoi organizzare al massimo quattro pacchi in un solo giro. Suddividi la richiesta e riprova.');
+    return true;
+   }
+   activeChatRequest=parsed;
+   organizer.open=true;stateSelects();rows.replaceChildren();
+   for(const d of parsed.parcels)addRow(d.network,d.action,d.brtFormat||'');
+   renumberParcels();stateSelects();
+   const opts=originOptions(bridge.state());
+   const findSaved=name=>opts.find(o=>o.kind==='place'&&o.label.trim().toLowerCase()===name);
+   const origin=parsed.origin==='gps'?opts.find(o=>o.value==='gps'):findSaved(parsed.origin);
+   if(origin)panel.querySelector('#parcel-origin').value=origin.value;
+   const dest=parsed.destination==='casa'||parsed.destination==='palestra'?findSaved(parsed.destination):null;
+   panel.querySelector('#parcel-destination').value=dest?.value||'none';
+   panel.querySelector('#parcel-max-stops').value=String(parsed.maxStops);
+   const destinationName=parsed.destination==='choose'?'Casa oppure Palestra (scegli sotto)':parsed.destination==='casa'?'Casa':parsed.destination==='palestra'?'Palestra':'nessuna selezionata';
+   const title='Ho riconosciuto '+parsed.parcels.length+' pacchi · partenza '+(origin?.label||parsed.origin)+' · arrivo '+destinationName+' · massimo '+parsed.maxStops+' soste.';
+   const banner=panel.querySelector('#parcel-request-banner');banner.textContent=title;banner.classList.remove('hidden');
+   const issues=[...parsed.issues];
+   if(parsed.destination==='choose')issues.push('Scegli Casa oppure Palestra come destinazione.');
+   if(parsed.destination&&parsed.destination!=='choose'&&!dest?.available)issues.push('La destinazione salvata '+parsed.destination+' non ha ancora coordinate utilizzabili.');
+   if(parsed.origin!=='gps'&&!origin?.available)issues.push('La partenza salvata '+parsed.origin+' non ha coordinate utilizzabili.');
+   issues.push('Controlla tipo di operazione, etichette e per i ritiri il punto ESATTO assegnato nell’avviso.');
+   if(parsed.parcels.some(p=>p.network==='brt'&&p.brtFormat==='digital'))
+    issues.push('BRT Digital: Edicolandia esclusa; gli altri punti sono soltanto candidati da confermare.');
+   setWizardStep(1);updateStepSummary();
+   bridge.message(title+'\n\n'+issues.join('\n')+'\n\nCompleta i campi necessari e premi **Trova subito il giro**. Il percorso è calcolato dal database locale, anche senza Gemini API key.');
+   bridge.showOrganizer();return true;
   }
  });
  bridge.replaceLocations([...original,...additions]);bridge.refresh();
