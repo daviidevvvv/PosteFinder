@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {parseRouteIntent} from '../src/route-intent.mjs';
 import {applyRouteFollowup} from '../src/route-followup.mjs';
-import {validateParcelSelections} from '../src/parcel-wizard.mjs';
+import {validateParcelSelections,routeDemandPartition} from '../src/parcel-wizard.mjs';
 import {readFileSync} from 'node:fs';
 const query='Ho 1 pacco DHL, 1 Bartolini Digital e 1 Amazon. Parto da qui, devo andare a casa o in palestra. Massimo due soste.';
 const start=()=>parseRouteIntent(query).parcels;
@@ -14,8 +14,10 @@ test('saying express after the three-parcel question updates DHL without losing 
  assert.equal(r.handled,true);
  assert.deepEqual(r.parcels.map(p=>p.network),['dhl_express','brt','amazon']);
  assert.equal(r.parcels[1].brtFormat,'digital');
- assert.equal(r.parcels[2].action,'');
- assert.equal(validateParcelSelections(r.parcels).index,2);
+ assert.equal(r.parcels[2].action,'dropoff');
+ assert.equal(validateParcelSelections(r.parcels).ok,true);
+ assert.deepEqual(routeDemandPartition(r.parcels).coveredIndexes,[0,1]);
+ assert.equal(routeDemandPartition(r.parcels).pending.length,1);
  assert.match(r.message,/altri pacchi/i);
 });
 test('Amazon remains a parcel when clarified as a reso; only merchant network changes on next reply',()=>{
@@ -44,7 +46,7 @@ test('Amazon pickup never invents a locker; can select only a unique active offi
  assert.equal(q.parcels.length,3);
 });
 test('An Amazon reso with its courier is not counted twice',()=>{
- const original=[{network:'amazon',action:'',assignedPointId:null},{network:'brt',action:'dropoff',brtFormat:'digital'}];
+ const original=[{network:'amazon',action:'dropoff',assignedPointId:null},{network:'brt',action:'dropoff',brtFormat:'digital'}];
  const r=applyRouteFollowup('reso con DHL Express',original);
  assert.equal(r.handled,true);
  assert.deepEqual(r.parcels.map(v=>v.network),['dhl_express','brt']);
@@ -62,12 +64,22 @@ test('Destination corrections and max stops preserve all parcels and the origina
  assert.equal(result.maxStops,1);
  assert.equal(result.parcels[1].brtFormat,'digital');
 });
-test('Amazon cannot be routed with no action; the QR checkbox has no authority',()=>{
+test('Default Amazon shipping is preserved without blocking the usable two-parcel plan',()=>{
  const p=start();p[0].network='dhl_express';
- assert.equal(validateParcelSelections(p).ok,false);
- assert.match(validateParcelSelections(p).message,/Amazon/);
+ assert.equal(validateParcelSelections(p).ok,true);
+ assert.equal(routeDemandPartition(p).plannable.length,2);
+ assert.equal(routeDemandPartition(p).pending.length,1);
+ assert.equal(routeDemandPartition(p).pending[0].index,2);
  const noBox=[{network:'dhl_express',action:'dropoff'},{network:'brt',action:'dropoff',brtFormat:'digital'}];
  assert.equal(validateParcelSelections(noBox).ok,true);
+});
+test('A short carrier answer can qualify the Amazon shipment without inventing a second parcel',()=>{
+ const p=start();p[0].network='dhl_express';
+ const updated=applyRouteFollowup('Poste',p);
+ assert.equal(updated.handled,true);
+ assert.deepEqual(updated.parcels.map(x=>x.network),['dhl_express','brt','poste']);
+ assert.equal(updated.parcels[2].action,'dropoff');
+ assert.equal(routeDemandPartition(updated.parcels).pending.length,0);
 });
 test('The UI never renders a mandatory QR confirmation checkbox',()=>{
  const ui=readFileSync(new URL('../src/carrier-ui.mjs',import.meta.url),'utf8');
