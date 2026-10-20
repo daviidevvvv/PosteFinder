@@ -110,7 +110,6 @@ async function start(){
   return [...rows.children].map(row=>({
    network:row.querySelector('.parcel-network').value,
    action:row.querySelector('.parcel-action').value,
-   labelConfirmed:row.querySelector('.parcel-confirm').checked,
    assignedPointId:row.querySelector('.parcel-assigned').value||null,
    brtFormat:row.querySelector('.parcel-network').value==='brt'
      ?(row.querySelector('.parcel-action').value==='return_qr'?'digital':row.querySelector('.parcel-brt-format').value)
@@ -231,6 +230,7 @@ async function start(){
    </label>
    <label class="block font-medium text-slate-700">Che cosa devi fare?
      <select class="parcel-action block w-full mt-1 border rounded-lg p-2 bg-white" aria-label="Operazione del pacco">
+       <option value="">Seleziona cosa devi fare...</option>
        ${Object.entries(ACTIONS).map(([v,t])=>`<option value="${v}">${escape(t)}</option>`).join('')}
      </select>
    </label>
@@ -242,9 +242,6 @@ async function start(){
      </select>
    </label>
    <p class="parcel-brt-note rounded bg-amber-50 text-amber-900 text-[11px] p-2 hidden"></p>
-   <label class="parcel-label flex items-start gap-2 text-[11px] text-slate-700">
-     <input class="parcel-confirm mt-0.5" type="checkbox">Ho controllato il QR/etichetta del pacco e le istruzioni del venditore.
-   </label>
    <label class="parcel-assigned-wrap hidden block text-[11px] font-medium text-slate-700">Dove è già stato consegnato?
      <select class="parcel-assigned block w-full border rounded-lg p-2 mt-1 bg-white" aria-label="Punto assegnato nell'avviso"></select>
    </label>
@@ -252,11 +249,11 @@ async function start(){
   row.querySelector('.parcel-network').value=network;
   row.querySelector('.parcel-action').value=action;
   row.querySelector('.parcel-brt-format').value=brtFormat||'';
-  const update=(resetConfirm=false)=>{
+  const update=()=>{
    const net=row.querySelector('.parcel-network').value;
    const actionField=row.querySelector('.parcel-action');
-   if(net==='amazon')actionField.value='pickup';
-   for(const option of actionField.options)option.disabled=(net==='amazon'&&option.value!=='pickup');
+   for(const option of actionField.options)option.disabled=(net==='amazon'&&option.value==='dropoff');
+   if(net==='amazon'&&actionField.value==='dropoff')actionField.value='';
    const operation=actionField.value;
    const isPickup=operation==='pickup',isBrt=net==='brt';
    const mode=operation==='return_qr'?'digital':row.querySelector('.parcel-brt-format').value;
@@ -264,7 +261,6 @@ async function start(){
    const note=row.querySelector('.parcel-brt-note');
    note.classList.toggle('hidden',!isBrt||isPickup||mode!=='digital');
    note.textContent='Edicolandia NON accetta BRT Digital / QR (segnalazione utente). Gli altri punti sono candidati da verificare.';
-   row.querySelector('.parcel-label').classList.toggle('hidden',isPickup);
    row.querySelector('.parcel-assigned-wrap').classList.toggle('hidden',!isPickup);
    const assigned=row.querySelector('.parcel-assigned');
    const previous=assigned.value;
@@ -276,15 +272,14 @@ async function start(){
    const coverage=catalog.coverage.find(c=>c.network===net);
    const notVerified=net==='amazon'||net==='dhl_ecommerce'||net==='dhl_unspecified'||!coverage||!coverage.count||coverage.status==='not_verified'||coverage.status==='legacy';
    warning.classList.toggle('hidden',!notVerified);
-   warning.textContent=net==='amazon'?'Punti Amazon confermati soltanto per il ritiro di un ordine, non per resi automatici. Seleziona ESATTAMENTE il Locker/Counter gia assegnato.':
+   warning.textContent=net==='amazon'?(operation==='pickup'?'Ritiro Amazon: seleziona il Locker/Counter assegnato dall’ordine.':operation==='return_label'||operation==='return_qr'?'Reso Amazon: cambia il CORRIERE scegliendo quello indicato nelle istruzioni Amazon. I locker Amazon non accettano tutti i resi.':'Amazon: specifica se è un ritiro o un reso. Per il reso serve il corriere effettivo.'):
      net==='dhl_ecommerce'?'DHL Finder include partner PuntoPoste: verifica che il punto sia abilitato per la tua specifica etichetta DHL eCommerce; QR NON attestato.':
      net==='dhl_unspecified'?'DHL Express e DHL eCommerce usano reti diverse: seleziona quella sull’etichetta.':
      notVerified?'La rete '+(NETWORKS[net]||net)+' non ha ancora punti ricontrollati in questo catalogo: le combinazioni potrebbero risultare non disponibili.':'';
-   if(resetConfirm)row.querySelector('.parcel-confirm').checked=false;
    reportWizardError('parcel-parcel-error','');
   };
   for(const cls of ['parcel-network','parcel-action','parcel-brt-format']){
-   row.querySelector('.'+cls).addEventListener('change',()=>update(true));
+   row.querySelector('.'+cls).addEventListener('change',()=>{if(cls==='parcel-network'&&row.querySelector('.parcel-network').value==='amazon')row.querySelector('.parcel-action').value='';update();});
   }
   row.querySelector('.parcel-remove').addEventListener('click',()=>{
    if(rows.children.length<=1)return;
@@ -534,7 +529,7 @@ async function start(){
    if(parsed.destination==='choose')issues.push('Scegli Casa oppure Palestra come destinazione.');
    if(parsed.destination&&parsed.destination!=='choose'&&!dest?.available)issues.push('La destinazione salvata '+parsed.destination+' non ha ancora coordinate utilizzabili.');
    if(parsed.origin!=='gps'&&!origin?.available)issues.push('La partenza salvata '+parsed.origin+' non ha coordinate utilizzabili.');
-   issues.push('Controlla tipo di operazione, etichette e per i ritiri il punto ESATTO assegnato nell’avviso.');
+   issues.push('Scegli soltanto le informazioni mancanti: tipo di servizio e, per il ritiro, punto assegnato.');
    if(parsed.parcels.some(p=>p.network==='brt'&&p.brtFormat==='digital'))
     issues.push('BRT Digital: Edicolandia esclusa; gli altri punti sono soltanto candidati da confermare.');
    setWizardStep(1);updateStepSummary();
