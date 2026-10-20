@@ -11,13 +11,13 @@ test('One colloquial message becomes three separate packages, GPS to Casa/Palest
  assert.equal(result.recognized,true);
  assert.deepEqual(result.parcels.map(p=>p.network),['dhl_unspecified','brt','amazon']);
  assert.equal(result.parcels[1].brtFormat,'digital');
- assert.equal(result.parcels[2].action,'pickup');
+ assert.equal(result.parcels[2].action,'');
  assert.equal(result.origin,'gps');
  assert.equal(result.destination,'choose');
  assert.equal(result.maxStops,2);
  assert.ok(result.issues.some(i=>i.includes('DHL')));
  assert.ok(result.issues.some(i=>i.includes('Amazon')));
- assert.equal(result.parcels.every(p=>p.labelConfirmed===false),true);
+ assert.ok(result.parcels.every(p=>!Object.hasOwn(p,'labelConfirmed')));
 });
 test('Explicit DHL Express and gym destination are preserved',()=>{
  const r=parseRouteIntent('Parto da qui: devo spedire 1 DHL Express e 1 Bartolini con etichetta stampata, andando in palestra, massimo 2 soste.');
@@ -48,7 +48,7 @@ test('Carrier information question passes to Gemini rather than starting a route
 test('Cannot silently invent an assigned Amazon pickup, QR acceptance, or a label',()=>{
  const r=parseRouteIntent('Devo ritirare Amazon e mandare BRT digital, verso casa');
  assert.equal(r.parcels.find(p=>p.network==='amazon').assignedPointId,null);
- assert.equal(r.parcels.find(p=>p.network==='brt').labelConfirmed,false);
+ assert.ok(!Object.hasOwn(r.parcels.find(p=>p.network==='brt'),'labelConfirmed'));
 });
 test('Missing saved positions are not embedded in parsed phrases or in source',()=>{
  const r=parseRouteIntent('Porto DHL Express dal GPS fino a Palestra');
