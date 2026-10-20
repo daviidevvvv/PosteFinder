@@ -1,4 +1,6 @@
-import {NETWORKS,ACTIONS,validateCatalog,siteOpening,sourceOpen,planParcels,navigationUrl,interpretCarrierText} from './carrier-planner.mjs';
+import {NETWORKS,ACTIONS,validateCatalog,siteOpening,sourceOpen,planParcels,navigationUrl,metres} from './carrier-planner.mjs';
+import {parseRouteIntent} from './route-intent.mjs';
+import {rankRoadPlans} from './road-routing.mjs';
 import {MAX_PARCELS,describeParcel,validateParcelSelections,originOptions,defaultOrigin,resolveOrigin} from './parcel-wizard.mjs';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const hh=n=>String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
@@ -24,6 +26,7 @@ async function start(){
    <summary class="cursor-pointer font-bold text-blue-700 py-2">Organizza i miei pacchi / corrieri</summary>
    <div id="parcel-wizard-content" class="pt-2 pb-3 space-y-3 max-h-[54vh] md:max-h-[64vh] overflow-y-auto overscroll-contain">
      <p class="text-[10px] text-slate-500">Bisceglie · dati consultati il ${escape(catalog.observedAt)}. Copertura parziale: le reti non verificate non vengono inventate.</p>
+     <p id="parcel-request-banner" class="hidden rounded-lg bg-blue-50 border border-blue-100 p-2 text-[11px] font-medium text-blue-900"></p>
      <div id="parcel-progress" class="grid grid-cols-3 gap-1 text-center text-[10px] font-semibold" aria-label="Fasi di ricerca">
        <span data-wizard-step="1" class="rounded-md border p-1.5 bg-blue-600 text-white border-blue-600">1. Pacchi</span>
        <span data-wizard-step="2" class="rounded-md border p-1.5 border-slate-200 text-slate-500">2. Partenza</span>
@@ -36,6 +39,7 @@ async function start(){
        <button type="button" id="parcel-add" class="w-full rounded-lg border border-blue-200 bg-blue-50 px-2 py-2 text-blue-800 font-semibold">+ Aggiungi un altro pacco (max 4)</button>
        <p id="parcel-parcel-error" role="alert" class="hidden rounded border border-amber-300 bg-amber-50 p-2 text-amber-900"></p>
        <button type="button" id="parcel-next-location" class="w-full rounded-lg bg-blue-600 text-white py-2.5 font-bold">Continua: scegli la partenza →</button>
+       <button type="button" id="parcel-quick-go" class="w-full rounded-lg border border-blue-200 bg-blue-50 text-blue-800 py-2.5 font-bold">Trova subito il giro (1 o 2 soste)</button>
      </section>
      <section id="parcel-stage-location" class="hidden space-y-2" aria-label="Posizione di partenza e arrivo">
        <h4 class="font-bold text-slate-800 text-sm">Da dove vuoi partire?</h4>
@@ -49,7 +53,8 @@ async function start(){
        <label class="block font-medium text-slate-700">Dove devi arrivare? (facoltativo)
          <select id="parcel-destination" class="block w-full mt-1 border rounded-lg p-2 bg-white"></select>
        </label>
-       <details id="parcel-advanced" class="border rounded-lg bg-white p-2">
+       <div id="parcel-destination-shortcuts" class="flex flex-wrap gap-2" aria-label="Destinazione rapida"></div>
+       <details id="parcel-advanced" class="border rounded-lg bg-white p-2>
          <summary class="cursor-pointer font-semibold text-slate-700">Orari e distanza · opzioni avanzate</summary>
          <div class="space-y-2 pt-2">
            <div class="grid grid-cols-2 gap-2">
@@ -80,7 +85,7 @@ async function start(){
  </details>`;
  list.parentElement.insertBefore(panel,list.previousElementSibling);
  const organizer=panel.querySelector('#parcel-organizer'),rows=panel.querySelector('#parcel-rows'),result=panel.querySelector('#parcel-result');
- let wizardStep=1, geolocationPoll=null;
+ let wizardStep=1, geolocationPoll=null, quickGpsInterval=null, activeChatRequest=null;
 
  function setWizardStep(step){
   wizardStep=step;
@@ -155,6 +160,14 @@ async function start(){
   const destinations=[{value:'none',label:'Nessun arrivo (solo punti di ritiro)'},...options.filter(o=>o.kind==='place')];
   destination.innerHTML=destinations.map(o=>`<option value="${escape(o.value)}">${escape(o.label)}${o.available===false?' · da configurare':''}</option>`).join('');
   destination.value=destinations.some(o=>o.value===priorDestination)?priorDestination:'none';
+  const shortcuts=panel.querySelector('#parcel-destination-shortcuts');shortcuts.replaceChildren();
+  for(const option of destinations.filter(o=>o.kind==='place'&&['casa','palestra'].includes(o.label.trim().toLowerCase()))){
+   const btn=document.createElement('button');btn.type='button';
+   btn.className='rounded-full px-3 py-1.5 border border-blue-200 bg-blue-50 text-blue-800 font-semibold';
+   btn.textContent='Verso '+option.label+(option.available?'':' (configura posizione)');
+   btn.addEventListener('click',()=>{destination.value=option.value;reportWizardError('parcel-location-error','');updateStepSummary();});
+   shortcuts.append(btn);
+  }
   updateOriginUI(options);
  }
 
@@ -256,7 +269,7 @@ async function start(){
    const assigned=row.querySelector('.parcel-assigned');
    const previous=assigned.value;
    assigned.innerHTML='<option value="">Seleziona il punto indicato nell\'avviso...</option>'+catalog.sites
-     .filter(s=>s.memberships.some(m=>m.network===net))
+     .filter(s=>s.memberships.some(m=>m.network===net&&m.active===true))
      .map(s=>`<option value="${escape(s.id)}">${escape(s.name)} — ${escape(s.address)}</option>`).join('');
    if(previous&&[...assigned.options].some(o=>o.value===previous))assigned.value=previous;
    const warning=row.querySelector('.parcel-network-warning');
