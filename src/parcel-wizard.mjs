@@ -19,8 +19,10 @@ export function validateParcelSelections(demands){
   }
   for(let i=0;i<demands.length;i++){
     const d=demands[i],prefix='Pacco '+(i+1)+': ';
+    if(d.network==='dhl_unspecified')return {ok:false,index:i,message:prefix+'DHL Express oppure DHL eCommerce? Basta indicarlo.'};
+    if(d.network==='amazon'&&!d.action)return {ok:false,index:i,message:prefix+'Amazon: è un ritiro (scegli il punto assegnato) oppure un reso (indica il corriere previsto)?'};
     if(!NETWORKS[d.network] || !ACTIONS[d.action]){
-      return {ok:false,index:i,message:prefix+'scegli un corriere e un\'operazione.'};
+      return {ok:false,index:i,message:prefix+'scegli il corriere e il tipo di operazione.'};
     }
     if(d.network==='amazon'&&d.action!=='pickup'){
       return {ok:false,index:i,message:prefix+'gli Amazon Hub sono confermati come punti di RITIRO ordini; per un reso scegli il corriere indicato nelle istruzioni Amazon.'};
