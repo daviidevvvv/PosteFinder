@@ -26,9 +26,9 @@
       "network": "inpost",
       "label": "InPost",
       "status": "partial_live",
-      "count": 8,
+      "count": 9,
       "sourceUrl": "https://inpost.pl/en/parcel-lockers-bisceglie",
-      "note": "8 codici elencati nella pagina ufficiale InPost per Bisceglie: 6 locker esterni e 2 InPost Point. Ciuffo Wash (ITBLQ149474B) aggiunto dalla pagina ufficiale, H24; pin collocato indicativamente sulla strada (non ingresso). Stato vano e disponibilita effettiva non verificati in tempo reale."
+      "note": "Verifica ufficiale 20/10/2026: 8 codici correnti InPost a Bisceglie (5 locker + 3 ParcelPoint, fra cui Trentadue). Il catalogo conserva anche il locker Ciuffo Wash del 14/10 come IN SOSPESO: 9 membership totali, 8 attive. Non dedurre chiusure da assenze o redirect."
     },
     {
       "network": "dhl_ecommerce",
@@ -97,6 +97,17 @@
       "address": "Via Lamaveta 92-94, Bisceglie",
       "status": "unverified",
       "finding": "BRT confermato; rapporto UPS Access Point e orari domenicali delle directory non verificati."
+    },
+    {
+      "name": "InPost Locker Ciuffo Wash",
+      "pointId": "ITBLQ149474B",
+      "address": "Via Mosca 4, Bisceglie",
+      "status": "pending_official_recheck",
+      "checkedAt": "2026-10-20",
+      "lastOfficialConfirmationAt": "2026-10-14",
+      "sourceUrl": "https://inpost.pl/en/parcel-lockers-bisceglie",
+      "previousDetailUrl": "https://inpost.it/locker-bisceglie-itblq149474b-via-mosca",
+      "finding": "Assente fra gli 8 risultati ufficiali InPost del 20/10 e vecchia scheda italiana reindirizza al localizzatore. Non e prova di chiusura. Visibile nello storico (Tutte) con avviso IN SOSPESO; escluso dai punti raccomandati e dal planner finche non verificato."
     }
   ],
   "disclaimer": "Verificato nella fonte non significa disponibilita del negozio o del servizio garantita adesso. Necessari etichetta corretta, peso e ingombri compatibili. Orari festivi e chiusure straordinarie possono mancare.",
@@ -829,7 +840,48 @@
         "return_label": "conditional",
         "return_qr": "unknown",
         "pickup": "assigned_only"
-      }
+      },
+      "verificationStatus": "pending_recheck",
+      "recheckedAt": "2026-10-20",
+      "recheckSourceUrl": "https://inpost.pl/en/parcel-lockers-bisceglie",
+      "verificationNote": "IN SOSPESO: presente nella scheda ufficiale 14/10/2026, assente dalla lista cittadina ufficiale 20/10/2026. Il precedente URL italiano reindirizza al localizzatore generico. Non dedurre chiusura o rimozione fisica. Non proporre il punto come attivo finche non ricertificato."
+    },
+    {
+      "site": "trentadue",
+      "network": "inpost",
+      "pointId": "ITPBT09528P",
+      "coords": [
+        41.23204,
+        16.49503
+      ],
+      "hoursPacked": "mon,tue,wed,thu,fri,sat=300-780/960-1200;sun=",
+      "sourceUrl": "https://inpost.pl/en/parcel-lockers-bisceglie",
+      "sourceDetailsUrl": "https://inpost.pl/en/parcel-service-point-itpbt09528p-bisceglie-via-padre-massimiliano-kolbe-31-76011-bisceglie-bt-italy",
+      "retrievalMethod": "direct_official_city_locator_and_point_detail",
+      "observedAt": "2026-10-20",
+      "verificationStatus": "verified",
+      "pointType": "staffed_parcelpoint",
+      "sourceName": "Tabaccheria Trentadue",
+      "sourceAddress": "Via Padre Massimiliano Kolbe 31, 76011 Bisceglie BT",
+      "coordinateSource": "official_point_page_navigation_link",
+      "limits": {
+        "maxWeightKg": 25,
+        "maxDimensionsCm": [
+          39,
+          38,
+          64
+        ]
+      },
+      "conditions": [
+        "InPost ParcelPoint Trentadue: obbligatoria etichetta stampata. QR/senza stampa NON supportato da questa scheda; per i resi seguire l'etichetta e le istruzioni specifiche del venditore."
+      ],
+      "serviceOverrides": {
+        "dropoff": "conditional",
+        "return_label": "conditional",
+        "return_qr": "unknown",
+        "pickup": "assigned_only"
+      },
+      "labelRequirement": "printed_required"
     }
   ]
 }

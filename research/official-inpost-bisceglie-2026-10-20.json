@@ -1,0 +1,119 @@
+{
+  "observedAt": "2026-10-20",
+  "timezone": "Europe/Rome",
+  "scope": "Bisceglie 76011 (BT)",
+  "officialIndex": "https://inpost.pl/en/parcel-lockers-bisceglie",
+  "count": 8,
+  "recordCountByType": {
+    "locker": 5,
+    "point": 3
+  },
+  "methodology": "Lettura diretta della pagina cittadina ufficiale InPost e della nuova scheda ITPBT09528P. Una voce assente non certifica chiusura. Snapshot archiviato a confronto con la rilevazione ufficiale del 14/10/2026.",
+  "points": [
+    {
+      "code": "ITPBT03592P",
+      "type": "point",
+      "name": "Posta Privata Nexus",
+      "address": "Via Alcide De Gasperi 40",
+      "url": "https://inpost.pl/en/parcel-service-point-itpbt03592p-bisceglie-via-alcide-de-gasperi",
+      "status": "listed_available"
+    },
+    {
+      "code": "ITPBT07090P",
+      "type": "point",
+      "name": "Tabaccheria",
+      "address": "Via Cavour 47",
+      "url": "https://inpost.pl/en/parcel-service-point-itpbt07090p-bisceglie-via-cavour",
+      "status": "listed_available"
+    },
+    {
+      "code": "ITBIS108252F",
+      "type": "locker",
+      "name": "Stazione di servizio TOIL",
+      "address": "Via Imbriani 212",
+      "url": "https://inpost.pl/en/parcel-locker-bisceglie-itbis108252f-via-imbriani-paczkomaty-bt",
+      "status": "listed_available"
+    },
+    {
+      "code": "ITBIS111893F",
+      "type": "locker",
+      "name": "Stazione di servizio IPLANET",
+      "address": "Via Imbriani snc",
+      "url": "https://inpost.pl/en/parcel-locker-bisceglie-itbis111893f-via-imbriani-paczkomaty-bt",
+      "status": "listed_available"
+    },
+    {
+      "code": "ITBIS45221M",
+      "type": "locker",
+      "name": "Stazione di servizio IP",
+      "address": "Via Lamaveta",
+      "url": "https://inpost.pl/en/parcel-locker-bisceglie-itbis45221m-via-lamaveta-paczkomaty-bt",
+      "status": "listed_available"
+    },
+    {
+      "code": "ITBIS43460M",
+      "type": "locker",
+      "name": "Cassetta Petroli",
+      "address": "Via Mauro Giuliani 8",
+      "url": "https://inpost.pl/en/parcel-locker-bisceglie-itbis43460m-via-mauro-giuliani-paczkomaty-bt",
+      "status": "listed_available"
+    },
+    {
+      "code": "ITBIS24842",
+      "type": "locker",
+      "name": "CC Famila",
+      "address": "Via Nicola Consiglio 2",
+      "url": "https://inpost.pl/en/parcel-locker-bisceglie-itbis24842-via-nicola-consiglio-paczkomaty-bt",
+      "status": "listed_available"
+    },
+    {
+      "code": "ITPBT09528P",
+      "type": "point",
+      "name": "Tabaccheria Trentadue",
+      "address": "Via Padre Massimiliano Kolbe 31, 76011 Bisceglie BT",
+      "url": "https://inpost.pl/en/parcel-service-point-itpbt09528p-bisceglie-via-padre-massimiliano-kolbe-31-76011-bisceglie-bt-italy",
+      "status": "listed_available",
+      "hours": "MON-SAT 05:00-13:00 16:00-20:00",
+      "maxWeightKg": 25,
+      "maxDimensionsCm": [
+        39,
+        38,
+        64
+      ],
+      "coords": [
+        41.23204,
+        16.49503
+      ],
+      "coordinatesSource": "official_page_navigation_link",
+      "requiredLabel": "printed",
+      "services": {
+        "dropoff": "conditional",
+        "return_label": "conditional",
+        "return_qr": "unknown",
+        "pickup": "assigned_only"
+      }
+    }
+  ],
+  "changesVs20261014": {
+    "newlyListed": [
+      "ITPBT09528P"
+    ],
+    "notListedInCurrentIndex": [
+      "ITBLQ149474B"
+    ],
+    "unverifiedRemoval": [
+      "ITBLQ149474B"
+    ],
+    "verifiedClosures": []
+  },
+  "pending": [
+    {
+      "code": "ITBLQ149474B",
+      "lastOfficialDetailDate": "2026-10-14",
+      "previousAddress": "Via Mosca 4",
+      "previousSource": "https://inpost.it/locker-bisceglie-itblq149474b-via-mosca",
+      "status": "IN SOSPESO",
+      "reason": "Not in current official city list; Italian URL redirects to generic locator. Do not infer decommission."
+    }
+  ]
+}

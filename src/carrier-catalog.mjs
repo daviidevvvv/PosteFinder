@@ -24,8 +24,10 @@ export function makeCatalog(input){
   const compound=record.network+':'+record.pointId;if(networkIds.has(compound))throw new Error('Duplicate carrier point');networkIds.add(compound);
   const {defaultSourceUrl,...fields}=defaults;
   const services={...fields.services,...record.serviceOverrides};
+  const verificationStatus=record.verificationStatus||'verified';
+  if(!['verified','pending_recheck'].includes(verificationStatus))throw new Error('Unknown verification status '+verificationStatus);
   if(record.network==='dhl_express'&&record.providerCapabilities?.shipmentDropOffAndCollection===false)services.pickup='unknown';
-  byId.get(site).memberships.push({...fields,sourceUrl:defaultSourceUrl,...record,closedDates:fields.closedDates||[],services,hours:unpackHours(hoursPacked),observedAt:record.observedAt||meta.observedAt,sourceUpdatedAt:null,evidence:'official',active:true});
+  byId.get(site).memberships.push({...fields,sourceUrl:defaultSourceUrl,...record,closedDates:fields.closedDates||[],services,hours:unpackHours(hoursPacked),observedAt:record.observedAt||meta.observedAt,sourceUpdatedAt:null,evidence:'official',active:verificationStatus==='verified'});
  }
  return {...meta,sites};
 }

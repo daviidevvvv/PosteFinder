@@ -15,7 +15,7 @@ async function start(){
  let nextId=8100;for(const s of catalog.sites){s.appId=s.legacyId??s.appId??nextId++;byId.set(s.id,s);if(byLegacy.has(s.appId))throw new Error('Duplicate pin '+s.appId);byLegacy.set(s.appId,s);}
  const original=bridge.locations();
  const present=new Set(original.map(l=>l.id));
- const additions=catalog.sites.filter(s=>!present.has(s.appId)).map(s=>({id:s.appId,kind:s.kind,realName:s.name,address:s.address,services:s.memberships.map(m=>NETWORKS[m.network]).join(' / '),hasPoste:s.memberships.some(m=>m.network==='poste'),hasLis:false,coords:s.coords,schedule:{}}));
+ const additions=catalog.sites.filter(s=>!present.has(s.appId)).map(s=>({id:s.appId,kind:s.kind,realName:s.name,address:s.address,services:s.memberships.filter(m=>m.active===true).map(m=>NETWORKS[m.network]).join(' / ')||'IN SOSPESO - da verificare',hasPoste:s.memberships.some(m=>m.active===true&&m.network==='poste'),hasLis:false,coords:s.coords,schedule:{}}));
  let selectedNetwork='verified', timer=null;
  const list=document.getElementById('locations-list');
  const panel=document.createElement('section');panel.id='carrier-panel';panel.className='px-3 py-2 border-b border-slate-200 bg-slate-50 shrink-0 text-xs';
@@ -335,6 +335,12 @@ async function start(){
    if(!s){el.textContent='Dato storico: corrieri e orari non ricontrollati.';card.append(el);continue;}
    const nets=s.memberships.map(m=>NETWORKS[m.network]);
    el.innerHTML=`<div class="flex flex-wrap gap-1">${nets.map(n=>`<span class="rounded border border-blue-100 bg-blue-50 text-blue-800 px-1">${escape(n)}</span>`).join('')}</div><p class="mt-1">Fonti consultate: ${escape([...new Set(s.memberships.map(m=>m.observedAt))].join(', '))} · non verifica in tempo reale</p>${s.conflicts.length?'<p class="text-amber-800">Dati discordanti: controlla le fonti.</p>':''}<details class="mt-1"><summary>Orari, limiti e fonti per corriere</summary>${s.memberships.map(m=>`<div class="mt-2"><a class="underline font-bold" target="_blank" rel="noopener noreferrer" href="${escape(sourceLink(m.sourceDetailsUrl||m.sourceUrl))}">${escape(NETWORKS[m.network])} · ${escape(m.pointId)}</a><p>${Object.entries(dayLabels).map(([d,t])=>t+' '+(m.hours[d].length?m.hours[d].map(([a,b])=>hh(a)+'–'+hh(b)).join(', '):'chiuso')).join('<br>')}</p><p>${escape(m.conditions.join(' '))}</p>${m.userReport?'<p class="text-amber-800">'+escape(m.userReport)+'</p>':''}<p>Limite peso fonte: ${m.limits?.maxWeightKg??'?'} kg${m.limits?.maxDimensionsCm?' · '+m.limits.maxDimensionsCm.join('×')+' cm':''}${m.cutoffMinute!=null?' · cutoff '+hh(m.cutoffMinute):''}</p>${m.freshnessNote?'<p>'+escape(m.freshnessNote)+'</p>':''}</div>`).join('')}${s.conflicts.map(c=>'<p class="text-amber-800 mt-1">'+escape(c.note)+'</p>').join('')}</details>`;
+   const pendingMemberships=s.memberships.filter(m=>m.verificationStatus==='pending_recheck');
+   if(pendingMemberships.length){
+     const notice=document.createElement('p');notice.className='rounded mt-1 p-1 bg-amber-50 text-amber-900 font-semibold';
+     notice.textContent='IN SOSPESO — '+pendingMemberships.map(m=>NETWORKS[m.network]+': '+(m.verificationNote||'non verificato oggi')).join(' ');
+     el.querySelector('details')?.before(notice);
+   }
    if(s.id==='amazon-melezio'){
      const note=document.createElement('p');
      note.className='rounded mt-1 p-1 bg-blue-50 text-blue-900 font-medium';
@@ -364,7 +370,7 @@ async function start(){
  }
  bridge.install({beforeRefresh:audit,decorate,
   baseFilter:l=>bridge.state().filter==='poste'&&byLegacy.has(l.id)?byLegacy.get(l.id).memberships.some(m=>m.network==='poste'):null,
-  filter:l=>selectedNetwork==='all'||(selectedNetwork==='verified'?byLegacy.has(l.id):Boolean(byLegacy.get(l.id)?.memberships.some(m=>selectedNetwork==='brt_digital'?(m.network==='brt'&&m.brtDigitalStatus!=='not_supported_reported'):m.network===selectedNetwork))),
+  filter:l=>selectedNetwork==='all'||Boolean(byLegacy.get(l.id)?.memberships.some(m=>m.active===true&&(selectedNetwork==='verified'||(selectedNetwork==='brt_digital'?(m.network==='brt'&&m.brtDigitalStatus!=='not_supported_reported'):m.network===selectedNetwork)))),
   status:schedule=>{
    const s=auditSchedules.get(schedule);if(!s)return {isOpen:false,text:'Orari non verificati',class:'status-warning',score:-1};
    const desired=selectedNetwork==='brt_digital'?'brt':selectedNetwork;
