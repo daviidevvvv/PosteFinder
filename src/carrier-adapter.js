@@ -23,7 +23,7 @@
     focus(id){return selectLocation(id);},
     message(text,sender='ai'){addMessage(text,sender);},
     consumeMessage(){document.getElementById('chat-input').value='';},
-    showOrganizer(){if(typeof setMobileView==='function'&&window.matchMedia('(max-width: 767px), (max-width: 1023px) and (max-height: 500px)').matches)setMobileView('list');document.getElementById('parcel-organizer')?.scrollIntoView({block:'nearest'});},
+    showOrganizer(){const mobile=window.matchMedia('(max-width: 767px), (max-width: 1023px) and (max-height: 500px)').matches;if(mobile&&typeof setMobileView==='function')setMobileView('list');if(mobile){const chat=document.getElementById('chat-window');chat?.classList.remove('open');chat?.classList.add('closed');}document.getElementById('parcel-organizer')?.scrollIntoView({block:'nearest'});},
     showChat(){const c=document.getElementById('chat-window');c.classList.remove('closed');c.classList.add('open');}
   };
 })();
